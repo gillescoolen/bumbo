@@ -21,7 +21,7 @@ namespace Bumbo.Web.Controllers
         // GET: Users
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Users.ToListAsync());
+            return View(await _context.Users.Include(u => u.Branch).ToListAsync());
         }
 
         // GET: Users/Details/5
@@ -33,6 +33,7 @@ namespace Bumbo.Web.Controllers
             }
 
             var user = await _context.Users
+                .Include(u => u.Branch)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (user == null)
             {
@@ -72,7 +73,9 @@ namespace Bumbo.Web.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users
+                .Include(u => u.Branch)
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (user == null)
             {
                 return NotFound();
@@ -124,6 +127,7 @@ namespace Bumbo.Web.Controllers
             }
 
             var user = await _context.Users
+                .Include(u => u.Branch)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (user == null)
             {
