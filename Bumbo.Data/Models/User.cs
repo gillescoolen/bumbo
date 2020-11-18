@@ -43,7 +43,7 @@ namespace Bumbo.Data
         /// </summary>
         [PersonalData]
         [Required]
-        [Column(TypeName = "varchar")]
+        [Column(TypeName = "varchar(50)")]
         [StringLength(50)]
         [Display(Name = "Achternaam")]
         public string LastName { get; set; }
@@ -73,7 +73,7 @@ namespace Bumbo.Data
         /// </summary>
         [PersonalData]
         [Required]
-        [Column(TypeName = "varchar")]
+        [Column(TypeName = "varchar(50)")]
         [Display(Name = "Straatnaam")]
         [StringLength(50)]
         public string StreetName { get; set; }
@@ -90,7 +90,7 @@ namespace Bumbo.Data
         /// Gets or sets the house number letter for this user.
         /// </summary>
         [PersonalData]
-        [Column(TypeName = "varchar")]
+        [Column(TypeName = "varchar(10)")]
         [Display(Name = "Huisnummer (toevoeging)")]
         [StringLength(10)]
         public string HouseNumberLetter { get; set; }
@@ -110,7 +110,7 @@ namespace Bumbo.Data
         /// </summary>
         [PersonalData]
         [Required]
-        [Column(TypeName = "varchar")]
+        [Column(TypeName = "varchar(50)")]
         [Display(Name = "IBAN")]
         [StringLength(50)]
         public string IBAN { get; set; }
@@ -126,7 +126,7 @@ namespace Bumbo.Data
         /// Gets or sets the bumbo id for this user.
         /// </summary>
         [Required]
-        [Column(TypeName = "varchar")]
+        [Column(TypeName = "varchar(36)")]
         [StringLength(36)]
         public string Bid { get; set; }
 
