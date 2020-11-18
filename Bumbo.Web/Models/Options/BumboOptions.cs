@@ -9,6 +9,6 @@ namespace Bumbo.Web.Models.Options
     {
         public const string Bumbo = "Bumbo";
 
-        public bool RegistrationEnabled { get; set; } = true;
+        public bool RegistrationEnabled { get; set; } = false;
     }
 }
