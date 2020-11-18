@@ -50,6 +50,7 @@ namespace Bumbo.Data
         [PersonalData]
         [Required]
         [DataType(DataType.Date)]
+        [Column(TypeName = "Date")]
         [Display(Name = "Geboortedatum")]
         public DateTime DateOfBirth { get; set; }
 
@@ -91,6 +92,7 @@ namespace Bumbo.Data
         [PersonalData]
         [Required]
         [DataType(DataType.Date)]
+        [Column(TypeName = "Date")]
         [Display(Name = "Datum indiensttreding")]
         public DateTime DateOfEmployment { get; set; }
 
