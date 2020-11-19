@@ -91,7 +91,7 @@ namespace Bumbo.Data
         /// </summary>
         [PersonalData]
         [Column(TypeName = "varchar(10)")]
-        [Display(Name = "Huisnummer (toevoeging)")]
+        [Display(Name = "Toevoeging")]
         [StringLength(10)]
         public string HouseNumberLetter { get; set; }
 
@@ -119,6 +119,7 @@ namespace Bumbo.Data
         /// Gets or sets the branch id for this user.
         /// </summary>
         [Required]
+        [Display(Name = "Filiaal")]
         public int BranchId { get; set; }
 
 

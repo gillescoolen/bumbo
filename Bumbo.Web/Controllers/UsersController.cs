@@ -6,16 +6,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Bumbo.Data;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace Bumbo.Web.Controllers
 {
     public class UsersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public UsersController(ApplicationDbContext context)
+        public UsersController(ApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Users
@@ -46,6 +50,7 @@ namespace Bumbo.Web.Controllers
         // GET: Users/Create
         public IActionResult Create()
         {
+            ViewBag.Branches = _context.Branch.ToList();
             return View();
         }
 
@@ -54,13 +59,17 @@ namespace Bumbo.Web.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FirstName,LastName,DateOfBirth,PostalCode,HouseNumber,HouseNumberLetter,DateOfEmployment,IBAN,BranchId,Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] User user)
+        public async Task<IActionResult> Create(User user)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(user);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var passwordHasher = new PasswordHasher<User>();
+                user.PasswordHash = passwordHasher.HashPassword(user, user.PasswordHash);
+                user.UserName = user.Email;
+
+                var result = await _userManager.CreateAsync(user);
+
+                if (result.Succeeded) return RedirectToAction(nameof(Index));
             }
             return View(user);
         }
@@ -73,13 +82,14 @@ namespace Bumbo.Web.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users
-                .Include(u => u.Branch)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            user.Branch = _context.Branch.Find(user.BranchId);
             if (user == null)
             {
                 return NotFound();
             }
+
+            ViewBag.Branches = _context.Branch.ToList();
             return View(user);
         }
 
@@ -88,33 +98,47 @@ namespace Bumbo.Web.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("FirstName,LastName,DateOfBirth,PostalCode,HouseNumber,HouseNumberLetter,DateOfEmployment,IBAN,BranchId,Email,NormalizedEmail,PhoneNumber")] User user)
+        public async Task<IActionResult> Edit(int id, User user)
         {
             if (id != user.Id)
             {
                 return NotFound();
             }
 
+            var userToUpdate = await _userManager.FindByIdAsync(id.ToString());
+
             if (ModelState.IsValid)
             {
+                userToUpdate.FirstName = user.FirstName;
+                userToUpdate.LastName = user.LastName;
+                userToUpdate.DateOfBirth = user.DateOfBirth;
+                userToUpdate.StreetName = user.StreetName;
+                userToUpdate.HouseNumber = user.HouseNumber;
+                userToUpdate.HouseNumberLetter = user.HouseNumberLetter;
+                userToUpdate.PostalCode = user.PostalCode;
+                userToUpdate.Email = user.Email;
+                userToUpdate.PhoneNumber = user.PhoneNumber;
+                userToUpdate.IBAN = user.IBAN;
+                userToUpdate.BranchId = user.BranchId;
+                userToUpdate.DateOfEmployment = user.DateOfEmployment;
+                userToUpdate.Bid = user.Bid;
+
                 try
                 {
-                    _context.Update(user);
-                    await _context.SaveChangesAsync();
+                    var result = await _userManager.UpdateAsync(userToUpdate);
+                    if (!result.Succeeded)
+                    {
+                        ViewBag.Branches = _context.Branch.ToList();
+                        return View(user);
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserExists(user.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    return NotFound();
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Branches = _context.Branch.ToList();
             return View(user);
         }
 
@@ -126,9 +150,8 @@ namespace Bumbo.Web.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users
-                .Include(u => u.Branch)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            user.Branch = _context.Branch.Find(user.BranchId);
             if (user == null)
             {
                 return NotFound();
@@ -142,15 +165,9 @@ namespace Bumbo.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            await _userManager.DeleteAsync(user);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool UserExists(int id)
-        {
-            return _context.Users.Any(e => e.Id == id);
         }
     }
 }
