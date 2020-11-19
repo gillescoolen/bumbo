@@ -1,0 +1,52 @@
+﻿@model IEnumerable<Bumbo.Data.Models.AvailableWorktime>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Start)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Finish)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SchoolHoursWorked)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Start)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Finish)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SchoolHoursWorked)
+            </td>
+            <td>
+                @item.User.GetFullName()
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { pk1=item.UserId, pk2 = item.WorkDate }) |
+                @Html.ActionLink("Delete", "Delete", new { pk1 = item.UserId, pk2 = item.WorkDate })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
