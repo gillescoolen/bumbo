@@ -43,8 +43,8 @@
                 @item.User.GetFullName()
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { pk1=item.UserId, pk2 = item.WorkDate }) |
-                @Html.ActionLink("Delete", "Delete", new { pk1 = item.UserId, pk2 = item.WorkDate })
+                @Html.ActionLink("Edit", "Edit", new { UserId=item.UserId, WorkDate = item.WorkDate.ToString() }) |
+                @Html.ActionLink("Delete", "Delete", new { UserId = item.UserId, WorkDate = item.WorkDate.ToString() })
             </td>
         </tr>
 }

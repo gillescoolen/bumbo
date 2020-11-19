@@ -49,15 +49,16 @@ namespace Bumbo.Web.Controllers
         }
 
         // GET: AvailableWorktime/Edit
-        //get juiste parameters
-        public async Task<IActionResult> Edit(int? id, DateTime? id2)
+        [HttpGet("Edit/{UserId}/{WorkDate}")]
+        public async Task<IActionResult> Edit(int? UserId, string? WorkDate)
         {
-            if (id == null || id2 == null)
+            if (UserId == null || WorkDate == null)
             {
                 return NotFound();
             }
 
-            var availableWorktime = await _context.AvailableWorktime.FindAsync(id,id2);
+            DateTime date = DateTime.Parse(WorkDate);
+            var availableWorktime = await _context.AvailableWorktime.Where(at=>at.UserId==UserId&&at.WorkDate==date).FirstOrDefaultAsync();
             if (availableWorktime == null)
             {
                 return NotFound();
@@ -69,12 +70,12 @@ namespace Bumbo.Web.Controllers
         // POST: AvailableWorktime/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(DateTime id, [Bind("UserId,WorkDate,Start,Finish,SchoolHoursWorked")] AvailableWorktime availableWorktime)
+        public async Task<IActionResult> Edit([Bind("UserId,WorkDate,Start,Finish,SchoolHoursWorked")] AvailableWorktime availableWorktime)
         {
-            if (id != availableWorktime.WorkDate)
-            {
-                return NotFound();
-            }
+            //if (workdate != availableWorktime.WorkDate || userid!=availableWorktime.UserId)
+            //{
+            //    return NotFound();
+            //}
 
             if (ModelState.IsValid)
             {
@@ -100,18 +101,20 @@ namespace Bumbo.Web.Controllers
             return View(availableWorktime);
         }
 
-        // GET: AvailableWorktime/Delete/5
-        //get juiste parameters
-        public async Task<IActionResult> Delete(int? id, DateTime? id2)
+        // GET: AvailableWorktime/Delete
+        [HttpGet("Delete/{UserId}/{WorkDate}")]
+        public async Task<IActionResult> Delete(int? UserId, string? WorkDate)
         {
-            if (id == null||id2 == null)
+            if (UserId == null||WorkDate == null)
             {
                 return NotFound();
             }
 
+            DateTime date = DateTime.Parse(WorkDate);
             var availableWorktime = await _context.AvailableWorktime
                 .Include(a => a.User)
-                .FirstOrDefaultAsync(m => m.WorkDate == id2 && m.UserId == id);
+                .FirstOrDefaultAsync(at => at.UserId == UserId && at.WorkDate == date);
+
             if (availableWorktime == null)
             {
                 return NotFound();
@@ -120,12 +123,11 @@ namespace Bumbo.Web.Controllers
             return View(availableWorktime);
         }
 
-        // POST: AvailableWorktime/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(DateTime id)
+        // POST: AvailableWorktime/DeleteConfirmed
+        [HttpGet("DeleteConfirmed/{UserId}/{WorkDate}")]
+        public async Task<IActionResult> DeleteConfirmed(int UserId,string WorkDate)
         {
-            var availableWorktime = await _context.AvailableWorktime.FindAsync(id);
+            var availableWorktime = await _context.AvailableWorktime.Where(at=>at.UserId==UserId&&at.WorkDate== DateTime.Parse(WorkDate)).FirstOrDefaultAsync();
             _context.AvailableWorktime.Remove(availableWorktime);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

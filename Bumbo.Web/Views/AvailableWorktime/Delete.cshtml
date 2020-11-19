@@ -38,9 +38,7 @@
     </dl>
     
     <form asp-action="Delete">
-        <input type="hidden" asp-for="UserId" />
-        <input type="hidden" asp-for="WorkDate" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        @Html.ActionLink("Delete", "DeleteConfirmed", new { UserId = Model.UserId, WorkDate = Model.WorkDate.ToString() })
         <a asp-action="Index">Back to List</a>
     </form>
 </div>
