@@ -1,0 +1,86 @@
+﻿@model Bumbo.Data.User
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Medewerker</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.FirstName)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.FirstName)
+        </dd>
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.LastName)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.LastName)
+        </dd>
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.DateOfBirth)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.DateOfBirth)
+        </dd>
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.PostalCode)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.PostalCode)
+        </dd>
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.HouseNumber)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.HouseNumber) @Html.DisplayFor(model => model.HouseNumberLetter)
+        </dd>
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.DateOfEmployment)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.DateOfEmployment)
+        </dd>
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.IBAN)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.IBAN)
+        </dd>
+        <dt class="col-sm-4">
+            Filiaal
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.Branch.Name) (@Html.DisplayFor(model => model.Branch.StreetName) @Html.DisplayFor(model => model.Branch.HouseNumber) @Html.DisplayFor(model => model.Branch.HouseNumberLetter), @Html.DisplayFor(model => model.Branch.PostalCode))
+        </dd>
+
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.PhoneNumber)
+        </dt>
+        <dd class="col-sm-8">
+            @if (Model.PhoneNumber != null)
+            {
+                @Html.DisplayFor(model => model.PhoneNumber)
+            } else
+            {
+                @Html.DisplayText("Geen telefoonnummer toegevoegd!")
+            }
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
