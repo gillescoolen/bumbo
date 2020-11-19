@@ -25,6 +25,7 @@ namespace Bumbo.Web.Controllers
         // GET: Users
         public async Task<IActionResult> Index()
         {
+            ViewBag.CurrentUserId = _userManager.GetUserAsync(User).Result.Id;
             return View(await _context.Users.Include(u => u.Branch).ToListAsync());
         }
 
@@ -145,7 +146,7 @@ namespace Bumbo.Web.Controllers
         // GET: Users/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            if (id == null || id == _userManager.GetUserAsync(User).Result.Id)
             {
                 return NotFound();
             }
@@ -165,6 +166,11 @@ namespace Bumbo.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            if (id == _userManager.GetUserAsync(User).Result.Id)
+            {
+                return NotFound();
+            }
+
             var user = await _userManager.FindByIdAsync(id.ToString());
             await _userManager.DeleteAsync(user);
             return RedirectToAction(nameof(Index));
