@@ -7,29 +7,56 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Bumbo.Data;
 using Bumbo.Data.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Bumbo.Web.Controllers
 {
     public class AvailableWorktimeController : Controller
     {
         private readonly ApplicationDbContext _context;
-
+        private readonly UserManager<User> _userManager;
         public AvailableWorktimeController(ApplicationDbContext context)
         {
             _context = context;
         }
 
         // GET: AvailableWorktime
+        [HttpGet("Index/{UserId}")]
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.AvailableWorktime.Include(a => a.User);
-            return View(await applicationDbContext.ToListAsync());
+            var UserId = _userManager.GetUserAsync(User).Result.Id;
+            var user = _context.Users.Where(a => a.Id == UserId);
+
+            //als rol = niet bevoegd alle users te zien => ziet alleen eigen available worktime
+            if (User.IsInRole("Admin"))
+            {
+                var applicationDbContext = _context.AvailableWorktime.Include(a => a.User);
+                return View(await applicationDbContext.ToListAsync());
+            } 
+            else
+            {
+                var applicationDbContext = _context.AvailableWorktime.Include(a => a.User).Where(a => a.UserId == UserId);
+                return View(await applicationDbContext.ToListAsync());
+            }
         }
 
         // GET: AvailableWorktime/Create
+        // per week op geven dus: x = SELECT max date where start/finish not null; SELECT x+1,x+2,x+3,x+4,x+5,x+6,x+7
         public IActionResult Create()
         {
+            var userBirth = _userManager.GetUserAsync(User).Result.DateOfBirth;
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Bid");
+            ViewBag["UserAge"] = (int)(DateTime.Today - userBirth).TotalDays / 365;
+            DateTime maxDate = DateTime.Today;
+            List<DateTime> newWeek = new List<DateTime>();
+            newWeek.Add(maxDate.AddDays(1));
+            newWeek.Add(maxDate.AddDays(2));
+            newWeek.Add(maxDate.AddDays(3));
+            newWeek.Add(maxDate.AddDays(4));
+            newWeek.Add(maxDate.AddDays(5));
+            newWeek.Add(maxDate.AddDays(6));
+            newWeek.Add(maxDate.AddDays(7));
+            ViewBag["newDates"] = newWeek;
             return View();
         }
 
@@ -70,12 +97,12 @@ namespace Bumbo.Web.Controllers
         // POST: AvailableWorktime/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([Bind("UserId,WorkDate,Start,Finish,SchoolHoursWorked")] AvailableWorktime availableWorktime)
+        public async Task<IActionResult> Edit(int userId, [Bind("UserId,WorkDate,Start,Finish,SchoolHoursWorked")] AvailableWorktime availableWorktime)
         {
-            //if (workdate != availableWorktime.WorkDate || userid!=availableWorktime.UserId)
-            //{
-            //    return NotFound();
-            //}
+            if (userId != availableWorktime.UserId)
+            {
+                return NotFound();
+            }
 
             if (ModelState.IsValid)
             {

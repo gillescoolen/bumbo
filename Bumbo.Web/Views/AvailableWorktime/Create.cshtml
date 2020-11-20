@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Create";
 }
-
+@*Moet ik nog testen*@
 <h1>Create</h1>
 
 <h4>AvailableWorktime</h4>
@@ -14,28 +14,35 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
+                <label asp-for="UserId" class="form-control" asp-items="@ViewBag.UserId"></label>
             </div>
-            <div class="form-group">
-                <label asp-for="WorkDate" class="control-label"></label>
-                <input asp-for="WorkDate" class="form-control" />
-                <span asp-validation-for="WorkDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Start" class="control-label"></label>
-                <input asp-for="Start" class="form-control" />
-                <span asp-validation-for="Start" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Finish" class="control-label"></label>
-                <input asp-for="Finish" class="form-control" />
-                <span asp-validation-for="Finish" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SchoolHoursWorked" class="control-label"></label>
-                <input asp-for="SchoolHoursWorked" class="form-control" />
-                <span asp-validation-for="SchoolHoursWorked" class="text-danger"></span>
-            </div>
+
+            @foreach (DateTime date in ViewBag.newDates)
+            {
+                <div class="form-group">
+                    <label asp-for="@date" class="control-label">@date</label>
+                    <input asp-for="@date" class="form-control" />
+                    <span asp-validation-for="WorkDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Start" class="control-label">Starting Time you are available at</label>
+                    <input placeholder="For example: 9:00:00" asp-for="Start" class="form-control" />
+                    <span asp-validation-for="Start" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Finish" class="control-label">Finishing Time you are available at</label>
+                    <input placeholder="For example: 18:00:00" asp-for="Finish" class="form-control" />
+                    <span asp-validation-for="Finish" class="text-danger"></span>
+                </div>
+                @if (ViewBag.UserAge <= 18)
+                {
+                    <div class="form-group">
+                        <label asp-for="SchoolHoursWorked" class="control-label">How many hours have you had in school this day?</label>
+                        <input asp-for="SchoolHoursWorked" class="form-control" />
+                        <span asp-validation-for="SchoolHoursWorked" class="text-danger"></span>
+                    </div>
+                }
+            }
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

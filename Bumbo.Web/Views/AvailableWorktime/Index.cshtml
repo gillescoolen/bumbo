@@ -7,7 +7,7 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-for= asp-action="Create">Create New</a>
 </p>
 <table class="table">
     <thead>
@@ -19,15 +19,16 @@
                 @Html.DisplayNameFor(model => model.Finish)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.SchoolHoursWorked)
+                @Html.DisplayNameFor(model => model.User)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.User)
+                @Html.DisplayNameFor(model => model.SchoolHoursWorked)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
+
 @foreach (var item in Model) {
         <tr>
             <td>
@@ -37,13 +38,13 @@
                 @Html.DisplayFor(modelItem => item.Finish)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.SchoolHoursWorked)
-            </td>
-            <td>
                 @item.User.GetFullName()
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { UserId=item.UserId, WorkDate = item.WorkDate.ToString() }) |
+                @Html.DisplayFor(modelItem => item.SchoolHoursWorked)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { UserId = item.UserId, WorkDate = item.WorkDate.ToString() }) |
                 @Html.ActionLink("Delete", "Delete", new { UserId = item.UserId, WorkDate = item.WorkDate.ToString() })
             </td>
         </tr>
