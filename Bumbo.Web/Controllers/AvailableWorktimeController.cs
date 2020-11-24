@@ -15,13 +15,13 @@ namespace Bumbo.Web.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
-        public AvailableWorktimeController(ApplicationDbContext context)
+        public AvailableWorktimeController(ApplicationDbContext context, UserManager<User> user)
         {
             _context = context;
+            _userManager = user;
         }
 
         // GET: AvailableWorktime
-        [HttpGet("Index/{UserId}")]
         public async Task<IActionResult> Index()
         {
             var UserId = _userManager.GetUserAsync(User).Result.Id;
@@ -46,8 +46,8 @@ namespace Bumbo.Web.Controllers
         {
             var userBirth = _userManager.GetUserAsync(User).Result.DateOfBirth;
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Bid");
-            ViewBag["UserAge"] = (int)(DateTime.Today - userBirth).TotalDays / 365;
             DateTime maxDate = DateTime.Today;
+            ViewBag.UserAge = (int)((maxDate - userBirth).TotalDays / 365);
             List<DateTime> newWeek = new List<DateTime>();
             newWeek.Add(maxDate.AddDays(1));
             newWeek.Add(maxDate.AddDays(2));
@@ -56,15 +56,17 @@ namespace Bumbo.Web.Controllers
             newWeek.Add(maxDate.AddDays(5));
             newWeek.Add(maxDate.AddDays(6));
             newWeek.Add(maxDate.AddDays(7));
-            ViewBag["newDates"] = newWeek;
+            ViewBag.newDates = newWeek;
             return View();
         }
 
         // POST: AvailableWorktime/Create
+        //moet alle 7 available worktimes aanmaken
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("UserId,WorkDate,Start,Finish,SchoolHoursWorked")] AvailableWorktime availableWorktime)
         {
+
             if (ModelState.IsValid)
             {
                 _context.Add(availableWorktime);
@@ -76,6 +78,7 @@ namespace Bumbo.Web.Controllers
         }
 
         // GET: AvailableWorktime/Edit
+        //werkt nog niet ivm workdate
         [HttpGet("Edit/{UserId}/{WorkDate}")]
         public async Task<IActionResult> Edit(int? UserId, string? WorkDate)
         {
