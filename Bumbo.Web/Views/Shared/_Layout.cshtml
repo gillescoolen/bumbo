@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,57 +9,51 @@
     <link rel="stylesheet" href="~/lib/fullcalendar/main.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Bumbo Tool</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <partial name="_LoginPartial" />
-                    <ul class="navbar-nav flex-grow-1">
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Schedule" asp-action="Index">Schedule</a>
-                            </li>
-                            @if (User.IsInRole("Admin") || true == true)
-                            {
-                              <li class="nav-item">
-                                  <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Medewerkers</a>
-                              </li>
-                            }
-                        }
 
-                    </ul>
-                </div>
+<body>
+    <div class="d-flex" id="wrapper">
+        <div class="bg-light border-right" id="sidebar-wrapper">
+            <div class="sidebar-heading">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Bumbo Tool</a>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+            <div class="list-group list-group-flush">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a asp-area="" asp-controller="Home" asp-action="Index" class="list-group-item list-group-item-action bg-light">Home</a>
+                    <a asp-area="" asp-controller="Home" asp-action="Privacy" class="list-group-item list-group-item-action bg-light">Privacy</a>
+                    <a asp-area="" asp-controller="Schedule" asp-action="Index" class="list-group-item list-group-item-action bg-light">Rooster</a>
+
+                    @if (User.IsInRole("Admin") || true == true)
+                    {
+                        <a asp-area="" asp-controller="Users" asp-action="Index" class="list-group-item list-group-item-action bg-light">Medewerkers</a>
+                    }
+                }
+            </div>
+        </div>
+        <div id="page-content-wrapper">
+            <header>
+                <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                    <div class="container">
+                        <a id="menu-toggle" onclick="toggleMenu">Menu</a>
+                        <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                            <partial name="_LoginPartial" />
+                        </div>
+                    </div>
+                </nav>
+            </header>
+            <div class="container">
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; @DateTime.Now.Year - Bumbo Tool
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/fullcalendar/main.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
 </body>
+
 </html>
