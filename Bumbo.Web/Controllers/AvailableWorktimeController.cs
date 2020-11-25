@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Bumbo.Data;
 using Bumbo.Data.Models;
 using Microsoft.AspNetCore.Identity;
+using Bumbo.Web.Models;
 
 namespace Bumbo.Web.Controllers
 {
@@ -32,7 +33,7 @@ namespace Bumbo.Web.Controllers
             {
                 var applicationDbContext = _context.AvailableWorktime.Include(a => a.User);
                 return View(await applicationDbContext.ToListAsync());
-            } 
+            }
             else
             {
                 var applicationDbContext = _context.AvailableWorktime.Include(a => a.User).Where(a => a.UserId == UserId);
@@ -64,17 +65,25 @@ namespace Bumbo.Web.Controllers
         //moet alle 7 available worktimes aanmaken
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UserId,WorkDate,Start,Finish,SchoolHoursWorked")] AvailableWorktime availableWorktime)
+        public async Task<IActionResult> Create(AvailableWorkTimeViewModel model)
         {
-
-            if (ModelState.IsValid)
+            for (int index = 0; index < model.Start.Count; index++)
             {
+                AvailableWorktime availableWorktime = new AvailableWorktime
+                {
+                    UserId = 1,
+                    WorkDate = model.Dates[index],
+                    SchoolHoursWorked = model.SchoolHoursWorked,
+                    Start = model.Start[index],
+                    Finish = model.Finish[index]
+                };
+
                 _context.Add(availableWorktime);
+
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Bid", availableWorktime.UserId);
-            return View(availableWorktime);
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: AvailableWorktime/Edit
@@ -88,7 +97,7 @@ namespace Bumbo.Web.Controllers
             }
 
             DateTime date = DateTime.Parse(WorkDate);
-            var availableWorktime = await _context.AvailableWorktime.Where(at=>at.UserId==UserId&&at.WorkDate==date).FirstOrDefaultAsync();
+            var availableWorktime = await _context.AvailableWorktime.Where(at => at.UserId == UserId && at.WorkDate == date).FirstOrDefaultAsync();
             if (availableWorktime == null)
             {
                 return NotFound();
@@ -135,7 +144,7 @@ namespace Bumbo.Web.Controllers
         [HttpGet("Delete/{UserId}/{WorkDate}")]
         public async Task<IActionResult> Delete(int? UserId, string? WorkDate)
         {
-            if (UserId == null||WorkDate == null)
+            if (UserId == null || WorkDate == null)
             {
                 return NotFound();
             }
@@ -155,9 +164,9 @@ namespace Bumbo.Web.Controllers
 
         // POST: AvailableWorktime/DeleteConfirmed
         [HttpGet("DeleteConfirmed/{UserId}/{WorkDate}")]
-        public async Task<IActionResult> DeleteConfirmed(int UserId,string WorkDate)
+        public async Task<IActionResult> DeleteConfirmed(int UserId, string WorkDate)
         {
-            var availableWorktime = await _context.AvailableWorktime.Where(at=>at.UserId==UserId&&at.WorkDate== DateTime.Parse(WorkDate)).FirstOrDefaultAsync();
+            var availableWorktime = await _context.AvailableWorktime.Where(at => at.UserId == UserId && at.WorkDate == DateTime.Parse(WorkDate)).FirstOrDefaultAsync();
             _context.AvailableWorktime.Remove(availableWorktime);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
