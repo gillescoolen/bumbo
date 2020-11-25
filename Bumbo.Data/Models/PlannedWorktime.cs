@@ -10,7 +10,6 @@ namespace Bumbo.Data.Models
         public TimeSpan Start { get; set; }
         public TimeSpan Finish { get; set; }
         public string Section { get; set; }
-
         public virtual User User { get; set; }
     }
 }

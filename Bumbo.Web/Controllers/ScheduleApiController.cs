@@ -9,20 +9,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Bumbo.Web.Controllers
 {
+    [Route("api/schedule")]
+    [ApiController]
     [Authorize]
-    public class ScheduleController : Controller
+    public class ScheduleApiController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public ScheduleController(ApplicationDbContext context)
+        public ScheduleApiController(ApplicationDbContext context)
         {
             _context = context;
-
         }
 
-        public IActionResult Index()
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<PlannedWorktime>>> GetPlannedWorkTime()
         {
-            return View();
+            return await _context.PlannedWorktime.ToListAsync();
         }
     }
 }

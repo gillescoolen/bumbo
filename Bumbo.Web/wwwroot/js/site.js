@@ -1,8 +1,6 @@
 ﻿// @ts-nocheck
-// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+const url = 'api/schedule';
 
-// Write your JavaScript code.
 document.addEventListener('DOMContentLoaded', function () {
   const calendarElement = document.getElementById('calendar');
   const eventForm = document.getElementById('add-event');
@@ -18,18 +16,19 @@ document.addEventListener('DOMContentLoaded', function () {
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      right: 'timeGridWeek'
     },
 
     intitialView: 'timeGridWeek',
     initialDate: new Date().toISOString().split('T')[0],
+
     nowIndicator: true,
     navLinks: true,
     editable: true,
 
     eventClick: () => console.log('click...'),
 
-    dateClick: () => jQuery('#event-add').modal('toggle'),
+    dateClick: () => console.log('click...'),
 
     eventDrop: update,
     eventResize: update,
