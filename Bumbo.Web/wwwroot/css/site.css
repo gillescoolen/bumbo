@@ -2,7 +2,7 @@
 for details on configuring this project to bundle and minify static web assets. */
 
 :root {
-    --primary: #ffd900;
+    --primary: #FFC107;
     --secondary: #5f551c;
     --accent: #b4b4b4;
 }
@@ -44,6 +44,7 @@ a {
 html {
     font-size: 14px;
 }
+
 @media (min-width: 768px) {
     html {
         font-size: 16px;
@@ -53,6 +54,7 @@ html {
 .border-top {
     border-top: 1px solid #e5e5e5;
 }
+
 .border-bottom {
     border-bottom: 1px solid #e5e5e5;
 }
@@ -79,6 +81,7 @@ body {
     /* todo: fix */
     overflow-x: hidden;
 }
+
 .footer {
     position: absolute;
     bottom: 0;
@@ -101,14 +104,14 @@ body {
     transition: margin 0.25s ease-out;
 }
 
-#sidebar-wrapper .sidebar-heading {
-    padding: 0.875rem 1.25rem;
-    font-size: 1.2rem;
-}
+    #sidebar-wrapper .sidebar-heading {
+        padding: 0.875rem 1.25rem;
+        font-size: 1.2rem;
+    }
 
-#sidebar-wrapper .list-group {
-    width: 15rem;
-}
+    #sidebar-wrapper .list-group {
+        width: 15rem;
+    }
 
 #page-content-wrapper {
     min-width: 100vw;
