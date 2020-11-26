@@ -43,11 +43,22 @@
                 }
             </div>
         </div>
-            <div class="container">
+        <div id="page-content-wrapper" style="padding: 25px">
+            @if (ViewData["UseContainer"] == null || ViewData["UseContainer"].Equals(true))
+            {
+                <div class="container">
+                    <main role="main" class="pb-3">
+                        @RenderBody()
+                    </main>
+                </div>
+            }
+            else
+            {
                 <main role="main" class="pb-3">
                     @RenderBody()
                 </main>
-            </div>
+            }
+
         </div>
     </div>
 
