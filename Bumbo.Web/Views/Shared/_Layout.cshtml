@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@using Bumbo.Data
+@inject UserManager<User> UserManager
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -10,17 +14,22 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 
-<body>
+<body style="margin-bottom: 0">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow">
+            <a title="Schakel de zij-navigatie in/uit" style="font-weight: bold; user-select: none;" id="menu-toggle" onclick="toggleMenu">Bumbo Tool</a>
+
+            <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                <partial name="_LoginPartial" />
+            </div>
+        </nav>
+    </header>
     <div class="d-flex" id="wrapper">
         <div class="bg-light border-right" id="sidebar-wrapper">
-            <div class="sidebar-heading">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Bumbo Tool</a>
-            </div>
             <div class="list-group list-group-flush">
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <a asp-area="" asp-controller="Home" asp-action="Index" class="list-group-item list-group-item-action bg-light">Home</a>
-                    <a asp-area="" asp-controller="Home" asp-action="Privacy" class="list-group-item list-group-item-action bg-light">Privacy</a>
+                    <a asp-area="" asp-controller="Home" asp-action="Index" class="list-group-item list-group-item-action bg-light">Dashboard</a>
                     <a asp-area="" asp-controller="Schedule" asp-action="Index" class="list-group-item list-group-item-action bg-light">Rooster</a>
 
                     @if (User.IsInRole("Admin") || true == true)
@@ -28,19 +37,12 @@
                         <a asp-area="" asp-controller="Users" asp-action="Index" class="list-group-item list-group-item-action bg-light">Medewerkers</a>
                     }
                 }
+                else
+                {
+                    <a asp-area="Identity" asp-page="/Account/Manage/Index" class="list-group-item list-group-item-action bg-light">Inloggen</a>
+                }
             </div>
         </div>
-        <div id="page-content-wrapper">
-            <header>
-                <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-                    <div class="container">
-                        <a id="menu-toggle" onclick="toggleMenu">Menu</a>
-                        <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                            <partial name="_LoginPartial" />
-                        </div>
-                    </div>
-                </nav>
-            </header>
             <div class="container">
                 <main role="main" class="pb-3">
                     @RenderBody()
