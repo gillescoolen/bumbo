@@ -80,11 +80,12 @@ namespace Bumbo.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AvailableWorkTimeViewModel model)
         {
+            var user = _userManager.GetUserAsync(User).Result;
             for (int index = 0; index < model.Start.Count; index++)
             {
                 AvailableWorktime availableWorktime = new AvailableWorktime
                 {
-                    UserId = 1,
+                    UserId = user.Id,
                     WorkDate = model.Dates[index],
                     SchoolHoursWorked = model.SchoolHoursWorked,
                     Start = model.Start[index],
