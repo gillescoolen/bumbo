@@ -1,5 +1,8 @@
 ﻿@using Bumbo.Data
-@model User
+@using Microsoft.AspNetCore.Identity
+@using System.Text.RegularExpressions;
+@inject UserManager<User> UserManager
+@model DashboardViewModel
 
 @{
     ViewData["Title"] = "Dashboard";
@@ -9,5 +12,88 @@
 <div class="text-center mb-5">
     <h1 class="display-4">@Model.GetGreeting(), @UserManager.GetUserAsync(User).Result.FirstName!</h1>
 </div>
+
+<div class="row">
+    <div class="col-md-6 col-sm-12">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        Belangrijke meldingen
+                    </div>
+                    <table class="table card-table table-sm">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Melding
+                                </th>
+                                <th>
+                                    Beschrijving
+                                </th>
+                                <th>
+                                    Datum
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.MessagesList.Count() > 0)
+                            {
+                                @foreach (Message message in Model.MessagesList.OrderBy(m => m.RelatedDate).ThenBy(m => m.Priority))
+                                {
+                                    <tr @(message.Priority == Message.Priorities.High ? "class=table-danger" : string.Empty) @(message.Priority == Message.Priorities.Medium ? "class=table-warning" : string.Empty)>
+                                        <td>
+                                            @message.Title
+                                        </td>
+                                        <td>@Regex.Replace(message.Content, @"<[^>]*>", String.Empty)</td>
+                                        <td>@(message.GetFormattedDate() ?? "-")</td>
+                                        <td>
+                                            @if (message.Location != null)
+                                            {
+                                                <a href="@message.Location">-></a>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="3">Je hebt geen belangrijke meldingen!</td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-sm-12">
+        @if (Model.MessagesCards.Count() > 0)
+        {
+            <div class="row mb-5">
+                @foreach (Message message in Model.MessagesCards)
+                {
+                    <div class="col-md-6 col-sm-12">
+                        <div class="card @(message.Priority == Message.Priorities.High ? "border-danger" : string.Empty) @(message.Priority == Message.Priorities.Medium ? "border-warning" : string.Empty)">
+                            <div class="card-header">@message.Title</div>
+                            <div class="card-body">
+                                @if (message.Content != null)
+                                {
+                                    <p class="card-text">@Html.Raw(message.Content)</p>
+                                }
+
+                                @if (message.Location != null)
+                                {
+                                    <a href="@message.Location" class="card-link">Lees meer</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
 </div>
 
