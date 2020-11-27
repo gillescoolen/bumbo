@@ -78,7 +78,7 @@ namespace Bumbo.Web.Controllers
         }
 
         // POST: AvailableWorktime/Create
-        //moet alle 7 available worktimes aanmaken
+        //Maakt date voor komende 8 dagen
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AvailableWorkTimeViewModel model)
