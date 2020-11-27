@@ -22,12 +22,11 @@ namespace Bumbo.Web.Controllers
             _userManager = user;
         }
 
-        // GET: AvailableWorktime
         public async Task<IActionResult> Index()
         {
             var user = _userManager.GetUserAsync(User).Result;
             ViewBag.UserAge = (int)((DateTime.Today - user.DateOfBirth).TotalDays / 365);
-            //als rol = niet bevoegd alle users te zien => ziet alleen eigen available worktime
+            //Als rol = niet bevoegd alle users te zien => ziet alleen eigen available worktime
             if (User.IsInRole("Admin"))
             {
                 var applicationDbContext = _context.AvailableWorktime.Include(a => a.User);
@@ -40,7 +39,6 @@ namespace Bumbo.Web.Controllers
             }
         }
 
-        // GET: AvailableWorktime/Create
         public IActionResult Create()
         {
             var user = _userManager.GetUserAsync(User).Result;
@@ -49,7 +47,7 @@ namespace Bumbo.Web.Controllers
             ViewBag.UserAge = (int)((maxDate - user.DateOfBirth).TotalDays / 365);
             AvailableWorktime lastFilledWorkTime = _context.AvailableWorktime.Where(wt=>wt.UserId==user.Id).OrderByDescending(p=>p.WorkDate).FirstOrDefault();
 
-            //bepaalt welke volgende dates er komen te staan die moeten worden ingevuld
+            //Bepaalt welke volgende dates er komen te staan die moeten worden ingevuld
             List<DateTime> newWeek = new List<DateTime>();
             if (lastFilledWorkTime == null)
             {
@@ -77,7 +75,6 @@ namespace Bumbo.Web.Controllers
             return View();
         }
 
-        // POST: AvailableWorktime/Create
         //Maakt date voor komende 8 dagen
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -102,8 +99,7 @@ namespace Bumbo.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: AvailableWorktime/Edit
-        //werkt nog niet ivm workdate
+        //Werkt nog niet ivm workdate
         [HttpGet("Edit/{UserId}/{WorkDate}")]
         public async Task<IActionResult> Edit(int? UserId, string? WorkDate)
         {
@@ -122,7 +118,6 @@ namespace Bumbo.Web.Controllers
             return View(availableWorktime);
         }
 
-        // POST: AvailableWorktime/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int userId, [Bind("UserId,WorkDate,Start,Finish,SchoolHoursWorked")] AvailableWorktime availableWorktime)
@@ -156,7 +151,6 @@ namespace Bumbo.Web.Controllers
             return View(availableWorktime);
         }
 
-        // GET: AvailableWorktime/Delete
         [HttpGet("Delete/{UserId}/{WorkDate}")]
         public async Task<IActionResult> Delete(int? UserId, string? WorkDate)
         {
@@ -178,7 +172,6 @@ namespace Bumbo.Web.Controllers
             return View(availableWorktime);
         }
 
-        // POST: AvailableWorktime/DeleteConfirmed
         [HttpGet("DeleteConfirmed/{UserId}/{WorkDate}")]
         public async Task<IActionResult> DeleteConfirmed(int UserId, string WorkDate)
         {
