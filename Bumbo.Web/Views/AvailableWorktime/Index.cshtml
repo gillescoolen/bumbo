@@ -13,6 +13,9 @@
     <thead>
         <tr>
             <th>
+                @Html.DisplayNameFor(model => model.WorkDate)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Start)
             </th>
             <th>
@@ -21,9 +24,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.User)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SchoolHoursWorked)
-            </th>
+            @if (ViewBag.UserAge < 18)
+            {
+                <th>
+                    @Html.DisplayNameFor(model => model.SchoolHoursWorked)
+                </th>
+            }
             <th></th>
         </tr>
     </thead>
@@ -31,6 +37,9 @@
 
 @foreach (var item in Model) {
         <tr>
+            <td>
+                @item.WorkDate.DayOfWeek : @item.WorkDate.ToShortDateString()
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Start)
             </td>
@@ -40,9 +49,12 @@
             <td>
                 @item.User.GetFullName()
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SchoolHoursWorked)
-            </td>
+            @if (ViewBag.UserAge < 18)
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.SchoolHoursWorked)
+                </td>
+            }
             <td>
                 @Html.ActionLink("Edit", "Edit", new { UserId = item.UserId, WorkDate = item.WorkDate.ToString() }) |
                 @Html.ActionLink("Delete", "Delete", new { UserId = item.UserId, WorkDate = item.WorkDate.ToString() })

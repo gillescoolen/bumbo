@@ -25,9 +25,8 @@ namespace Bumbo.Web.Controllers
         // GET: AvailableWorktime
         public async Task<IActionResult> Index()
         {
-            var UserId = _userManager.GetUserAsync(User).Result.Id;
-            var user = _context.Users.Where(a => a.Id == UserId);
-
+            var user = _userManager.GetUserAsync(User).Result;
+            ViewBag.UserAge = (int)((DateTime.Today - user.DateOfBirth).TotalDays / 365);
             //als rol = niet bevoegd alle users te zien => ziet alleen eigen available worktime
             if (User.IsInRole("Admin"))
             {
@@ -36,27 +35,37 @@ namespace Bumbo.Web.Controllers
             }
             else
             {
-                var applicationDbContext = _context.AvailableWorktime.Include(a => a.User).Where(a => a.UserId == UserId);
+                var applicationDbContext = _context.AvailableWorktime.Include(a => a.User).Where(a => a.UserId == user.Id);
                 return View(await applicationDbContext.ToListAsync());
             }
         }
 
         // GET: AvailableWorktime/Create
-        // per week op geven dus: x = SELECT max date where start/finish not null; SELECT x+1,x+2,x+3,x+4,x+5,x+6,x+7
         public IActionResult Create()
         {
-            var userBirth = _userManager.GetUserAsync(User).Result.DateOfBirth;
+            var user = _userManager.GetUserAsync(User).Result;
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Bid");
             DateTime maxDate = DateTime.Today;
-            ViewBag.UserAge = (int)((maxDate - userBirth).TotalDays / 365);
+            ViewBag.UserAge = (int)((maxDate - user.DateOfBirth).TotalDays / 365);
+            AvailableWorktime lastFilledWorkTime = _context.AvailableWorktime.Where(wt=>wt.UserId==user.Id).OrderByDescending(p=>p.WorkDate).FirstOrDefault();
+
+            //bepaalt welke volgende dates er komen te staan die moeten worden ingevuld
             List<DateTime> newWeek = new List<DateTime>();
-            newWeek.Add(maxDate.AddDays(1));
-            newWeek.Add(maxDate.AddDays(2));
-            newWeek.Add(maxDate.AddDays(3));
-            newWeek.Add(maxDate.AddDays(4));
-            newWeek.Add(maxDate.AddDays(5));
-            newWeek.Add(maxDate.AddDays(6));
-            newWeek.Add(maxDate.AddDays(7));
+            if (maxDate>=lastFilledWorkTime.WorkDate)
+            {
+                for (int i = 1; i < 9; i++)
+                {
+                    newWeek.Add(maxDate.AddDays(i));
+                }
+            } 
+            else
+            {
+                for (int i = 1; i < 9; i++)
+                {
+                    newWeek.Add(lastFilledWorkTime.WorkDate.AddDays(i));
+                }
+            }
+
             ViewBag.newDates = newWeek;
             return View();
         }
