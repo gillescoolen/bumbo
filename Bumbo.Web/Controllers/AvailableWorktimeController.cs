@@ -51,7 +51,14 @@ namespace Bumbo.Web.Controllers
 
             //bepaalt welke volgende dates er komen te staan die moeten worden ingevuld
             List<DateTime> newWeek = new List<DateTime>();
-            if (maxDate>=lastFilledWorkTime.WorkDate)
+            if (lastFilledWorkTime == null)
+            {
+                for (int i = 1; i < 9; i++)
+                {
+                    newWeek.Add(maxDate.AddDays(i));
+                }
+            }
+            else if (maxDate>=lastFilledWorkTime.WorkDate)
             {
                 for (int i = 1; i < 9; i++)
                 {
