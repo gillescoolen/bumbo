@@ -11,6 +11,9 @@ namespace Bumbo.Web.Models
 {
     public class DashboardViewModel
     {
+        public List<Message> MessagesList { get; set; }
+        public List<Message> MessagesCards { get; set; }
+
         /// <summary>
         /// Returns greeting relevant to the time of the day
         /// </summary>
