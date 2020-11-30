@@ -82,6 +82,15 @@ namespace Bumbo.Web.Controllers
         public async Task<IActionResult> Create(AvailableWorkTimeViewModel model)
         {
             var user = _userManager.GetUserAsync(User).Result;
+
+            for (int index = 0; index < model.Start.Count; index++)
+            {
+                if (model.Start[index].CompareTo(model.Finish[index]) > 0)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+
             for (int index = 0; index < model.Start.Count; index++)
             {
                 AvailableWorktime availableWorktime = new AvailableWorktime
@@ -142,6 +151,11 @@ namespace Bumbo.Web.Controllers
             }
 
             if (availableWorktime.WorkDate.Subtract(DateTime.Today.AddDays(7)).Days < 0)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (availableWorktime.Start.CompareTo(availableWorktime.Finish) > 0)
             {
                 return RedirectToAction(nameof(Index));
             }
