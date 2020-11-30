@@ -179,7 +179,8 @@ namespace Bumbo.Web.Controllers
         [HttpGet("DeleteConfirmed/{UserId}/{WorkDate}")]
         public async Task<IActionResult> DeleteConfirmed(int UserId, string WorkDate)
         {
-            var availableWorktime = await _context.AvailableWorktime.Where(at => at.UserId == UserId && at.WorkDate == DateTime.Parse(WorkDate)).FirstOrDefaultAsync();
+            DateTime workDate = DateTime.Parse(HttpUtility.UrlDecode(WorkDate));
+            var availableWorktime = await _context.AvailableWorktime.Where(at => at.UserId == UserId && at.WorkDate == workDate).FirstOrDefaultAsync();
             _context.AvailableWorktime.Remove(availableWorktime);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
