@@ -46,7 +46,7 @@ namespace Bumbo.Web.Controllers
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Bid");
             DateTime maxDate = DateTime.Today;
             ViewBag.UserAge = (int)((maxDate - user.DateOfBirth).TotalDays / 365);
-            AvailableWorktime lastFilledWorkTime = _context.AvailableWorktime.Where(wt=>wt.UserId==user.Id).OrderByDescending(p=>p.WorkDate).FirstOrDefault();
+            AvailableWorktime lastFilledWorkTime = _context.AvailableWorktime.Where(wt => wt.UserId == user.Id).OrderByDescending(p => p.WorkDate).FirstOrDefault();
 
             //Bepaalt welke volgende dates er komen te staan die moeten worden ingevuld
             List<DateTime> newWeek = new List<DateTime>();
@@ -57,13 +57,13 @@ namespace Bumbo.Web.Controllers
                     newWeek.Add(maxDate.AddDays(i));
                 }
             }
-            else if (maxDate>=lastFilledWorkTime.WorkDate)
+            else if (maxDate >= lastFilledWorkTime.WorkDate)
             {
                 for (int i = 1; i < 9; i++)
                 {
                     newWeek.Add(maxDate.AddDays(i));
                 }
-            } 
+            }
             else
             {
                 for (int i = 1; i < 9; i++)
@@ -123,24 +123,35 @@ namespace Bumbo.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(AvailableWorkTimeViewModel model)
+        public async Task<IActionResult> EditConfirmed(int userId, AvailableWorktime availableWorktime)
         {
-            var user = _userManager.GetUserAsync(User).Result;
+            if (userId != availableWorktime.UserId)
             {
-                AvailableWorktime availableWorktime = new AvailableWorktime
-                {
-                    UserId = user.Id,
-                    WorkDate = model.WorkDate,
-                    SchoolHoursWorked = model.SchoolHoursWorked,
-                    Start = model.Start[0],
-                    Finish = model.Finish[0]
-                };
-
-                _context.Update(availableWorktime);
-
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-
+            var toBeUpdated = _context.AvailableWorktime.Where(a => a.UserId == userId && a.WorkDate == availableWorktime.WorkDate).FirstOrDefault();
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    toBeUpdated.Start = availableWorktime.Start;
+                    toBeUpdated.Finish = availableWorktime.Finish;
+                    toBeUpdated.SchoolHoursWorked = availableWorktime.SchoolHoursWorked;
+                    _context.Update(toBeUpdated);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!AvailableWorktimeExists(availableWorktime.WorkDate))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
             return RedirectToAction(nameof(Index));
         }
 
