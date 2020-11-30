@@ -114,7 +114,7 @@ namespace Bumbo.Web.Controllers
             var decoded = HttpUtility.UrlDecode(WorkDate);
             DateTime date = DateTime.Parse(decoded);
 
-            if (date.Subtract(DateTime.Today.AddDays(7)).Days > 0)
+            if (date.Subtract(DateTime.Today.AddDays(7)).Days < 0)
             {
                 return RedirectToAction(nameof(Index));
             }
@@ -141,7 +141,7 @@ namespace Bumbo.Web.Controllers
                 return NotFound();
             }
 
-            if (availableWorktime.WorkDate.Subtract(DateTime.Today.AddDays(7)).Days > 0)
+            if (availableWorktime.WorkDate.Subtract(DateTime.Today.AddDays(7)).Days < 0)
             {
                 return RedirectToAction(nameof(Index));
             }
