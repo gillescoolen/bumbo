@@ -105,15 +105,24 @@ namespace Bumbo.Web.Controllers
         [HttpGet("Edit/{UserId}/{WorkDate}")]
         public async Task<IActionResult> Edit(int? UserId, string? WorkDate)
         {
+
             if (UserId == null || WorkDate == null)
             {
                 return NotFound();
             }
-            var user = _userManager.GetUserAsync(User).Result;
-            ViewBag.UserAge = (int)((DateTime.Now - user.DateOfBirth).TotalDays / 365);
 
             var decoded = HttpUtility.UrlDecode(WorkDate);
             DateTime date = DateTime.Parse(decoded);
+
+            if (date.Subtract(DateTime.Today.AddDays(7)).Days > 0)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var user = _userManager.GetUserAsync(User).Result;
+            ViewBag.UserAge = (int)((DateTime.Now - user.DateOfBirth).TotalDays / 365);
+
+            
             var availableWorktime = await _context.AvailableWorktime.Where(at => at.UserId == UserId && at.WorkDate == date).FirstOrDefaultAsync();
             if (availableWorktime == null)
             {
@@ -131,6 +140,12 @@ namespace Bumbo.Web.Controllers
             {
                 return NotFound();
             }
+
+            if (availableWorktime.WorkDate.Subtract(DateTime.Today.AddDays(7)).Days > 0)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
             var toBeUpdated = _context.AvailableWorktime.Where(a => a.UserId == userId && a.WorkDate == availableWorktime.WorkDate).FirstOrDefault();
             try
             {
