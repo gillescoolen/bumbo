@@ -123,35 +123,25 @@ namespace Bumbo.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int userId, [Bind("UserId,WorkDate,Start,Finish,SchoolHoursWorked")] AvailableWorktime availableWorktime)
+        public async Task<IActionResult> Edit(AvailableWorkTimeViewModel model)
         {
-            if (userId != availableWorktime.UserId)
+            var user = _userManager.GetUserAsync(User).Result;
             {
-                return NotFound();
+                AvailableWorktime availableWorktime = new AvailableWorktime
+                {
+                    UserId = user.Id,
+                    WorkDate = model.WorkDate,
+                    SchoolHoursWorked = model.SchoolHoursWorked,
+                    Start = model.Start[0],
+                    Finish = model.Finish[0]
+                };
+
+                _context.Update(availableWorktime);
+
+                await _context.SaveChangesAsync();
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(availableWorktime);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!AvailableWorktimeExists(availableWorktime.WorkDate))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Bid", availableWorktime.UserId);
-            return View(availableWorktime);
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet("Delete/{UserId}/{WorkDate}")]
