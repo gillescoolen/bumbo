@@ -9,6 +9,7 @@ using Bumbo.Data;
 using Bumbo.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Bumbo.Web.Models;
+using System.Web;
 
 namespace Bumbo.Web.Controllers
 {
@@ -109,7 +110,8 @@ namespace Bumbo.Web.Controllers
                 return NotFound();
             }
 
-            DateTime date = DateTime.Parse(WorkDate);
+            var decoded = HttpUtility.UrlDecode(WorkDate);
+            DateTime date = DateTime.Parse(decoded);
             var availableWorktime = await _context.AvailableWorktime.Where(at => at.UserId == UserId && at.WorkDate == date).FirstOrDefaultAsync();
             if (availableWorktime == null)
             {
@@ -160,7 +162,8 @@ namespace Bumbo.Web.Controllers
                 return NotFound();
             }
 
-            DateTime date = DateTime.Parse(WorkDate);
+            var decoded = HttpUtility.UrlDecode(WorkDate);
+            DateTime date = DateTime.Parse(decoded);
             var availableWorktime = await _context.AvailableWorktime
                 .Include(a => a.User)
                 .FirstOrDefaultAsync(at => at.UserId == UserId && at.WorkDate == date);
