@@ -24,11 +24,14 @@
                 <input asp-for="Finish" class="form-control" />
                 <span asp-validation-for="Finish" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="SchoolHoursWorked" class="control-label"></label>
-                <input asp-for="SchoolHoursWorked" class="form-control" />
-                <span asp-validation-for="SchoolHoursWorked" class="text-danger"></span>
-            </div>
+            @if (ViewBag.UserAge < 19)
+            {
+                <div class="form-group">
+                    <label asp-for="SchoolHoursWorked" class="control-label"></label>
+                    <input asp-for="SchoolHoursWorked" class="form-control" />
+                    <span asp-validation-for="SchoolHoursWorked" class="text-danger"></span>
+                </div>
+            }
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

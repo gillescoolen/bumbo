@@ -109,6 +109,8 @@ namespace Bumbo.Web.Controllers
             {
                 return NotFound();
             }
+            var user = _userManager.GetUserAsync(User).Result;
+            ViewBag.UserAge = (int)((DateTime.Now - user.DateOfBirth).TotalDays / 365);
 
             var decoded = HttpUtility.UrlDecode(WorkDate);
             DateTime date = DateTime.Parse(decoded);
