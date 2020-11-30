@@ -92,7 +92,7 @@ namespace Bumbo.Web.Controllers
                         Priority = Message.Priorities.Low,
                         Type = Message.MessageType.Card,
                         Title = "Vandaag",
-                        Content = $"<span style='font-size: xx-large; vertical-align: middle;'>{todaysPrognose.AmountOfFreight}</span> <span style='font-size: large; vertical-align: middle;'>geplande colli</span><br/><span style='font-size: xx-large; vertical-align: middle;'>{todaysPrognose.AmountOfCustomers}</span> <span style='font-size: large; vertical-align: middle;'>verwachtte bezoekers</span>"
+                        Content = $"<span style='font-size: xx-large; vertical-align: middle;'>{todaysPrognose.AmountOfFreight}</span> <span style='font-size: large; vertical-align: middle;'>geplande vracht</span><br/><span style='font-size: xx-large; vertical-align: middle;'>{todaysPrognose.AmountOfCustomers}</span> <span style='font-size: large; vertical-align: middle;'>verwachtte bezoekers</span>"
                     });
                 }
                 #endregion
