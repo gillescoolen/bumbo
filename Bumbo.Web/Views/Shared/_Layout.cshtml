@@ -43,7 +43,9 @@
                                 </li>
                             }
 
-                            
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="AvailableWorktime" asp-action="Index">Available Worktime</a>
+                            </li>
                         }
 
                     </ul>
@@ -65,13 +67,11 @@
                 {
                     <a asp-area="" asp-controller="Home" asp-action="Index" class="list-group-item list-group-item-action bg-light">Dashboard</a>
                     <a asp-area="" asp-controller="Schedule" asp-action="Index" class="list-group-item list-group-item-action bg-light">Rooster</a>
-                    <a class="list-group-item list-group-item-action bg-light" asp-area="" asp-controller="AvailableWorktime" asp-action="Index">Available Worktime</a>
 
                     @if (User.IsInRole("Admin") || true == true)
                     {
                         <a asp-area="" asp-controller="Users" asp-action="Index" class="list-group-item list-group-item-action bg-light">Medewerkers</a>
                     }
-
                 }
                 else
                 {
