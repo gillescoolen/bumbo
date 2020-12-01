@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Bumbo.Data;
+using Microsoft.Extensions.Options;
+using Bumbo.Web.Models.Options;
 
 namespace Bumbo.Web.Areas.Identity.Pages.Account.Manage
 {
@@ -19,15 +21,18 @@ namespace Bumbo.Web.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailSender _emailSender;
+        private readonly IOptions<BumboOptions> _bumboOptions;
 
         public EmailModel(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IOptions<BumboOptions> bumboOptions)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
+            _bumboOptions = bumboOptions;
         }
 
         public string Username { get; set; }
@@ -65,6 +70,8 @@ namespace Bumbo.Web.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnGetAsync()
         {
+            if (!_bumboOptions.Value.EmailIsManageable) return NotFound();
+
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
@@ -77,6 +84,8 @@ namespace Bumbo.Web.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPostChangeEmailAsync()
         {
+            if (!_bumboOptions.Value.EmailIsManageable) return NotFound();
+
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
@@ -114,6 +123,8 @@ namespace Bumbo.Web.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPostSendVerificationEmailAsync()
         {
+            if (!_bumboOptions.Value.EmailIsManageable) return NotFound();
+
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
