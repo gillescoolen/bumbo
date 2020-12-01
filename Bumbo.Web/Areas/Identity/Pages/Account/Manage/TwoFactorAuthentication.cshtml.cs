@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bumbo.Data;
-using Bumbo.Web.Models.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Bumbo.Web.Areas.Identity.Pages.Account.Manage
 {
@@ -19,18 +17,15 @@ namespace Bumbo.Web.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<TwoFactorAuthenticationModel> _logger;
-        private readonly IOptions<BumboOptions> _bumboOptions;
 
         public TwoFactorAuthenticationModel(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
-            ILogger<TwoFactorAuthenticationModel> logger,
-            IOptions<BumboOptions> bumboOptions)
+            ILogger<TwoFactorAuthenticationModel> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
-            _bumboOptions = bumboOptions;
         }
 
         public bool HasAuthenticator { get; set; }
@@ -47,8 +42,6 @@ namespace Bumbo.Web.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnGet()
         {
-            if (!_bumboOptions.Value.TwoFactorAuthenticationEnabled) return NotFound();
-
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
@@ -65,8 +58,6 @@ namespace Bumbo.Web.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPost()
         {
-            if (!_bumboOptions.Value.TwoFactorAuthenticationEnabled) return NotFound();
-
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
