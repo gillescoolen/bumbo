@@ -7,7 +7,7 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-for= asp-action ="Create">Maak nieuwe beschikbaarheid</a>
+    <a asp-for=asp-action ="Create"> <button class="btn btn-primary">Maak nieuwe beschikbaarheid</button></a>
 </p>
 <table class="table">
     <thead>
@@ -123,7 +123,7 @@
                     <td>
                         @if (item.WorkDate.Subtract(DateTime.Today.AddDays(7)).Days > 0)
                         {
-                            @Html.ActionLink("Edit", "Edit", new { UserId = item.UserId, WorkDate = item.WorkDate.ToString() });
+                            @Html.ActionLink("Edit", "Edit", new { UserId = item.UserId, WorkDate = item.WorkDate.ToString() })
                         }
                     </td>
 
