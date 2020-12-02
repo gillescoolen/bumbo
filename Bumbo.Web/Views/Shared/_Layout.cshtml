@@ -1,21 +1,13 @@
-﻿@using Microsoft.AspNetCore.Identity
-@using Bumbo.Data
-@inject UserManager<User> UserManager
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Bumbo Tool</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/lib/fullcalendar/main.min.css" />
-    <link rel="stylesheet" href="~/lib/font-awesome/css/all.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
-
-<body style="margin-bottom: 0">
+<body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
@@ -42,67 +34,27 @@
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Medewerkers</a>
                                 </li>
                             }
-
-                            
                         }
 
                     </ul>
                 </div>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow">
-
-            <a title="Schakel de zij-navigatie in/uit" style="user-select: none;" id="menu-toggle" onclick="toggleMenu"><i class="fas fa-bars"></i>&nbsp;&nbsp;</a>
-            <a style="font-weight: bold;">Bumbo Tool</a>
-
-            <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                <partial name="_LoginPartial" />
             </div>
         </nav>
     </header>
-    <div class="d-flex" id="wrapper">
-        <div class="bg-light border-right" id="sidebar-wrapper">
-            <div class="list-group list-group-flush">
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <a asp-area="" asp-controller="Home" asp-action="Index" class="list-group-item list-group-item-action bg-light">Dashboard</a>
-                    <a asp-area="" asp-controller="Schedule" asp-action="Index" class="list-group-item list-group-item-action bg-light">Rooster</a>
-                    <a class="list-group-item list-group-item-action bg-light" asp-area="" asp-controller="AvailableWorktime" asp-action="Index">Available Worktime</a>
-
-                    @if (User.IsInRole("Admin") || true == true)
-                    {
-                        <a asp-area="" asp-controller="Users" asp-action="Index" class="list-group-item list-group-item-action bg-light">Medewerkers</a>
-                    }
-
-                }
-                else
-                {
-                    <a asp-area="Identity" asp-page="/Account/Manage/Index" class="list-group-item list-group-item-action bg-light">Inloggen</a>
-                }
-            </div>
-        </div>
-        <div id="page-content-wrapper" style="padding: 25px">
-            @if (ViewData["UseContainer"] == null || ViewData["UseContainer"].Equals(true))
-            {
-                <div class="container">
-                    <main role="main" class="pb-3">
-                        @RenderBody()
-                    </main>
-                </div>
-            }
-            else
-            {
-                <main role="main" class="pb-3">
-                    @RenderBody()
-                </main>
-            }
-
-        </div>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
     </div>
 
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; @DateTime.Now.Year - Bumbo Tool
+        </div>
+    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/lib/fullcalendar/main.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
 </body>
-
 </html>
