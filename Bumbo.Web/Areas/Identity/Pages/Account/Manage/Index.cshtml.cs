@@ -34,14 +34,14 @@ namespace Bumbo.Web.Areas.Identity.Pages.Account.Manage
         public class InputModel
         {
             [Phone]
-            [Display(Name = "Phone number")]
+            [Display(Name = "Telefoonnummer")]
             public string PhoneNumber { get; set; }
         }
 
         private async Task LoadAsync(User user)
         {
-            var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var userName = user.UserName;
+            var phoneNumber = user.PhoneNumber.ToString();
 
             Username = userName;
 
@@ -56,7 +56,7 @@ namespace Bumbo.Web.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Kon gebruiker met ID '{_userManager.GetUserId(User)}' niet laden.");
             }
 
             await LoadAsync(user);
@@ -68,7 +68,7 @@ namespace Bumbo.Web.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Kon gebruiker met ID '{_userManager.GetUserId(User)}' niet laden.");
             }
 
             if (!ModelState.IsValid)
@@ -83,7 +83,7 @@ namespace Bumbo.Web.Areas.Identity.Pages.Account.Manage
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
                 if (!setPhoneResult.Succeeded)
                 {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
+                    StatusMessage = "Onverwachtte fout opgetreden bij het wijzigen van je telefoonnummer.";
                     return RedirectToPage();
                 }
             }
@@ -91,7 +91,7 @@ namespace Bumbo.Web.Areas.Identity.Pages.Account.Manage
             await _userManager.UpdateAsync(user);
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
+            StatusMessage = "Je profiel is gewijzigd.";
             return RedirectToPage();
         }
     }

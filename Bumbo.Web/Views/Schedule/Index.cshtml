@@ -1,0 +1,59 @@
+﻿<div class="p-5">
+  <h2 class="mb-4">Schedule</h2>
+  <div class="card">
+    <div class="card-body p-0">
+      <div id="calendar"></div>
+    </div>
+  </div>
+</div>
+
+<div id="event" class="modal modal-top fade calendar-modal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h4 class="modal-title" id="event-title"></h4>
+        <div id="event-date"></div>
+        <div id="event-start"></div>
+        <div id="event-end"></div>
+        <hr />
+        <div id="event-description"></div>
+      </div>
+
+      <div class="modal-footer">
+
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="event-add" class="modal modal-top fade calendar-modal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form id="add-event">
+        <div class="modal-body">
+          <h4>Add Event</h4>
+          <div class="form-group">
+            <label>Title</label>
+            <input id="new-title" type="text" class="form-control" name="title">
+          </div>
+          <div class="form-group">
+            <label>Start</label>
+            <input id="new-start" type='datetime-local' class="datetimepicker form-control" name="date">
+          </div>
+          <div class="form-group">
+            <label>End</label>
+            <input id="new-end" type='datetime-local' class="datetimepicker form-control" name="date">
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="new-description" class="form-control" name="description"></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
