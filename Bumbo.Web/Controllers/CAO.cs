@@ -81,6 +81,10 @@ namespace Bumbo.Web.Controllers
             return halfHourWithSubcharge;
         }
 
+        /**
+         * Checks if the user suffices the CAO norms for the given work week
+         */
+        //TODO Check for > 40 hours worked for 16-17 your olds this month
         public Boolean ApproveWorkWeek(User user, PlannedWorktime[] plannedWorkWeek)
         {
             Boolean isApprovable = StandardNorms(plannedWorkWeek);
@@ -103,6 +107,9 @@ namespace Bumbo.Web.Controllers
             return isApprovable;
         }
 
+        /**
+         * Returns value based on if the standard CAO norms are met for the given work week
+         */
         private Boolean StandardNorms(PlannedWorktime[] plannedWorkWeek)
         {
             double totalMinutesWorked = 0;
@@ -124,6 +131,9 @@ namespace Bumbo.Web.Controllers
             return totalMinutesWorked >= (60 * 60);
         }
 
+        /**
+         * Returns value based on if the standard CAO norms are met for sixteen and seventeen year olds
+         */
         private bool SixteenAndSeventeenNorms(User user, PlannedWorktime[] plannedWorkWeek)
         {
             foreach (PlannedWorktime workDay in plannedWorkWeek)
@@ -139,6 +149,9 @@ namespace Bumbo.Web.Controllers
             return true;
         }
 
+        /**
+         * Returns value based on if the standard CAO norms are met for employees younger then 16 years
+         */
         private bool UnderSixteenNorms(User user, PlannedWorktime[] plannedWorkWeek)
         {
             int workedDays = 0;
