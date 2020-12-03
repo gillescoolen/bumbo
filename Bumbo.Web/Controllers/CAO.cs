@@ -81,26 +81,69 @@ namespace Bumbo.Web.Controllers
             return halfHourWithSubcharge;
         }
 
-        public bool MaxHoursPerDayMinor(User user, PlannedWorktime[] week)
+        public Boolean ApproveWorkWeek(User user, PlannedWorktime[] plannedWorkWeek)
+        {
+            Boolean isApprovable = StandardNorms(plannedWorkWeek);
+
+            if (!isApprovable)
+            {
+                return isApprovable;
+            }
+
+            int userage = (int)((DateTime.Today - user.DateOfBirth).TotalDays / 365);
+            if (userage == 16 || userage == 17)
+            {
+                return SixteenAndSeventeenNorms(user, plannedWorkWeek);
+            } 
+            else if (userage < 16)
+            {
+                return UnderSixteenNorms(plannedWorkWeek);
+            }
+
+            return isApprovable;
+        }
+
+        private Boolean StandardNorms(PlannedWorktime[] plannedWorkWeek)
+        {
+            double totalMinutesWorked = 0;
+            foreach (PlannedWorktime workDay in plannedWorkWeek)
+            {
+                //Checks if worked hours per day is less then 12 hours
+                double workedMinutes = workDay.Start.Subtract(workDay.Finish).TotalMinutes;
+                if (workedMinutes > (12 * 60))
+                {
+                    return false;
+                } 
+                else
+                {
+                    totalMinutesWorked = totalMinutesWorked + workedMinutes;
+                }
+            }
+
+            //Checks if worked hours this week is less then 60 hours
+            return totalMinutesWorked >= (60 * 60);
+        }
+
+        private bool SixteenAndSeventeenNorms(User user, PlannedWorktime[] plannedWorkWeek)
         {
             int userage = (int)((DateTime.Today - user.DateOfBirth).TotalDays / 365);
             if (userage < 18)
             {
-                for (int i = 0; i < week.Length; i++)
+                for (int i = 0; i < plannedWorkWeek.Length; i++)
                 {
-                    int? schoolhoursworked = _context.AvailableWorktime.Where(at => at.UserId == user.Id && at.WorkDate == week[i].WorkDate).Select(at => at.SchoolHoursWorked).FirstOrDefault();
+                    int? schoolhoursworked = _context.AvailableWorktime.Where(at => at.UserId == user.Id && at.WorkDate == plannedWorkWeek[i].WorkDate).Select(at => at.SchoolHoursWorked).FirstOrDefault();
                     if (schoolhoursworked!=null)
                     {
                         if (userage == 16 || userage == 17)
                         {
-                            if (week[i].Finish.Subtract(week[i].Start).Hours + (int)schoolhoursworked > 9)
+                            if (plannedWorkWeek[i].Finish.Subtract(plannedWorkWeek[i].Start).Hours + (int)schoolhoursworked > 9)
                             {
                                 return false;
                             }
                         }
                         else if (userage < 16)
                         {
-                            if (week[i].Finish.Subtract(week[i].Start).Hours + (int)schoolhoursworked > 8)
+                            if (plannedWorkWeek[i].Finish.Subtract(plannedWorkWeek[i].Start).Hours + (int)schoolhoursworked > 8)
                             {
                                 return false;
                             }
@@ -111,18 +154,15 @@ namespace Bumbo.Web.Controllers
             return true;
         }
 
-        public bool MaxUntilSevenIfUserLessThanSixteen(int userAge, PlannedWorktime[] week)
+        private bool UnderSixteenNorms(PlannedWorktime[] plannedWorkWeek)
         {
-            if (userAge<16)
-            {
-                foreach (var item in week)
+                foreach (var item in plannedWorkWeek)
                 {
                     if (item.Finish.Hours > 19)
                     {
                         return false;
                     }
                 }
-            }
             return true;
         }
     }
