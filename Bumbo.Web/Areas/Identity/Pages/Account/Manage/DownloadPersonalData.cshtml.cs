@@ -41,7 +41,11 @@ namespace Bumbo.Web.Areas.Identity.Pages.Account.Manage
                             prop => Attribute.IsDefined(prop, typeof(PersonalDataAttribute)));
             foreach (var p in personalDataProps)
             {
-                personalData.Add(p.Name, p.GetValue(user)?.ToString() ?? "null");
+                try
+                {
+                    personalData.Add(p.Name, p.GetValue(user)?.ToString() ?? "null");
+                }
+                catch { }
             }
 
             var logins = await _userManager.GetLoginsAsync(user);
