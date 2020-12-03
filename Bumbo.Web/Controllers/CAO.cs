@@ -97,7 +97,7 @@ namespace Bumbo.Web.Controllers
             } 
             else if (userage < 16)
             {
-                return UnderSixteenNorms(plannedWorkWeek);
+                return UnderSixteenNorms(user, plannedWorkWeek);
             }
 
             return isApprovable;
@@ -126,44 +126,74 @@ namespace Bumbo.Web.Controllers
 
         private bool SixteenAndSeventeenNorms(User user, PlannedWorktime[] plannedWorkWeek)
         {
-            int userage = (int)((DateTime.Today - user.DateOfBirth).TotalDays / 365);
-            if (userage < 18)
+            foreach (PlannedWorktime workDay in plannedWorkWeek)
             {
-                for (int i = 0; i < plannedWorkWeek.Length; i++)
+                //Checks if worked hours + shool hours per day is less then 9 hours
+                int? schoolhoursworked = _context.AvailableWorktime.Where(at => at.UserId == user.Id && at.WorkDate == workDay.WorkDate).Select(at => at.SchoolHoursWorked).FirstOrDefault();
+                if ((workDay.Finish.Subtract(workDay.Start).Hours + (int)schoolhoursworked) > 9)
                 {
-                    int? schoolhoursworked = _context.AvailableWorktime.Where(at => at.UserId == user.Id && at.WorkDate == plannedWorkWeek[i].WorkDate).Select(at => at.SchoolHoursWorked).FirstOrDefault();
-                    if (schoolhoursworked!=null)
-                    {
-                        if (userage == 16 || userage == 17)
-                        {
-                            if (plannedWorkWeek[i].Finish.Subtract(plannedWorkWeek[i].Start).Hours + (int)schoolhoursworked > 9)
-                            {
-                                return false;
-                            }
-                        }
-                        else if (userage < 16)
-                        {
-                            if (plannedWorkWeek[i].Finish.Subtract(plannedWorkWeek[i].Start).Hours + (int)schoolhoursworked > 8)
-                            {
-                                return false;
-                            }
-                        }
-                    }
+                    return false;
                 }
             }
+
             return true;
         }
 
-        private bool UnderSixteenNorms(PlannedWorktime[] plannedWorkWeek)
+        private bool UnderSixteenNorms(User user, PlannedWorktime[] plannedWorkWeek)
         {
-                foreach (var item in plannedWorkWeek)
+            int workedDays = 0;
+            int workedHoursThisWeek = 0;
+            Boolean hadSchool = false;
+
+            foreach (PlannedWorktime workDay in plannedWorkWeek)
+            {
+                //Checks if worked hours + shool hours per day is less then 8 hours
+                int? schoolhoursworked = _context.AvailableWorktime.Where(at => at.UserId == user.Id && at.WorkDate == workDay.WorkDate).Select(at => at.SchoolHoursWorked).FirstOrDefault();
+                if ((workDay.Finish.Subtract(workDay.Start).Hours + (int)schoolhoursworked) > 8)
                 {
-                    if (item.Finish.Hours > 19)
-                    {
-                        return false;
-                    }
+                    return false;
                 }
-            return true;
+
+                //Checks if employee has had school
+                if (schoolhoursworked > 0)
+                {
+                    hadSchool = true;
+                }
+
+                //Checks if employee has worked past 19:00
+                if (workDay.Finish.TotalHours > 19)
+                {
+                    return false;
+                }
+
+                //Calculates worked days
+                int workedHours = workDay.Finish.Subtract(workDay.Start).Hours;
+                if (workedHours > 0)
+                {
+                    workedDays++;
+                }
+
+                workedHoursThisWeek = workedHoursThisWeek + workedHours;
+            }
+            
+            //Checks maximum worked hours this week
+            if (hadSchool)
+            {
+                if (workedHoursThisWeek > 12)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (workedHoursThisWeek > 40)
+                {
+                    return false;
+                }
+            }
+
+            //Checks if employee has worked a maximum of 5 days
+            return workedDays < 6;
         }
     }
 }
