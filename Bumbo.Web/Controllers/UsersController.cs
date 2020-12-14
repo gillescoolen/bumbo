@@ -107,6 +107,8 @@ namespace Bumbo.Web.Controllers
                 if (userViewModel.Role == UserViewModel.Roles.Manager) await _userManager.AddToRoleAsync(dataUser, "Manager");
 
             }
+
+            ViewBag.Branches = _context.Branch.ToList();
             return View(userViewModel);
         }
 
