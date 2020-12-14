@@ -1,5 +1,5 @@
 ﻿@using Bumbo.Data.Models
-@model Bumbo.Data.User
+@model Bumbo.Web.Models.UserViewModel
 
 @{
     ViewData["Title"] = "Medewerker bewerken";
@@ -119,7 +119,12 @@
 
         <div class="col-md-12">
             <div class="form-group">
-                @* TODO: User Role *@
+                <label asp-for="Role" class="control-label"></label>
+                <select asp-for="Role" class="form-control">
+                    <option value="@Bumbo.Web.Models.UserViewModel.Roles.Manager" selected="@(Model.Role == Bumbo.Web.Models.UserViewModel.Roles.Manager)">Manager</option>
+                    <option value="@Bumbo.Web.Models.UserViewModel.Roles.User" selected="@(Model.Role == Bumbo.Web.Models.UserViewModel.Roles.User)">Medewerker</option>
+                    <span asp-validation-for="Role" class="text-danger"></span>
+                </select>
             </div>
         </div>
 
