@@ -93,19 +93,32 @@ namespace Bumbo.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                User dataUser = new User();
-                dataUser.PasswordHash = new PasswordHasher<User>().HashPassword(dataUser, userViewModel.Password);
-                dataUser.UserName = userViewModel.Email;
+                User dataUser = new User()
+                {
+                    FirstName = userViewModel.FirstName,
+                    LastName = userViewModel.LastName,
+                    DateOfBirth = userViewModel.DateOfBirth,
+                    StreetName = userViewModel.StreetName,
+                    HouseNumber = userViewModel.HouseNumber,
+                    HouseNumberLetter = userViewModel.HouseNumberLetter,
+                    PostalCode = userViewModel.PostalCode,
+                    PhoneNumber = userViewModel.PhoneNumber,
+                    IBAN = userViewModel.IBAN,
+                    BranchId = userViewModel.BranchId,
+                    DateOfEmployment = userViewModel.DateOfEmployment,
+                    Bid = userViewModel.Bid,
+                    Email = userViewModel.Email,
+                    UserName = userViewModel.Email
+                };
 
-                var result = await _userManager.CreateAsync(dataUser);
+                var result = await _userManager.CreateAsync(dataUser, userViewModel.Password);
 
                 if (result.Succeeded)
                 {
+                    if (userViewModel.Role == UserViewModel.Roles.Manager) await _userManager.AddToRoleAsync(dataUser, "Manager");
+
                     return RedirectToAction(nameof(Index));
                 }
-
-                if (userViewModel.Role == UserViewModel.Roles.Manager) await _userManager.AddToRoleAsync(dataUser, "Manager");
-
             }
 
             ViewBag.Branches = _context.Branch.ToList();
