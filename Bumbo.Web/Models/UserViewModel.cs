@@ -109,6 +109,7 @@ namespace Bumbo.Web.Models
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
+        [Display(Name = "Rol")]
         public Roles Role { get; set; }
 
         public enum Roles
