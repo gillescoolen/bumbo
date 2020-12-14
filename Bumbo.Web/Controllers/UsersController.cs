@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Bumbo.Web.Controllers
 {
-    [Authorize("Manager")]
+    [Authorize(Roles = "Manager")]
     public class UsersController : Controller
     {
         private readonly ApplicationDbContext _context;
