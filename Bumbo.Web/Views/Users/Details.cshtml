@@ -1,10 +1,10 @@
-﻿@model Bumbo.Data.User
+﻿@model Bumbo.Web.Models.UserViewModel
 
 @{
     ViewData["Title"] = "Medewerker details";
 }
 
-    <h1>Medewerkers</h1>
+<h1>Medewerkers</h1>
 
 <div>
     <h4>Details</h4>
@@ -73,7 +73,8 @@
             @if (Model.PhoneNumber != null)
             {
                 @Html.DisplayFor(model => model.PhoneNumber)
-            } else
+            }
+            else
             {
                 @Html.DisplayText("Geen telefoonnummer toegevoegd!")
             }

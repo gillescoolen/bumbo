@@ -8,9 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using Bumbo.Data;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
+using Bumbo.Web.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bumbo.Web.Controllers
 {
+    [Authorize("Manager")]
     public class UsersController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -37,15 +40,40 @@ namespace Bumbo.Web.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users
+            var dataUser = await _context.Users
                 .Include(u => u.Branch)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
+            if (dataUser == null)
             {
                 return NotFound();
             }
 
-            return View(user);
+            string userRole = _userManager.GetRolesAsync(dataUser).Result.FirstOrDefault();
+            UserViewModel.Roles role;
+            if (userRole == "Manager") role = UserViewModel.Roles.Manager;
+            else role = UserViewModel.Roles.User;
+
+            UserViewModel userViewModel = new Models.UserViewModel
+            {
+                Id = dataUser.Id,
+                Bid = dataUser.Bid,
+                BranchId = dataUser.BranchId,
+                DateOfBirth = dataUser.DateOfBirth,
+                DateOfEmployment = dataUser.DateOfEmployment,
+                Email = dataUser.Email,
+                FirstName = dataUser.FirstName,
+                HouseNumber = dataUser.HouseNumber,
+                HouseNumberLetter = dataUser.HouseNumberLetter,
+                IBAN = dataUser.IBAN,
+                LastName = dataUser.LastName,
+                PhoneNumber = dataUser.PhoneNumber,
+                PostalCode = dataUser.PostalCode,
+                StreetName = dataUser.StreetName,
+                Branch = dataUser.Branch,
+                Role = role
+            };
+
+            return View(userViewModel);
         }
 
         // GET: Users/Create
@@ -60,19 +88,25 @@ namespace Bumbo.Web.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(User user)
+        public async Task<IActionResult> Create(UserViewModel userViewModel)
         {
             if (ModelState.IsValid)
             {
-                var passwordHasher = new PasswordHasher<User>();
-                user.PasswordHash = passwordHasher.HashPassword(user, user.PasswordHash);
-                user.UserName = user.Email;
+                User dataUser = new User();
+                dataUser.PasswordHash = new PasswordHasher<User>().HashPassword(dataUser, userViewModel.Password);
+                dataUser.UserName = userViewModel.Email;
 
-                var result = await _userManager.CreateAsync(user);
+                var result = await _userManager.CreateAsync(dataUser);
 
-                if (result.Succeeded) return RedirectToAction(nameof(Index));
+                if (result.Succeeded)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                if (userViewModel.Role == UserViewModel.Roles.Manager) await _userManager.AddToRoleAsync(dataUser, "Manager");
+
             }
-            return View(user);
+            return View(userViewModel);
         }
 
         // GET: Users/Edit/5
@@ -83,15 +117,39 @@ namespace Bumbo.Web.Controllers
                 return NotFound();
             }
 
-            var user = await _userManager.FindByIdAsync(id.ToString());
-            user.Branch = _context.Branch.Find(user.BranchId);
-            if (user == null)
+            var dataUser = await _userManager.FindByIdAsync(id.ToString());
+            if (dataUser == null)
             {
                 return NotFound();
             }
 
+            string userRole = _userManager.GetRolesAsync(dataUser).Result.FirstOrDefault();
+            UserViewModel.Roles role;
+            if (userRole == "Manager") role = UserViewModel.Roles.Manager;
+            else role = UserViewModel.Roles.User;
+
+            UserViewModel userViewModel = new UserViewModel
+            {
+                Id = dataUser.Id,
+                Bid = dataUser.Bid,
+                BranchId = dataUser.BranchId,
+                DateOfBirth = dataUser.DateOfBirth,
+                DateOfEmployment = dataUser.DateOfEmployment,
+                Email = dataUser.Email,
+                FirstName = dataUser.FirstName,
+                HouseNumber = dataUser.HouseNumber,
+                HouseNumberLetter = dataUser.HouseNumberLetter,
+                IBAN = dataUser.IBAN,
+                LastName = dataUser.LastName,
+                PhoneNumber = dataUser.PhoneNumber,
+                PostalCode = dataUser.PostalCode,
+                StreetName = dataUser.StreetName,
+                Branch = dataUser.Branch,
+                Role = role
+            };
+
             ViewBag.Branches = _context.Branch.ToList();
-            return View(user);
+            return View(userViewModel);
         }
 
         // POST: Users/Edit/5
@@ -99,38 +157,49 @@ namespace Bumbo.Web.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, User user)
+        public async Task<IActionResult> Edit(int id, UserViewModel userViewModel)
         {
-            if (id != user.Id)
+
+            if (id != userViewModel.Id)
             {
                 return NotFound();
             }
 
-            var userToUpdate = await _userManager.FindByIdAsync(id.ToString());
+            var dataUser = await _userManager.FindByIdAsync(id.ToString());
 
             if (ModelState.IsValid)
             {
-                userToUpdate.FirstName = user.FirstName;
-                userToUpdate.LastName = user.LastName;
-                userToUpdate.DateOfBirth = user.DateOfBirth;
-                userToUpdate.StreetName = user.StreetName;
-                userToUpdate.HouseNumber = user.HouseNumber;
-                userToUpdate.HouseNumberLetter = user.HouseNumberLetter;
-                userToUpdate.PostalCode = user.PostalCode;
-                userToUpdate.Email = user.Email;
-                userToUpdate.PhoneNumber = user.PhoneNumber;
-                userToUpdate.IBAN = user.IBAN;
-                userToUpdate.BranchId = user.BranchId;
-                userToUpdate.DateOfEmployment = user.DateOfEmployment;
-                userToUpdate.Bid = user.Bid;
+                dataUser.FirstName = userViewModel.FirstName;
+                dataUser.LastName = userViewModel.LastName;
+                dataUser.DateOfBirth = userViewModel.DateOfBirth;
+                dataUser.StreetName = userViewModel.StreetName;
+                dataUser.HouseNumber = userViewModel.HouseNumber;
+                dataUser.HouseNumberLetter = userViewModel.HouseNumberLetter;
+                dataUser.PostalCode = userViewModel.PostalCode;
+                dataUser.Email = userViewModel.Email;
+                dataUser.PhoneNumber = userViewModel.PhoneNumber;
+                dataUser.IBAN = userViewModel.IBAN;
+                dataUser.BranchId = userViewModel.BranchId;
+                dataUser.DateOfEmployment = userViewModel.DateOfEmployment;
+                dataUser.Bid = userViewModel.Bid;
+
+                UserViewModel.Roles role = userViewModel.Role;
 
                 try
                 {
-                    var result = await _userManager.UpdateAsync(userToUpdate);
+                    var result = await _userManager.UpdateAsync(dataUser);
                     if (!result.Succeeded)
                     {
                         ViewBag.Branches = _context.Branch.ToList();
-                        return View(user);
+                        return View(userViewModel);
+                    }
+
+                    var roles = _userManager.GetRolesAsync(dataUser).Result;
+                    await _userManager.RemoveFromRolesAsync(dataUser, roles.ToArray());
+
+                    if (role == UserViewModel.Roles.Manager)
+                    {
+                        await _userManager.AddToRoleAsync(dataUser, "Manager");
                     }
                 }
                 catch (DbUpdateConcurrencyException)
@@ -140,7 +209,7 @@ namespace Bumbo.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.Branches = _context.Branch.ToList();
-            return View(user);
+            return View(userViewModel);
         }
 
         // GET: Users/Delete/5
@@ -151,14 +220,39 @@ namespace Bumbo.Web.Controllers
                 return NotFound();
             }
 
-            var user = await _userManager.FindByIdAsync(id.ToString());
-            user.Branch = _context.Branch.Find(user.BranchId);
-            if (user == null)
+            var dataUser = await _userManager.FindByIdAsync(id.ToString());
+            dataUser.Branch = _context.Branch.Find(dataUser.BranchId);
+            if (dataUser == null)
             {
                 return NotFound();
             }
 
-            return View(user);
+            string userRole = _userManager.GetRolesAsync(dataUser).Result.FirstOrDefault();
+            UserViewModel.Roles role;
+            if (userRole == "Manager") role = UserViewModel.Roles.Manager;
+            else role = UserViewModel.Roles.User;
+
+            UserViewModel userViewModel = new UserViewModel
+            {
+                Id = dataUser.Id,
+                Bid = dataUser.Bid,
+                BranchId = dataUser.BranchId,
+                DateOfBirth = dataUser.DateOfBirth,
+                DateOfEmployment = dataUser.DateOfEmployment,
+                Email = dataUser.Email,
+                FirstName = dataUser.FirstName,
+                HouseNumber = dataUser.HouseNumber,
+                HouseNumberLetter = dataUser.HouseNumberLetter,
+                IBAN = dataUser.IBAN,
+                LastName = dataUser.LastName,
+                PhoneNumber = dataUser.PhoneNumber,
+                PostalCode = dataUser.PostalCode,
+                StreetName = dataUser.StreetName,
+                Branch = dataUser.Branch,
+                Role = role
+            };
+
+            return View(userViewModel);
         }
 
         // POST: Users/Delete/5
