@@ -73,6 +73,7 @@ namespace Bumbo.Web.Controllers
                 Role = role
             };
 
+            ViewBag.Branches = _context.Branch.ToList();
             return View(userViewModel);
         }
 
