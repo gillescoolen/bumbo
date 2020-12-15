@@ -35,45 +35,59 @@
         </tr>
     </thead>
     <tbody>
+        @{TimeSpan tempTimeSpan = new TimeSpan(0, 01, 00, 00); }
         @foreach (var item in Model)
         {
             if (item.WorkDate.Subtract(DateTime.Today).Days > 0)
             {
-                <tr>
-                    <td>
-                        @char.ToUpper(ViewBag.cultureinfo.DateTimeFormat.GetDayName(item.WorkDate.DayOfWeek)[0])@ViewBag.cultureinfo.DateTimeFormat.GetDayName(item.WorkDate.DayOfWeek).Substring(1)-@item.WorkDate.Day-@char.ToUpper(ViewBag.cultureinfo.DateTimeFormat.GetMonthName(item.WorkDate.Month)[0])@ViewBag.cultureinfo.DateTimeFormat.GetMonthName(item.WorkDate.Month).Substring(1) @item.WorkDate.Year
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Start)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Finish)
-                    </td>
-                    <td>
-                        @item.User.GetFullName()
-                    </td>
-                    @if (ViewBag.UserAge < 18)
-                    {
-                        <td>
-                            @Html.DisplayFor(modelItem => item.SchoolHoursWorked)
-                        </td>
-                    }
+        <tr>
+            <td>
+                @char.ToUpper(ViewBag.cultureinfo.DateTimeFormat.GetDayName(item.WorkDate.DayOfWeek)[0])@ViewBag.cultureinfo.DateTimeFormat.GetDayName(item.WorkDate.DayOfWeek).Substring(1)-@item.WorkDate.Day-@char.ToUpper(ViewBag.cultureinfo.DateTimeFormat.GetMonthName(item.WorkDate.Month)[0])@ViewBag.cultureinfo.DateTimeFormat.GetMonthName(item.WorkDate.Month).Substring(1) @item.WorkDate.Year
+            </td>
+            @if (item.Start == tempTimeSpan && item.Finish == tempTimeSpan)
+            {
+                <td>
+                    --:--
+                </td>
+                <td>
+                    --:--
+                </td>
+            }
+            else
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.Start)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Finish)
+                </td>
+            }
 
-                    @if (item.WorkDate.Subtract(DateTime.Today.AddDays(7)).Days > 0)
-                    {
-                        <td>
-                            @Html.ActionLink("Aanpassen", "Edit", new { UserId = item.UserId, WorkDate = item.WorkDate.ToString() })
-                        </td>
-                        <td>
-                            @Html.ActionLink("Verwijderen", "Delete", new { UserId = item.UserId, WorkDate = item.WorkDate.ToString() })
-                        </td>
-                    }
-                    else
-                    {
-                        <td></td>
-                        <td></td>
-                    }
-                </tr>
+            <td>
+                @item.User.GetFullName()
+            </td>
+            @if (ViewBag.UserAge < 18)
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.SchoolHoursWorked)
+                </td>
+            }
+
+            @if (item.WorkDate.Subtract(DateTime.Today.AddDays(7)).Days > 0)
+            {
+                <td>
+                    @Html.ActionLink("Aanpassen", "Edit", new { UserId = item.UserId, WorkDate = item.WorkDate.ToString() })
+                </td>
+                <td>
+                    @Html.ActionLink("Verwijderen", "Delete", new { UserId = item.UserId, WorkDate = item.WorkDate.ToString() })
+                </td>
+            }
+            else
+            {
+                <td></td>
+                <td></td>
+            }
+        </tr>
             }
         }
     </tbody>
