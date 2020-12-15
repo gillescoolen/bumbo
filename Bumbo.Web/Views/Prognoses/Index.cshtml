@@ -1,0 +1,90 @@
+﻿@using Bumbo.Data.Models
+@model IEnumerable<Bumbo.Data.Models.Prognoses>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Prognoses</h1>
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<div class="row">
+
+    <div class="col">
+
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Weeknummer
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (ViewBag.Weeks != null)
+                {
+                    @foreach (var week in ViewBag.Weeks)
+                    {
+                        <tr>
+                            <td>
+                                <form asp-action="IndexPrognoses" method="post" class="text-right d-inline-block">
+                                    <input type="hidden" name="week" value="@week">
+                                    <button type="submit" class="btn"><i class="fas fa-arrow"></i>@week</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+
+        </table>
+    </div>
+
+    <div class="col">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Prognose's'
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (ViewBag.Prognoses != null)
+                {
+                    @foreach (Prognoses prog in ViewBag.Prognoses)
+                    {
+                        <tr>
+                            <td>
+                                @prog.Date.DayOfWeek
+                            </td>
+                            <td>
+                                @prog.AmountOfCustomers
+                            </td>
+                            <td>
+                                @prog.AmountOfFreight
+                            </td>
+                            <td>
+                                @Html.ActionLink("Edit", "Edit", new { @prog.Date }) |
+                                @Html.ActionLink("Details", "Details", new { @prog.Date }) |
+                                @Html.ActionLink("Delete", "Delete", new { @prog.Date })
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+

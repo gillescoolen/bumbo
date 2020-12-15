@@ -1,0 +1,45 @@
+﻿@model Bumbo.Data.Models.Prognoses
+
+@{
+    ViewData["Title"] = "Show";
+}
+
+<h1>Show</h1>
+
+<div class="row mb-3">
+    <div class="col-12">
+        <a class="btn btn-primary" asp-controller="Prognoses" asp-action="Index"><i class="fas fa-chevron-left mr-2"></i>Ga terug</a>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <div class="col-12 col-md-6 ">
+        <div class="card card-body shadow-lg">
+            <table class="table">
+                <tr>
+                    <td>Datum</td>
+                    <td>@Model.Date</td>
+                </tr>
+                <tr>
+                    <td>Aantal klanten</td>
+                    <td>@Model.AmountOfCustomers</td>
+                </tr>
+                <tr>
+                    <td>Hoeveelheid vracht</td>
+                    <td>@Model.AmountOfFreight</td>
+                </tr>
+            </table>
+            <div class="row">
+                <div class="col-12 text-right">
+                    <a asp-action="Edit" asp-route-id="@Model.Date" class="btn btn-info d-inline-block"><i class="fas fa-pencil-alt mr-2"></i> Edit @Model.Date</a>
+                    <form asp-action="Delete" method="post" class="text-right d-inline-block verify-delete">
+                        <input type="hidden" name="id" value="@Model.Date">
+                        <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt mr-2"></i>Delete @Model.Date</button>
+                    </form>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+

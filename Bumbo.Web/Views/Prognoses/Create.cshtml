@@ -1,0 +1,63 @@
+﻿@using Bumbo.Data.Models
+@model Bumbo.Data.Models.Prognoses
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Prognoses</h4>
+<hr />
+<div class="row mb-3">
+    <div class="col-12">
+        <a class="btn btn-primary" asp-action="Index"><i class="fas fa-chevron-left mr-2"></i>Go back</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Store" asp-controller="Prognoses" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Date" class="control-label"></label>
+                <input asp-for="Date" class="form-control" />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AmountOfCustomers" class="control-label"></label>
+                <input asp-for="AmountOfCustomers" class="form-control" />
+                <span asp-validation-for="AmountOfCustomers" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AmountOfFreight" class="control-label"></label>
+                <input asp-for="AmountOfFreight" class="form-control" />
+                <span asp-validation-for="AmountOfFreight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BranchId" class="control-label"></label>
+                <select asp-for="BranchId" class="form-control">
+                    @foreach (Branch branch in ViewBag.Branches)
+                    {
+                        <option value="@branch.Id">
+                            @branch.Name (@branch.StreetName @branch.HouseNumber @branch.HouseNumberLetter, @branch.PostalCode)
+                        </option>
+                    }
+                    <span asp-validation-for="BranchId" class="text-danger"></span>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="WeatherDescription" class="control-label"></label>
+                <input asp-for="WeatherDescription" class="form-control" />
+                <span asp-validation-for="WeatherDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
