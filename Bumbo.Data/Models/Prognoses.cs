@@ -12,5 +12,10 @@ namespace Bumbo.Data.Models
         public string WeatherDescription { get; set; }
 
         public virtual Branch Branch { get; set; }
+
+        public Prognoses(DateTime date)
+        {
+            this.Date = date;
+        }
     }
 }

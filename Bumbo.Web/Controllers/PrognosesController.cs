@@ -41,9 +41,9 @@ namespace Bumbo.Web.Controllers
                     .SkipWhile(x => x.weekFinish < jan1.AddDays(1))
                     .Select((x, i) => new
                     {
-                        //WeekStart = x.weekStart,
-                        //WeekEnd = x.weekFinish,
-                        Week = i + 1
+                        Van = x.weekStart.ToShortDateString(),
+                        Tot = x.weekFinish.ToShortDateString(),
+                        //WeekNummer = i + 1
                     });
 
             ViewBag.Weeks = weeks;
@@ -57,7 +57,7 @@ namespace Bumbo.Web.Controllers
             week = Regex.Replace(week, "[^0-9]+", string.Empty);
             int weekNr = Int32.Parse(week);
             DateTime start = FirstDateOfWeek(2020, weekNr, CultureInfo.CurrentCulture);
-            DateTime end = start.AddDays(7);
+            DateTime end = start.AddDays(6);
 
             var jan1 = new DateTime(DateTime.Today.Year, 1, 1);
             var startOfFirstWeek = jan1.AddDays(1 - (int)(jan1.DayOfWeek));
@@ -77,19 +77,18 @@ namespace Bumbo.Web.Controllers
                     .SkipWhile(x => x.weekFinish < jan1.AddDays(1))
                     .Select((x, i) => new
                     {
-                        //WeekStart = x.weekStart,
-                        //WeekEnd = x.weekFinish,
-                        Week = i + 1
+                        Van = x.weekStart.ToShortDateString(),
+                        Tot = x.weekFinish.ToShortDateString(),
+                        //WeekNummer = i + 1
                     });
 
             ViewBag.Weeks = weeks;
-
             ViewBag.Prognoses = repo.GetAll(start, end);
-
+            ViewBag.Start = start;
+            ViewBag.End = end;
 
             return View("Index");
         }
-
 
         public static DateTime FirstDateOfWeek(int year, int weekOfYear, System.Globalization.CultureInfo ci)
         {
@@ -107,63 +106,81 @@ namespace Bumbo.Web.Controllers
 
 
 
-        public IActionResult Show(DateTime date)
+        public IActionResult Details(DateTime date, int branchId)
         {
-            ViewBag.Prognoses = repo.Get(date.Date);
-            return View("Details");
+            var model = repo.Get(date.Date, branchId);
+            return View(model);
         }
 
-        public IActionResult Create()
+        public IActionResult Create(DateTime start)
         {
-            var model = new Prognoses();
+            //List<Prognoses> prognoses = new List<Prognoses>();
+
+            //for (int i = 0; i < 7; i++)
+            //{
+            //   prognoses.Add(new Prognoses(start.AddDays(i)));
+            //}
+
+
+            PrognosesViewModel vm = new PrognosesViewModel();
+            vm.PrognosesList = new List<Prognoses>();
+            for (int i = 0; i < 7; i++)
+            {
+
+               vm.PrognosesList.Add(new Prognoses(start.AddDays(i)));
+            }
+
             ViewBag.Branches = context.Branch.ToList();
-            return View("Create", model);
+            ViewBag.Prognoses = vm;
+
+            return View("Create");
         }
 
         [HttpPost]
-        public IActionResult Store(Prognoses prog)
+        public IActionResult Store(PrognosesViewModel model)
         {
-            if (prog.AmountOfCustomers == 0)
+            for (int i = 0; i < 7; i++)
             {
-                TempData["Error"] = "Veld mag niet leeg zijn";
-                return RedirectToAction("Create");
+                //vm.PrognosesList[i]
+
+
             }
 
-            var model = repo.Create(prog);
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
+
         }
 
-        public IActionResult Edit(DateTime date)
+        public IActionResult Edit(DateTime date, int branchId)
         {
             if (TempData["Error"] != null) ViewBag.Error = TempData["Error"].ToString();
 
-            var model = repo.Get(date.Date);
+            var model = repo.Get(date.Date, branchId);
 
             return View("Edit", model);
         }
 
         [HttpPost]
-        public IActionResult Update(DateTime date, Prognoses updatedProg)
+        public IActionResult Update(DateTime Date, Prognoses updatedProg, int BranchId)
         {
-            if (date.Date != updatedProg.Date) return NotFound();
+            if (Date.Date != updatedProg.Date) return NotFound();
 
             if (updatedProg.AmountOfCustomers == 0)
             {
                 TempData["Error"] = "Veld mag niet leeg zijn";
-                return RedirectToAction("Edit", new { date });
+                return RedirectToAction("Edit", new { Date, BranchId });
             }
 
 
             repo.Update(updatedProg);
-            return RedirectToAction("Edit", new { date });
+            return RedirectToAction("Edit", new { Date, BranchId });
         }
 
         [HttpPost]
-        public IActionResult Delete(DateTime date)
+        public IActionResult Delete(DateTime date, int branchId)
         {
-            if (repo.Get(date.Date) != null)
+            if (repo.Get(date.Date, branchId) != null)
             {
-                repo.Delete(date.Date);
+                repo.Delete(date.Date, branchId);
             }
             return RedirectToAction("Index");
         }

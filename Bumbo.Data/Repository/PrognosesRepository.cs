@@ -18,11 +18,11 @@ namespace Bumbo.Data.Repository
             }
         }
 
-        public Prognoses Get(DateTime date)
+        public Prognoses Get(DateTime date, int branchId)
         {
             using (var ctx = new ContextFactory().CreateDbContext(null))
             {
-                return ctx.Prognoses.FirstOrDefault(n => n.Date == date.Date);
+                return ctx.Prognoses.Where(n => n.Date == date.Date).Where(n => n.BranchId == branchId).FirstOrDefault();
             }
         }
 
@@ -46,11 +46,11 @@ namespace Bumbo.Data.Repository
             }
         }
 
-        public bool Delete(DateTime date)
+        public bool Delete(DateTime date, int branchId)
         {
             using (var ctx = new ContextFactory().CreateDbContext(null))
             {
-                var toRemove = ctx.Prognoses.Find(date.Date);
+                var toRemove = ctx.Prognoses.Find(date.Date, branchId);
                 if (toRemove != null)
                 {
                     ctx.Prognoses.Remove(toRemove);

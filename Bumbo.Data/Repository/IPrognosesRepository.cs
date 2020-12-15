@@ -8,12 +8,12 @@ namespace Bumbo.Data.Repository
     {
         List<Prognoses> GetAll(DateTime start, DateTime end);
 
-        Prognoses Get(DateTime date);
+        Prognoses Get(DateTime date, int branchId);
 
         Prognoses Create(Prognoses prog);
 
         Prognoses Update(Prognoses prog);
 
-        bool Delete(DateTime date);
+        bool Delete(DateTime date, int branchId);
     }
 }

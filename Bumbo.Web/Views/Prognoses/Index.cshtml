@@ -3,18 +3,13 @@
 
 @{
     ViewData["Title"] = "Index";
+    //ViewData["UseContainer"] = false;
 }
 
 <h1>Prognoses</h1>
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 
 <div class="row">
-
-    <div class="col">
-
-
+    <div class="col-4">
         <table class="table">
             <thead>
                 <tr>
@@ -26,16 +21,19 @@
             <tbody>
                 @if (ViewBag.Weeks != null)
                 {
+                    int i = 1;
                     @foreach (var week in ViewBag.Weeks)
                     {
                         <tr>
                             <td>
                                 <form asp-action="IndexPrognoses" method="post" class="text-right d-inline-block">
-                                    <input type="hidden" name="week" value="@week">
-                                    <button type="submit" class="btn"><i class="fas fa-arrow"></i>@week</button>
+                                    <input type="hidden" name="week" value="@i">
+                                    <label class="small mb-0">@week</label>
+                                    <button type="submit" class="btn pt-0"><i class="bi bi-arrow-right"></i>Weeknummer: @i</button>
                                 </form>
                             </td>
                         </tr>
+                        i++;
                     }
                 }
             </tbody>
@@ -43,48 +41,66 @@
         </table>
     </div>
 
-    <div class="col">
+    <div class="col-8">
         <table class="table">
             <thead>
                 <tr>
                     <th>
-                        Prognose's'
+                        Prognose's
                     </th>
                 </tr>
             </thead>
             <tbody>
                 @if (ViewBag.Prognoses != null)
                 {
-                    @foreach (Prognoses prog in ViewBag.Prognoses)
+                    @if (ViewBag.Prognoses.Count > 0)
+                    {
+                        <tr>
+                            <th>
+                                Dag
+                            </th>
+                            <th>
+                                Aantal bezoekers
+                            </th>
+                            <th>
+                                Hoeveelheid vracht
+                            </th>
+                        </tr>
+                        @foreach (Prognoses prog in ViewBag.Prognoses)
+                        {
+                            <tr>
+                                <td>
+                                    @prog.Date.DayOfWeek
+                                </td>
+                                <td>
+                                    @prog.AmountOfCustomers
+                                </td>
+                                <td>
+                                    @prog.AmountOfFreight
+                                </td>
+                                <td>
+                                    @Html.ActionLink("Edit", "Edit", new { @prog.Date, @prog.BranchId }) |
+                                    @Html.ActionLink("Details", "Details", new { @prog.Date, @prog.BranchId }) |
+                                    <form asp-action="Delete" method="post" class="text-right d-inline-block verify-delete">
+                                        <input type="hidden" name="date" value="@prog.Date">
+                                        <input type="hidden" name="branchId" value="@prog.BranchId">
+                                        <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt mr-2"></i>Verwijder</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
                     {
                         <tr>
                             <td>
-                                @prog.Date.DayOfWeek
-                            </td>
-                            <td>
-                                @prog.AmountOfCustomers
-                            </td>
-                            <td>
-                                @prog.AmountOfFreight
-                            </td>
-                            <td>
-                                @Html.ActionLink("Edit", "Edit", new { @prog.Date }) |
-                                @Html.ActionLink("Details", "Details", new { @prog.Date }) |
-                                @Html.ActionLink("Delete", "Delete", new { @prog.Date })
+                                <a asp-action="Create" asp-route-start="@ViewBag.Start">Create New</a>
                             </td>
                         </tr>
                     }
                 }
+
             </tbody>
         </table>
     </div>
 </div>
-
-
-
-
-
-
-
-
-

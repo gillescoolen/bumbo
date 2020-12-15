@@ -10,13 +10,8 @@
 <h4>Prognoses</h4>
 <hr />
 <div class="row">
-    <div class="row mb-3">
-        <div class="col-12">
-            <a class="btn btn-primary" asp-controller="Equipment" asp-action="Show" asp-route-id="@Model.Date"><i class="fas fa-chevron-left mr-2"></i>Terug</a>
-        </div>
-    </div>
     <div class="col-md-4">
-        <form asp-action="Update" asp-route-id="@Model.Date" asp-controller="Prognoses" method="post">
+        <form asp-action="Update" asp-controller="Prognoses" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Date" />
             <div class="form-group">

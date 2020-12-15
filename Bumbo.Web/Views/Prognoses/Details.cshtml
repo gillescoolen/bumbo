@@ -1,10 +1,10 @@
 ﻿@model Bumbo.Data.Models.Prognoses
 
 @{
-    ViewData["Title"] = "Show";
+    ViewData["Title"] = "Details";
 }
 
-<h1>Show</h1>
+<h1>Details</h1>
 
 <div class="row mb-3">
     <div class="col-12">
@@ -28,18 +28,6 @@
                     <td>@Model.AmountOfFreight</td>
                 </tr>
             </table>
-            <div class="row">
-                <div class="col-12 text-right">
-                    <a asp-action="Edit" asp-route-id="@Model.Date" class="btn btn-info d-inline-block"><i class="fas fa-pencil-alt mr-2"></i> Edit @Model.Date</a>
-                    <form asp-action="Delete" method="post" class="text-right d-inline-block verify-delete">
-                        <input type="hidden" name="id" value="@Model.Date">
-                        <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt mr-2"></i>Delete @Model.Date</button>
-                    </form>
-                </div>
-            </div>
-
-
         </div>
     </div>
 </div>
-
