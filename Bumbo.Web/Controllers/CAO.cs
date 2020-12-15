@@ -22,6 +22,12 @@ namespace Bumbo.Web.Controllers
             _context = null;
         }
 
+        /// <summary>
+        /// For each half hour worked, calculates the surcharge for the coming half hour
+        /// </summary>
+        /// <param name="start">Starttime</param>
+        /// <param name="finish">Finishtime</param>
+        /// <returns>A list of the surcharges per half hour. Note: The surcharge is for the next half hour worked</returns>
         public Dictionary<double,int> WorkdaySurcharge(DateTime start, DateTime finish)
         {
             int workedHours = finish.Subtract(start).Hours;
@@ -29,7 +35,7 @@ namespace Bumbo.Web.Controllers
             double startHour = double.Parse(start.ToString("HH")) + (double.Parse(start.ToString("mm")) / 60);
             double finishHour = double.Parse(finish.ToString("HH")) + (double.Parse(start.ToString("mm")) / 60);
 
-            //Checks if dates are valid
+            /// Checks if dates are valid
             if (!start.DayOfWeek.Equals(finish.DayOfWeek))
             {
                 throw new System.ArgumentException("Start and finish times are on different days");
@@ -43,52 +49,49 @@ namespace Bumbo.Web.Controllers
                 throw new System.ArgumentException("Start time cannot be more than Finish Time, and vice versa");
             }
 
-            //determines subcharge per half hour worked
-            for (double i = startHour; i <= finishHour; i=i+0.5)
+            /// Determines subcharge per half hour worked
+            for (double i = startHour; i < finishHour; i=i+0.5)
             {
-                //nieuwjaar
+                /// Nieuwjaar holiday
                 if (start.Month == 1 && start.Day == 1)
                 {
                     halfHourWithSubcharge.Add(i, 100);
                 }
-                //pasen
+                /// Pasen holiday
                 else if (start.Month == 4 && (start.Day==12 || start.Day==13))
                 {
                     halfHourWithSubcharge.Add(i, 100);
                 }
-                //koningsdag
+                /// Koningsdag holiday
                 else if (start.Month == 4 && start.Day==27)
                 {
                     halfHourWithSubcharge.Add(i, 100);
                 }
-                //bevrijdingsdag
+                /// Bevrijdingsdag
                 else if (start.Month == 5 && start.Day==5)
                 {
                     halfHourWithSubcharge.Add(i, 100);
                 }
-                //hemelvaartsdag
+                /// Hemelvaartsdag holiday
                 else if (start.Month == 5 && start.Day == 21)
                 {
                     halfHourWithSubcharge.Add(i, 100);
                 }
-                //pinksteren
+                /// Pinksteren holiday
                 else if (start.Month == 5 && start.Day == 31 || start.Month==6 && start.Day == 1)
                 {
                     halfHourWithSubcharge.Add(i, 100);
                 }
-                //kerst
+                /// Kerst holiday
                 else if (start.Month == 12 && start.Day == 25 || start.Month==4 && start.Day==26)
                 {
                     halfHourWithSubcharge.Add(i, 100);
                 }
-                else if (start.DayOfWeek.Equals("Saturday"))
+                else if (start.DayOfWeek.ToString().Equals("Saturday") && (i >= 18.00 && i < 24.00))
                 {
-                    if (i >= 18.00 && i < 21.00)
-                    {
-                        halfHourWithSubcharge.Add(i, 50);
-                    }
+                    halfHourWithSubcharge.Add(i, 50);
                 }
-                else if (start.DayOfWeek.Equals("Sunday"))
+                else if (start.DayOfWeek.ToString().Equals("Sunday"))
                 {
                     halfHourWithSubcharge.Add(i, 100);
                 }
@@ -112,9 +115,12 @@ namespace Bumbo.Web.Controllers
             return halfHourWithSubcharge;
         }
 
-        /**
-         * Checks if the user suffices the CAO norms for the given work week
-         */
+        /// <summary>
+        /// Checks if the user suffices the CAO norms for the given work week
+        /// </summary>
+        /// <param name="user">Specified user which needs approvement</param>
+        /// <param name="plannedWorkWeek">The workweek which needs to be approved</param>
+        /// <returns>A boolean which indicates whether the given workweek is approved</returns>
         public bool ApproveWorkWeek(User user, PlannedWorktime[] plannedWorkWeek)
         {
             bool isApprovable = StandardNorms(plannedWorkWeek);
@@ -137,15 +143,12 @@ namespace Bumbo.Web.Controllers
             return isApprovable;
         }
 
-        /**
-         * Returns value based on if the standard CAO norms are met for the given work week
-         */
         private Boolean StandardNorms(PlannedWorktime[] plannedWorkWeek)
         {
             double totalMinutesWorked = 0;
             foreach (PlannedWorktime workDay in plannedWorkWeek)
             {
-                //Checks if worked hours per day is less then 12 hours
+                /// Checks if worked hours per day is less then 12 hours
                 double workedMinutes = workDay.Start.Subtract(workDay.Finish).TotalMinutes;
                 if (workedMinutes > (12 * 60))
                 {
@@ -157,18 +160,15 @@ namespace Bumbo.Web.Controllers
                 }
             }
 
-            //Checks if worked hours this week is less than 60 hours
+            /// Checks if worked hours this week is less than 60 hours
             return totalMinutesWorked >= (60 * 60);
         }
 
-        /**
-         * Returns value based on if the standard CAO norms are met for sixteen and seventeen year olds
-         */
         private bool SixteenAndSeventeenNorms(User user, PlannedWorktime[] plannedWorkWeek)
         {
             foreach (PlannedWorktime workDay in plannedWorkWeek)
             {
-                //Checks if worked hours + school hours per day is less than 9 hours
+                /// Checks if worked hours + school hours per day is less than 9 hours
                 int? schoolhoursworked = _context.AvailableWorktime.Where(at => at.UserId == user.Id && at.WorkDate == workDay.WorkDate).Select(at => at.SchoolHoursWorked).FirstOrDefault();
                 if ((workDay.Finish.Subtract(workDay.Start).Hours + (int)schoolhoursworked) > 9)
                 {
@@ -197,7 +197,7 @@ namespace Bumbo.Web.Controllers
                 }
                 totalHoursInMonth = totalHoursInMonth + (int)schoolhoursworked + time.Finish.Subtract(time.Start).Hours;
             }
-            //1 month has roughly 4.34812141 weeks, rond omlaag af omdat het beter is te veel uren te tellen dan te weinig ivm risico
+            /// 1 month has roughly 4.34812141 weeks, rounded downwords to minimize risk of overpaying
             if ((totalHoursInMonth / 4.34) < 40)
             {
                 return true;
@@ -208,9 +208,6 @@ namespace Bumbo.Web.Controllers
             }
         }
 
-        /**
-         * Returns value based on if the standard CAO norms are met for employees younger than 16 years
-         */
         private bool UnderSixteenNorms(User user, PlannedWorktime[] plannedWorkWeek)
         {
             int workedDays = 0;
@@ -219,26 +216,22 @@ namespace Bumbo.Web.Controllers
 
             foreach (PlannedWorktime workDay in plannedWorkWeek)
             {
-                //Checks if worked hours + shool hours per day is less then 8 hours
                 int? schoolhoursworked = _context.AvailableWorktime.Where(at => at.UserId == user.Id && at.WorkDate == workDay.WorkDate).Select(at => at.SchoolHoursWorked).FirstOrDefault();
                 if ((workDay.Finish.Subtract(workDay.Start).Hours + (int)schoolhoursworked) > 8)
                 {
                     return false;
                 }
 
-                //Checks if employee has had school
                 if (schoolhoursworked > 0)
                 {
                     hadSchool = true;
                 }
 
-                //Checks if employee has worked past 19:00
                 if (workDay.Finish.TotalHours > 19)
                 {
                     return false;
                 }
 
-                //Calculates worked days
                 int workedHours = workDay.Finish.Subtract(workDay.Start).Hours;
                 if (workedHours > 0)
                 {
@@ -248,7 +241,6 @@ namespace Bumbo.Web.Controllers
                 workedHoursThisWeek = workedHoursThisWeek + workedHours;
             }
             
-            //Checks maximum worked hours this week
             if (hadSchool)
             {
                 if (workedHoursThisWeek > 12)
@@ -264,7 +256,6 @@ namespace Bumbo.Web.Controllers
                 }
             }
 
-            //Checks if employee has worked a maximum of 5 days
             return workedDays < 6;
         }
     }
