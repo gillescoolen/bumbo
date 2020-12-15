@@ -3,9 +3,8 @@
 @{
     ViewData["Title"] = "Create";
 }
-<h1>Create</h1>
+<h1>Geef nieuwe beschikbaarheid door</h1>
 
-<h4>Beschikbaarheid</h4>
 <hr />
 <form asp-action="Create">
 
@@ -23,7 +22,7 @@
             <div class="card" style="width: 15rem; margin:3px;">
                 <div class="card-body">
                     <div class="form-group">
-                        <b><label asp-for="@date" class="control-label">@date.DayOfWeek, @date.ToShortDateString()</label></b>
+                        <b><label asp-for="@date" class="control-label">@char.ToUpper(ViewBag.cultureinfo.DateTimeFormat.GetDayName(date.DayOfWeek)[0])@ViewBag.cultureinfo.DateTimeFormat.GetDayName(date.DayOfWeek).Substring(1)-@date.Day-@char.ToUpper(ViewBag.cultureinfo.DateTimeFormat.GetMonthName(date.Month)[0])@ViewBag.cultureinfo.DateTimeFormat.GetMonthName(date.Month).Substring(1)</label></b>
                         <input asp-for="Dates" type="hidden" value="@date" class="form-control" />
                         <span asp-validation-for="WorkDate" class="text-danger"></span>
                     </div>
@@ -53,12 +52,12 @@
 </div>
 
 <div class="form-group">
-    <input type="submit" value="Create" class="btn btn-primary" />
+    <input type="submit" value="Opslaan" class="btn btn-primary" />
 </div>
 </form>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Terug naar overzicht</a>
 </div>
 
 @section Scripts {

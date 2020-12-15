@@ -10,6 +10,7 @@ using Bumbo.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Bumbo.Web.Models;
 using System.Web;
+using System.Globalization;
 
 namespace Bumbo.Web.Controllers
 {
@@ -28,6 +29,9 @@ namespace Bumbo.Web.Controllers
             var user = _userManager.GetUserAsync(User).Result;
             ViewBag.UserAge = (int)((DateTime.Today - user.DateOfBirth).TotalDays / 365);
             //Als rol = niet bevoegd alle users te zien => ziet alleen eigen available worktime
+            CultureInfo dutchculture = new CultureInfo("nl-NL");
+            ViewBag.cultureinfo = dutchculture;
+            
             if (User.IsInRole("Admin"))
             {
                 var applicationDbContext = _context.AvailableWorktime.Include(a => a.User);
@@ -42,6 +46,8 @@ namespace Bumbo.Web.Controllers
 
         public IActionResult Create()
         {
+            CultureInfo dutchculture = new CultureInfo("nl-NL");
+            ViewBag.cultureinfo = dutchculture;
             var user = _userManager.GetUserAsync(User).Result;
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Bid");
             DateTime maxDate = DateTime.Today;
@@ -110,9 +116,8 @@ namespace Bumbo.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        //Werkt nog niet ivm workdate
         [HttpGet("Edit/{UserId}/{WorkDate}")]
-        public async Task<IActionResult> Edit(int? UserId, string? WorkDate)
+        public async Task<IActionResult> Edit(int? UserId, string WorkDate)
         {
 
             if (UserId == null || WorkDate == null)
@@ -160,7 +165,7 @@ namespace Bumbo.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var toBeUpdated = _context.AvailableWorktime.Where(a => a.UserId == userId && a.WorkDate == availableWorktime.WorkDate).FirstOrDefault();
+            AvailableWorktime toBeUpdated = _context.AvailableWorktime.Where(a => a.UserId == userId && a.WorkDate == availableWorktime.WorkDate).FirstOrDefault();
             try
             {
                 if (ModelState.IsValid)
@@ -212,6 +217,10 @@ namespace Bumbo.Web.Controllers
         public async Task<IActionResult> DeleteConfirmed(int UserId, string WorkDate)
         {
             DateTime workDate = DateTime.Parse(HttpUtility.UrlDecode(WorkDate));
+            if (workDate.Subtract(DateTime.Today.AddDays(7)).Days < 0)
+            {
+                return RedirectToAction(nameof(Index));
+            }
             var availableWorktime = await _context.AvailableWorktime.Where(at => at.UserId == UserId && at.WorkDate == workDate).FirstOrDefaultAsync();
             _context.AvailableWorktime.Remove(availableWorktime);
             await _context.SaveChangesAsync();

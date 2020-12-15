@@ -4,11 +4,8 @@
     ViewData["Title"] = "Verwijder";
 }
 
-<h1>Delete</h1>
-
-<h3>Wil je deze verwijderen?</h3>
+<h2>Wil je deze beschikbaarheidsdatum verwijderen?</h2>
 <div>
-    <h4>Beschikbaarheid</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -43,7 +40,7 @@
     </dl>
 
     <form asp-action="Delete">
-        @Html.ActionLink("Delete", "DeleteConfirmed", new { UserId = Model.UserId, WorkDate = Model.WorkDate.ToString() })
+        @Html.ActionLink("Verwijder", "DeleteConfirmed", new { UserId = Model.UserId, WorkDate = Model.WorkDate.ToString() })
     </form>
 
     <a asp-action="Index">Terug naar overzicht</a>

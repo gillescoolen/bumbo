@@ -4,23 +4,23 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
-
-<h4>Available Worktime</h4>
+<h2>Beschikbaarheid aanpassen</h2>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-controller="AvailableWorktime" asp-action="EditConfirmed">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="UserId" />
-            <input type="hidden" asp-for="WorkDate" />
             <div class="form-group">
-                <label asp-for="Start" class="control-label"></label>
+                <input type="hidden" asp-for="WorkDate" class="form-control" value="@Model.WorkDate"/>
+            </div>
+            <div class="form-group">
+                <label asp-for="Start" class="control-label">Starttijd</label>
                 <input asp-for="Start" class="form-control" />
                 <span asp-validation-for="Start" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Finish" class="control-label"></label>
+                <label asp-for="Finish" class="control-label">Eindtijd</label>
                 <input asp-for="Finish" class="form-control" />
                 <span asp-validation-for="Finish" class="text-danger"></span>
             </div>
@@ -33,7 +33,7 @@
                 </div>
             }
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Opslaan" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -42,7 +42,7 @@
 
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Terug naar overzicht</a>
 </div>
 
 @section Scripts {
