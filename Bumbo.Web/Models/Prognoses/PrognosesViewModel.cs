@@ -8,6 +8,6 @@ namespace Bumbo.Web.Models
 {
     public class PrognosesViewModel
     {
-        public List<Prognoses> PrognosesList { get; set; }
+        public List<PrognoseViewModel> Prognoses { get; set; }
     }
 }

@@ -103,9 +103,6 @@ namespace Bumbo.Web.Controllers
             return firstWeekDay.AddDays(weekOfYear * 7);
         }
 
-
-
-
         public IActionResult Details(DateTime date, int branchId)
         {
             var model = repo.Get(date.Date, branchId);
@@ -114,40 +111,32 @@ namespace Bumbo.Web.Controllers
 
         public IActionResult Create(DateTime start)
         {
-            //List<Prognoses> prognoses = new List<Prognoses>();
+            var prognoses = new List<PrognoseViewModel>();
 
-            //for (int i = 0; i < 7; i++)
-            //{
-            //   prognoses.Add(new Prognoses(start.AddDays(i)));
-            //}
-
-
-            PrognosesViewModel vm = new PrognosesViewModel();
-            vm.PrognosesList = new List<Prognoses>();
             for (int i = 0; i < 7; i++)
             {
-
-               vm.PrognosesList.Add(new Prognoses(start.AddDays(i)));
+                prognoses.Add(
+                    new PrognoseViewModel()
+                    {
+                        Date = start.AddDays(i)
+                    }
+                );
             }
 
-            ViewBag.Branches = context.Branch.ToList();
-            ViewBag.Prognoses = vm;
+            PrognosesViewModel viewModel = new PrognosesViewModel()
+            {
+                Prognoses = prognoses
+            };
 
-            return View("Create");
+            ViewBag.Branches = context.Branch.ToList();
+
+            return View(viewModel);
         }
 
         [HttpPost]
         public IActionResult Store(PrognosesViewModel model)
         {
-            for (int i = 0; i < 7; i++)
-            {
-                //vm.PrognosesList[i]
-
-
-            }
-
             return RedirectToAction(nameof(Index));
-
         }
 
         public IActionResult Edit(DateTime date, int branchId)

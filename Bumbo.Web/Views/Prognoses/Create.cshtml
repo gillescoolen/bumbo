@@ -18,53 +18,49 @@
     <div>
         <form asp-action="Store" asp-controller="Prognoses" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            @foreach (Prognoses prog in ViewBag.Prognoses.PrognosesList)
+
+            @for (int i = 0; i < Model.Prognoses.Count; i++)
             {
                 <div class="card my-4">
                     <div class="card-header">
-                        <strong>@prog.Date</strong>
+                        <strong>@Model.Prognoses[i].Date</strong>
                     </div>
                     <div class="form-row card-body">
                         <div class="form-group col-md-6">
-                            <label asp-for="@prog.Date" class="control-label"></label>
-                            <input readonly asp-for="@prog.Date" class="form-control" />
-                            <span asp-validation-for="@prog.Date" class="text-danger"></span>
+                            <label asp-for="@Model.Prognoses[i].Date" class="control-label"></label>
+                            <input readonly asp-for="@Model.Prognoses[i].Date" class="form-control" />
+                            <span asp-validation-for="@Model.Prognoses[i].Date" class="text-danger"></span>
                         </div>
                         <div class="form-group col-md-6">
-                            <label asp-for="@prog.AmountOfCustomers" class="control-label"></label>
-                            <input asp-for="@prog.AmountOfCustomers" class="form-control" />
-                            <span asp-validation-for="@prog.AmountOfCustomers" class="text-danger"></span>
+                            <label asp-for="@Model.Prognoses[i].AmountOfCustomers" class="control-label"></label>
+                            <input asp-for="@Model.Prognoses[i].AmountOfCustomers" class="form-control" />
+                            <span asp-validation-for="@Model.Prognoses[i].AmountOfCustomers" class="text-danger"></span>
                         </div>
                         <div class="form-group col-md-6">
-                            <label asp-for="@prog.AmountOfFreight" class="control-label"></label>
-                            <input asp-for="@prog.AmountOfFreight" class="form-control" />
-                            <span asp-validation-for="@prog.AmountOfFreight" class="text-danger"></span>
+                            <label asp-for="@Model.Prognoses[i].AmountOfFreight" class="control-label"></label>
+                            <input asp-for="@Model.Prognoses[i].AmountOfFreight" class="form-control" />
+                            <span asp-validation-for="@Model.Prognoses[i].AmountOfFreight" class="text-danger"></span>
                         </div>
                         <div class="form-group col-md-6">
-                            <label asp-for="@prog.BranchId" class="control-label"></label>
-                            <select asp-for="@prog.BranchId" class="form-control">
+                            <label asp-for="@Model.Prognoses[i].BranchId" class="control-label"></label>
+                            <select asp-for="@Model.Prognoses[i].BranchId" class="form-control">
                                 @foreach (Branch branch in ViewBag.Branches)
                                 {
                                     <option value="@branch.Id">
                                         @branch.Name (@branch.StreetName @branch.HouseNumber @branch.HouseNumberLetter, @branch.PostalCode)
                                     </option>
                                 }
-                                <span asp-validation-for="@prog.BranchId" class="text-danger"></span>
+                                <span asp-validation-for="@Model.Prognoses[i].BranchId" class="text-danger"></span>
                             </select>
                         </div>
                         <div class="form-group col-md-6">
-                            <label asp-for="@prog.WeatherDescription" class="control-label"></label>
-                            <input asp-for="@prog.WeatherDescription" class="form-control" />
-                            <span asp-validation-for="@prog.WeatherDescription" class="text-danger"></span>
+                            <label asp-for="@Model.Prognoses[i].WeatherDescription" class="control-label"></label>
+                            <input asp-for="@Model.Prognoses[i].WeatherDescription" class="form-control" />
+                            <span asp-validation-for="@Model.Prognoses[i].WeatherDescription" class="text-danger"></span>
                         </div>
                     </div>
-
                 </div>
-
             }
-            <div class="form-group">
-                <input type="hidden" asp-route-model="@ViewBag.Prognoses" asp-for="PrognosesList" value="@ViewBag.Prognoses" />
-            </div>
 
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
