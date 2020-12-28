@@ -36,7 +36,7 @@ namespace Bumbo.Web.Controllers
                     .Select(x => new
                     {
                         x.weekStart,
-                        weekFinish = x.weekStart.AddDays(4)
+                        weekFinish = x.weekStart.AddDays(6)
                     })
                     .SkipWhile(x => x.weekFinish < jan1.AddDays(1))
                     .Select((x, i) => new
@@ -72,7 +72,7 @@ namespace Bumbo.Web.Controllers
                     .Select(x => new
                     {
                         x.weekStart,
-                        weekFinish = x.weekStart.AddDays(4)
+                        weekFinish = x.weekStart.AddDays(6)
                     })
                     .SkipWhile(x => x.weekFinish < jan1.AddDays(1))
                     .Select((x, i) => new
@@ -136,6 +136,23 @@ namespace Bumbo.Web.Controllers
         [HttpPost]
         public IActionResult Store(PrognosesViewModel model)
         {
+            for(int i = 0; i < model.Prognoses.Count; i++) { 
+                if(model.Prognoses[i].Date != null && model.Prognoses[i].BranchId != 0)
+                {
+                    Prognoses p = new Prognoses(model.Prognoses[i].Date)
+                    {
+                        Date = model.Prognoses[i].Date,
+                        AmountOfCustomers = model.Prognoses[i].AmountOfCustomers,
+                        AmountOfFreight = model.Prognoses[i].AmountOfFreight,
+                        BranchId = model.Prognoses[i].BranchId,
+                        WeatherDescription = model.Prognoses[i].WeatherDescription,
+                        Branch = model.Prognoses[i].Branch
+                    };
+
+                    repo.Create(p);
+                }
+            }
+
             return RedirectToAction(nameof(Index));
         }
 
