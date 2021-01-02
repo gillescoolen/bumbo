@@ -8,6 +8,7 @@ using System;
 using Bumbo.Data;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Nager.Date;
 
 namespace Bumbo.Web.Controllers
 {
@@ -121,6 +122,17 @@ namespace Bumbo.Web.Controllers
                         Date = start.AddDays(i)
                     }
                 );
+
+                if(DateSystem.IsPublicHoliday(prognoses[i].Date, CountryCode.NL))
+                {
+                    var holidays = DateSystem.GetPublicHoliday(prognoses[i].Date, prognoses[i].Date, CountryCode.NL);
+                    foreach (var publicHoliday in holidays)
+                    {
+                        prognoses[i].Holiday = publicHoliday.LocalName;
+                    }
+                    
+                }
+                
             }
 
             PrognosesViewModel viewModel = new PrognosesViewModel()
@@ -130,6 +142,7 @@ namespace Bumbo.Web.Controllers
 
             ViewBag.Branches = context.Branch.ToList();
 
+            
             return View(viewModel);
         }
 

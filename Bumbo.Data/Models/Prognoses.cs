@@ -13,9 +13,15 @@ namespace Bumbo.Data.Models
 
         public virtual Branch Branch { get; set; }
 
+
+        public Prognoses()
+        {
+            
+        }
         public Prognoses(DateTime date)
         {
             this.Date = date;
         }
     }
+
 }

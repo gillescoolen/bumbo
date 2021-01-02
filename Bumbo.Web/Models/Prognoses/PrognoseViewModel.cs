@@ -11,5 +11,7 @@ namespace Bumbo.Data.Models
         public int BranchId { get; set; }
         public string WeatherDescription { get; set; }
         public virtual Branch Branch { get; set; }
+
+        public string Holiday { get; set; }
     }
 }
