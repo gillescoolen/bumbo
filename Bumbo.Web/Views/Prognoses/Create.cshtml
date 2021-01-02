@@ -34,12 +34,12 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label asp-for="@Model.Prognoses[i].AmountOfCustomers" class="control-label"></label>
-                                <input asp-for="@Model.Prognoses[i].AmountOfCustomers" class="form-control" />
+                                <input asp-for="@Model.Prognoses[i].AmountOfCustomers" class="form-control customerAmount" />
                                 <span asp-validation-for="@Model.Prognoses[i].AmountOfCustomers" class="text-danger"></span>
                             </div>
                             <div class="form-group col-md-6">
                                 <label asp-for="@Model.Prognoses[i].AmountOfFreight" class="control-label"></label>
-                                <input asp-for="@Model.Prognoses[i].AmountOfFreight" class="form-control" />
+                                <input asp-for="@Model.Prognoses[i].AmountOfFreight" class="form-control freightAmount" />
                                 <span asp-validation-for="@Model.Prognoses[i].AmountOfFreight" class="text-danger"></span>
                             </div>
                             <div class="form-group col-md-6">
@@ -56,8 +56,12 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label asp-for="@Model.Prognoses[i].WeatherDescription" class="control-label"></label>
-                                <input asp-for="@Model.Prognoses[i].WeatherDescription" class="form-control" />
+                                <input asp-for="@Model.Prognoses[i].WeatherDescription" class="form-control weather" />
                                 <span asp-validation-for="@Model.Prognoses[i].WeatherDescription" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="control-label">Te maken arbeidsuren</label>
+                                <input readonly id="workingHours" class="form-control disabled" />
                             </div>
                         </div>
                     </div>

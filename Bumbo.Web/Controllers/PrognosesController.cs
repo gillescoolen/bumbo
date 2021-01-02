@@ -123,6 +123,7 @@ namespace Bumbo.Web.Controllers
                     }
                 );
 
+                //Handle holidays
                 if(DateSystem.IsPublicHoliday(prognoses[i].Date, CountryCode.NL))
                 {
                     var holidays = DateSystem.GetPublicHoliday(prognoses[i].Date, prognoses[i].Date, CountryCode.NL);

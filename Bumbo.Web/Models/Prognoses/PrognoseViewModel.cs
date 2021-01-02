@@ -13,5 +13,6 @@ namespace Bumbo.Data.Models
         public virtual Branch Branch { get; set; }
 
         public string Holiday { get; set; }
+        
     }
 }
