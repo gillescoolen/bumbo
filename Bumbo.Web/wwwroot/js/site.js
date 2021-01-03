@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-
+//TODO: Vanilla js?
 $(function () {
 
     $("input.customerAmount").focusout(function () {

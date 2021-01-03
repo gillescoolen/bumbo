@@ -91,7 +91,7 @@ namespace Bumbo.Web.Controllers
             return View("Index");
         }
 
-        public static DateTime FirstDateOfWeek(int year, int weekOfYear, System.Globalization.CultureInfo ci)
+        public static DateTime FirstDateOfWeek(int year, int weekOfYear, CultureInfo ci)
         {
             DateTime jan1 = new DateTime(year, 1, 1);
             int daysOffset = (int)ci.DateTimeFormat.FirstDayOfWeek - (int)jan1.DayOfWeek;
@@ -110,30 +110,32 @@ namespace Bumbo.Web.Controllers
             return View(model);
         }
 
+        [HttpPost]
         public IActionResult Create(DateTime start)
         {
             var prognoses = new List<PrognoseViewModel>();
-
+            
             for (int i = 0; i < 7; i++)
             {
                 prognoses.Add(
                     new PrognoseViewModel()
                     {
                         Date = start.AddDays(i)
+                        //DateTime.ParseExact(start.AddDays(i).ToShortDateString(), "d/M/yyyy", CultureInfo.InvariantCulture)
                     }
                 );
 
                 //Handle holidays
-                if(DateSystem.IsPublicHoliday(prognoses[i].Date, CountryCode.NL))
+                if (DateSystem.IsPublicHoliday(prognoses[i].Date, CountryCode.NL))
                 {
                     var holidays = DateSystem.GetPublicHoliday(prognoses[i].Date, prognoses[i].Date, CountryCode.NL);
                     foreach (var publicHoliday in holidays)
                     {
                         prognoses[i].Holiday = publicHoliday.LocalName;
                     }
-                    
+
                 }
-                
+
             }
 
             PrognosesViewModel viewModel = new PrognosesViewModel()
@@ -143,15 +145,16 @@ namespace Bumbo.Web.Controllers
 
             ViewBag.Branches = context.Branch.ToList();
 
-            
+
             return View(viewModel);
         }
 
         [HttpPost]
         public IActionResult Store(PrognosesViewModel model)
         {
-            for(int i = 0; i < model.Prognoses.Count; i++) { 
-                if(model.Prognoses[i].Date != null && model.Prognoses[i].BranchId != 0)
+            for (int i = 0; i < model.Prognoses.Count; i++)
+            {
+                if (model.Prognoses[i].Date != null && model.Prognoses[i].BranchId != 0)
                 {
                     Prognoses p = new Prognoses(model.Prognoses[i].Date)
                     {

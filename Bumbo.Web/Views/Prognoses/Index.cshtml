@@ -94,7 +94,10 @@
                     {
                         <tr>
                             <td>
-                                <a asp-action="Create" asp-route-start="@ViewBag.Start">Create New</a>
+                                <form asp-action="Create" method="post">
+                                    <input type="hidden" name="start" value="@ViewBag.Start"/>
+                                    <button type="submit" class="btn">Maak nieuwe verwachting</button>
+                                </form>
                             </td>
                         </tr>
                     }
