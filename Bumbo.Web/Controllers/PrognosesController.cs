@@ -193,7 +193,6 @@ namespace Bumbo.Web.Controllers
                 return RedirectToAction("Edit", new { Date, BranchId });
             }
 
-
             repo.Update(updatedProg);
             return RedirectToAction("Edit", new { Date, BranchId });
         }
