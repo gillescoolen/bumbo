@@ -1,13 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Bumbo.Data.Models
 {
     public partial class Prognoses
     {
+        [Required]
         public DateTime Date { get; set; }
+
+        [Required]
         public int AmountOfCustomers { get; set; }
+
+        [Required]
         public int AmountOfFreight { get; set; }
+
+        [Required]
         public int BranchId { get; set; }
         public string WeatherDescription { get; set; }
 
@@ -15,8 +23,7 @@ namespace Bumbo.Data.Models
 
 
         public Prognoses()
-        {
-            
+        { 
         }
         
     }

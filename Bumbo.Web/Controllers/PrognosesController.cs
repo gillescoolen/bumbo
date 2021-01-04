@@ -106,9 +106,9 @@ namespace Bumbo.Web.Controllers
             int daysOffset = (int)ci.DateTimeFormat.FirstDayOfWeek - (int)jan1.DayOfWeek;
             DateTime firstWeekDay = jan1.AddDays(daysOffset);
             int firstWeek = ci.Calendar.GetWeekOfYear(jan1, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek);
-            if ((firstWeek <= 1 || firstWeek >= 52) && daysOffset >= -1)
+            if ((firstWeek <= 1 || firstWeek >= 52) && daysOffset >= -4)
             {
-                weekOfYear =- 1;
+                weekOfYear -= 1;
             }
             return firstWeekDay.AddDays(weekOfYear * 7);
         }
