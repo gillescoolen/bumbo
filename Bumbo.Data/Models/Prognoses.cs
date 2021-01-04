@@ -18,10 +18,7 @@ namespace Bumbo.Data.Models
         {
             
         }
-        public Prognoses(DateTime date)
-        {
-            this.Date = date;
-        }
+        
     }
 
 }

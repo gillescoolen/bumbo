@@ -24,7 +24,7 @@ namespace Bumbo.Web.Controllers
 
         public IActionResult Index()
         {
-            var jan1 = new DateTime(DateTime.Today.Year, 1, 1);
+            var jan1 = new DateTime(DateTime.Now.Year, 1, 1);
             var startOfFirstWeek = jan1.AddDays(1 - (int)(jan1.DayOfWeek));
             var weeks =
                 Enumerable
@@ -57,10 +57,10 @@ namespace Bumbo.Web.Controllers
         {
             week = Regex.Replace(week, "[^0-9]+", string.Empty);
             int weekNr = Int32.Parse(week);
-            DateTime start = FirstDateOfWeek(2020, weekNr, CultureInfo.CurrentCulture);
+            DateTime start = FirstDateOfWeek(DateTime.Now.Year, weekNr, CultureInfo.CurrentCulture);
             DateTime end = start.AddDays(6);
 
-            var jan1 = new DateTime(DateTime.Today.Year, 1, 1);
+            var jan1 = new DateTime(DateTime.Now.Year, 1, 1);
             var startOfFirstWeek = jan1.AddDays(1 - (int)(jan1.DayOfWeek));
             var weeks =
                 Enumerable
@@ -121,7 +121,6 @@ namespace Bumbo.Web.Controllers
                     new PrognoseViewModel()
                     {
                         Date = start.AddDays(i)
-                        //DateTime.ParseExact(start.AddDays(i).ToShortDateString(), "d/M/yyyy", CultureInfo.InvariantCulture)
                     }
                 );
 
@@ -133,9 +132,7 @@ namespace Bumbo.Web.Controllers
                     {
                         prognoses[i].Holiday = publicHoliday.LocalName;
                     }
-
                 }
-
             }
 
             PrognosesViewModel viewModel = new PrognosesViewModel()
@@ -156,7 +153,7 @@ namespace Bumbo.Web.Controllers
             {
                 if (model.Prognoses[i].Date != null && model.Prognoses[i].BranchId != 0)
                 {
-                    Prognoses p = new Prognoses(model.Prognoses[i].Date)
+                    Prognoses p = new Prognoses()
                     {
                         Date = model.Prognoses[i].Date,
                         AmountOfCustomers = model.Prognoses[i].AmountOfCustomers,
@@ -173,6 +170,7 @@ namespace Bumbo.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
         public IActionResult Edit(DateTime date, int branchId)
         {
             if (TempData["Error"] != null) ViewBag.Error = TempData["Error"].ToString();
@@ -194,7 +192,7 @@ namespace Bumbo.Web.Controllers
             }
 
             repo.Update(updatedProg);
-            return RedirectToAction("Edit", new { Date, BranchId });
+            return RedirectToAction("Index");
         }
 
         [HttpPost]

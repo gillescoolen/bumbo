@@ -79,7 +79,11 @@
                                     @prog.AmountOfFreight
                                 </td>
                                 <td>
-                                    @Html.ActionLink("Edit", "Edit", new { @prog.Date, @prog.BranchId }) |
+                                    <form asp-action="Edit" method="post" class="text-right d-inline-block">
+                                        <input type="hidden" name="date" value="@prog.Date">
+                                        <input type="hidden" name="branchId" value="@prog.BranchId">
+                                        <button type="submit" class="btn">Bewerk</button>
+                                    </form>
                                     @Html.ActionLink("Details", "Details", new { @prog.Date, @prog.BranchId }) |
                                     <form asp-action="Delete" method="post" class="text-right d-inline-block verify-delete">
                                         <input type="hidden" name="date" value="@prog.Date">
