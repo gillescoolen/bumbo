@@ -16,5 +16,13 @@ namespace Bumbo.Data.Models
         public int LastYearVisitors { get; set; }
         public int LastWeekVisitors { get; set; }
 
+        public string GetFormattedDate()
+        {
+            string day = (Date.Day < 10) ? "0" + Date.Day.ToString() : Date.Day.ToString();
+            string month = (Date.Month < 10) ? "0" + Date.Month.ToString() : Date.Month.ToString();
+
+            return day + "-" + month + "-" + Date.Year;
+        }
+
     }
 }

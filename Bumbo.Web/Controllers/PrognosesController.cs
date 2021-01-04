@@ -123,7 +123,7 @@ namespace Bumbo.Web.Controllers
         public IActionResult Create(DateTime start, int branchId)
         {
             var prognoses = new List<PrognoseViewModel>();
-            
+
             for (int i = 0; i < 7; i++)
             {
                 var prognoseDate = start.AddDays(i);
@@ -134,7 +134,7 @@ namespace Bumbo.Web.Controllers
                         BranchId = branchId,
                         LastWeekVisitors = repo.Get(prognoseDate.AddDays(-7), branchId)?.AmountOfCustomers ?? 0,
                         LastYearVisitors = repo.Get(prognoseDate.AddYears(-1), branchId)?.AmountOfCustomers ?? 0
-                       
+
                     }
                 );
 
@@ -161,25 +161,34 @@ namespace Bumbo.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Store(PrognosesViewModel model)
+        public async Task<IActionResult> Store(PrognosesViewModel model)
         {
-            for (int i = 0; i < model.Prognoses.Count; i++)
+            var user = await _userManager.GetUserAsync(User);
+
+            foreach (var prognoseViewModel in model.Prognoses)
             {
-                if (model.Prognoses[i].Date != null && model.Prognoses[i].BranchId != 0)
+                if (prognoseViewModel.Date != null && prognoseViewModel.BranchId != 0)
                 {
-                    Prognoses p = new Prognoses()
+                    if (prognoseViewModel.BranchId != user.BranchId) return Unauthorized();
+
+                    Prognoses prognose = new Prognoses
                     {
-                        Date = model.Prognoses[i].Date,
-                        AmountOfCustomers = model.Prognoses[i].AmountOfCustomers,
-                        AmountOfFreight = model.Prognoses[i].AmountOfFreight,
-                        BranchId = model.Prognoses[i].BranchId,
-                        WeatherDescription = model.Prognoses[i].WeatherDescription,
-                        Branch = model.Prognoses[i].Branch
+                        Date = prognoseViewModel.Date,
+                        AmountOfCustomers = prognoseViewModel.AmountOfCustomers,
+                        AmountOfFreight = prognoseViewModel.AmountOfFreight,
+                        BranchId = prognoseViewModel.BranchId,
+                        WeatherDescription = prognoseViewModel.WeatherDescription,
+                        Branch = prognoseViewModel.Branch
                     };
 
-                    repo.Create(p);
+                    if (!repo.Create(prognose)) return View(model);
+                }
+                else
+                {
+                    return View("Create", model);
                 }
             }
+            
 
             return RedirectToAction(nameof(Index));
         }

@@ -26,13 +26,12 @@ namespace Bumbo.Data.Repository
             }
         }
 
-        public Prognoses Create(Prognoses prog)
+        public bool Create(Prognoses prog)
         {
             using (var ctx = new ContextFactory().CreateDbContext(null))
             {
                 ctx.Prognoses.Add(prog);
-                ctx.SaveChanges();
-                return prog;
+                return ctx.SaveChanges() > 0;
             }
         }
 

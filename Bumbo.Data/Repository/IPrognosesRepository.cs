@@ -10,7 +10,7 @@ namespace Bumbo.Data.Repository
 
         Prognoses Get(DateTime date, int branchId);
 
-        Prognoses Create(Prognoses prog);
+        bool Create(Prognoses prog);
 
         Prognoses Update(Prognoses prog);
 
