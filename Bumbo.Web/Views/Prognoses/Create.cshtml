@@ -43,18 +43,6 @@
                                 <span asp-validation-for="@Model.Prognoses[i].AmountOfFreight" class="text-danger"></span>
                             </div>
                             <div class="form-group col-md-6">
-                                <label asp-for="@Model.Prognoses[i].BranchId" class="control-label">Bumbo branch</label>
-                                <select asp-for="@Model.Prognoses[i].BranchId" class="form-control">
-                                    @foreach (Branch branch in ViewBag.Branches)
-                                    {
-                                        <option value="@branch.Id">
-                                            @branch.Name (@branch.StreetName @branch.HouseNumber @branch.HouseNumberLetter, @branch.PostalCode)
-                                        </option>
-                                    }
-                                    <span asp-validation-for="@Model.Prognoses[i].BranchId" class="text-danger"></span>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6">
                                 <label asp-for="@Model.Prognoses[i].WeatherDescription" class="control-label mx-1">
                                     <i class="fas fa-cloud-showers-heavy"></i>
                                     <input asp-for="@Model.Prognoses[i].WeatherDescription" value="regen" type="radio" class="form-control weather" />
@@ -81,6 +69,20 @@
                         </div>
                     </div>
                     <div class="col-4 my-4">
+                        @if (Model.Prognoses[i].LastWeekVisitors != null)
+                        {
+                            <div class="p-2 border rounded">
+                                <p>Bezoekers vorige week:</p>
+                                <h4>@Model.Prognoses[i].LastWeekVisitors</h4>
+                            </div>
+                        }
+                        @if (Model.Prognoses[i].LastYearVisitors != null)
+                        {
+                            <div class="p-2 border rounded">
+                                <p>Bezoekers vorig jaar:</p>
+                                <h4>@Model.Prognoses[i].LastYearVisitors</h4>
+                            </div>
+                        }
                         @if (Model.Prognoses[i].Holiday != null)
                         {
                             <div class="p-2 border rounded">
@@ -90,6 +92,7 @@
                         }
 
                     </div>
+
                 </div>
             }
 

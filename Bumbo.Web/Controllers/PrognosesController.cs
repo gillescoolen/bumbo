@@ -9,17 +9,21 @@ using Bumbo.Data;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Nager.Date;
+using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
 
 namespace Bumbo.Web.Controllers
 {
     public class PrognosesController : Controller
     {
         private IPrognosesRepository repo = new PrognosesRepository();
-        private readonly ApplicationDbContext context;
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public PrognosesController(ApplicationDbContext context)
+        public PrognosesController(ApplicationDbContext context, UserManager<User> userManager)
         {
-            this.context = context;
+            _context = context;
+            _userManager = userManager;
         }
 
         public IActionResult Index()
@@ -53,7 +57,7 @@ namespace Bumbo.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult IndexPrognoses(string week)
+        public async Task<IActionResult> IndexPrognoses(string week)
         {
             week = Regex.Replace(week, "[^0-9]+", string.Empty);
             int weekNr = Int32.Parse(week);
@@ -88,6 +92,10 @@ namespace Bumbo.Web.Controllers
             ViewBag.Start = start;
             ViewBag.End = end;
 
+            var user = await _userManager.GetUserAsync(User);
+            ViewBag.BranchId = user.BranchId;
+
+
             return View("Index");
         }
 
@@ -111,16 +119,21 @@ namespace Bumbo.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(DateTime start)
+        public IActionResult Create(DateTime start, int branchId)
         {
             var prognoses = new List<PrognoseViewModel>();
             
             for (int i = 0; i < 7; i++)
             {
+                var prognoseDate = start.AddDays(i);
                 prognoses.Add(
                     new PrognoseViewModel()
                     {
-                        Date = start.AddDays(i)
+                        Date = prognoseDate,
+                        BranchId = branchId,
+                        LastWeekVisitors = repo.Get(prognoseDate.AddDays(-7), branchId)?.AmountOfCustomers ?? 0,
+                        LastYearVisitors = repo.Get(prognoseDate.AddYears(-1), branchId)?.AmountOfCustomers ?? 0
+                       
                     }
                 );
 
@@ -140,7 +153,7 @@ namespace Bumbo.Web.Controllers
                 Prognoses = prognoses
             };
 
-            ViewBag.Branches = context.Branch.ToList();
+            ViewBag.Branches = _context.Branch.ToList();
 
 
             return View(viewModel);
