@@ -61,6 +61,7 @@ namespace Bumbo.Web.Controllers
         {
             week = Regex.Replace(week, "[^0-9]+", string.Empty);
             int weekNr = Int32.Parse(week);
+
             DateTime start = FirstDateOfWeek(DateTime.Now.Year, weekNr, CultureInfo.CurrentCulture);
             DateTime end = start.AddDays(6);
 
@@ -105,9 +106,9 @@ namespace Bumbo.Web.Controllers
             int daysOffset = (int)ci.DateTimeFormat.FirstDayOfWeek - (int)jan1.DayOfWeek;
             DateTime firstWeekDay = jan1.AddDays(daysOffset);
             int firstWeek = ci.Calendar.GetWeekOfYear(jan1, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek);
-            if ((firstWeek <= 1 || firstWeek >= 52) && daysOffset >= -3)
+            if ((firstWeek <= 1 || firstWeek >= 52) && daysOffset >= -1)
             {
-                weekOfYear -= 1;
+                weekOfYear =- 1;
             }
             return firstWeekDay.AddDays(weekOfYear * 7);
         }
