@@ -17,13 +17,16 @@ namespace Bumbo.Data.Models
 
         [Required]
         public int BranchId { get; set; }
+
+        [Required]
         public string WeatherDescription { get; set; }
 
         public virtual Branch Branch { get; set; }
 
 
         public Prognoses()
-        { 
+        {
+            WeatherDescription = "Default";
         }
         
     }
