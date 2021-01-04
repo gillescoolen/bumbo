@@ -59,7 +59,7 @@ namespace Bumbo.Web.Controllers
             {
                 #region Prognoses
                 // Check if there are prognoses for upcoming dates... (tomorrow - 2 weeks)
-                DateTime currentDate = DateTime.Now;
+                DateTime currentDate = DateTime.Today;
                 List<Prognoses> prognosesCard = prognoses.Where(p => p.Date > currentDate).Where(p => p.BranchId == user.BranchId).ToList();
                 int daysToLookForward = 14;
 
