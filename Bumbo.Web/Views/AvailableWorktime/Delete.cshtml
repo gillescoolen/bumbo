@@ -44,6 +44,7 @@
 
     <form asp-action="Delete">
         @Html.ActionLink("Delete", "DeleteConfirmed", new { UserId = Model.UserId, WorkDate = Model.WorkDate.ToString() })
-        | <a asp-action="Index">Back to List</a>
     </form>
+
+    <a asp-action="Index">Terug naar overzicht</a>
 </div>

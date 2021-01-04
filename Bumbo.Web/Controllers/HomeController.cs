@@ -54,8 +54,8 @@ namespace Bumbo.Web.Controllers
             // Fetching from dbContext
             List<Prognoses> prognoses = _context.Prognoses.ToList();
 
-            // User is an Admin
-            if (User.IsInRole("Admin") || true == true) // TODO: Check user role is Admin
+            // User is a manager
+            if (User.IsInRole("Manager") || true == true)
             {
                 #region Prognoses
                 // Check if there are prognoses for upcoming dates... (tomorrow - 2 weeks)
