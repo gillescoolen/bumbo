@@ -1,0 +1,65 @@
+﻿@model SubmitHoursModel
+
+@{
+    ViewData["Title"] = "Uren doorgeven";
+}
+
+<h1>Uren van vandaag doorgeven</h1>
+<p>Als u ziek was vandaag, hoeft u de uren niet in te vullen. Let op: als u NIET ingepland was vandaag worden er ook geen uren geteld.</p>
+<hr />
+
+<form asp-action="SubmitHours" method="post">
+    <div class="row">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label asp-for="Start" class="control-label"></label>
+                <input asp-for="Start" id="start" class="form-control" />
+                <span asp-validation-for="Start" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="form-group">
+                <label asp-for="End" class="control-label"></label>
+                <input asp-for="End" id="end" class="form-control" />
+                <span asp-validation-for="End" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label asp-for="Sick" class="control-label"></label>
+                <input asp-for="Sick" id="sickness" onchange="checkSickness()" class="form-control" />
+                <span asp-validation-for="Sick" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="form-group">
+                <input type="submit" value="Invoeren" class="btn btn-primary"/>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Terug naar het dashboard</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+<script>
+    function checkSickness() {
+        const checkbox = document.getElementById("sickness");
+        const start = document.getElementById("start");
+        const end = document.getElementById("end");
+        if (checkbox.checked) {
+            start.readOnly = true;
+            end.readOnly = true;
+        } else {
+            
+            start.readOnly = false;
+            end.readOnly = false;
+            }
+    }        
+</script>
