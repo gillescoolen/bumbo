@@ -28,7 +28,7 @@ namespace Bumbo.Web.Controllers
 
         public IActionResult Index()
         {
-            var jan1 = new DateTime(DateTime.Now.Year, 1, 1);
+            var jan1 = new DateTime(DateTime.Today.Year, 1, 1);
             var startOfFirstWeek = jan1.AddDays(1 - (int)(jan1.DayOfWeek));
             var weeks =
                 Enumerable
