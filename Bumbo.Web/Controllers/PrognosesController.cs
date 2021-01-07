@@ -181,7 +181,7 @@ namespace Bumbo.Web.Controllers
                         Branch = prognoseViewModel.Branch
                     };
 
-                    if (!repo.Create(prognose)) return View(model);
+                    if (!repo.Create(prognose)) return View("Create", model);
                 }
                 else
                 {
