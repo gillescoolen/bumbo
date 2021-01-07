@@ -28,7 +28,7 @@ namespace Bumbo.Web.Controllers
 
         public IActionResult Index()
         {
-            var jan1 = new DateTime(DateTime.Now.Year, 1, 1);
+            var jan1 = new DateTime(DateTime.Today.Year, 1, 1);
             var startOfFirstWeek = jan1.AddDays(1 - (int)(jan1.DayOfWeek));
             var weeks =
                 Enumerable
@@ -65,7 +65,7 @@ namespace Bumbo.Web.Controllers
             DateTime start = FirstDateOfWeek(DateTime.Now.Year, weekNr, CultureInfo.CurrentCulture);
             DateTime end = start.AddDays(6);
 
-            var jan1 = new DateTime(DateTime.Now.Year, 1, 1);
+            var jan1 = new DateTime(DateTime.Today.Year, 1, 1);
             var startOfFirstWeek = jan1.AddDays(1 - (int)(jan1.DayOfWeek));
             var weeks =
                 Enumerable
@@ -181,7 +181,7 @@ namespace Bumbo.Web.Controllers
                         Branch = prognoseViewModel.Branch
                     };
 
-                    if (!repo.Create(prognose)) return View(model);
+                    if (!repo.Create(prognose)) return View("Create", model);
                 }
                 else
                 {
