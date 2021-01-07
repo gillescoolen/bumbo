@@ -45,3 +45,39 @@ document.addEventListener('DOMContentLoaded', function () {
 
     calendar.render();
 });
+
+
+//TODO: Vanilla js?
+$(function () {
+
+    $("input.customerAmount").focusout(function () {
+        ChangeWorkingHours(this);
+    });
+    $("input.freightAmount").focusout(function () {
+        ChangeWorkingHours(this);
+    });
+    $("input.weather").click(function () {
+        ChangeWorkingHours(this);
+    });
+
+
+    function ChangeWorkingHours(field) {
+        let customers = $(field).closest('div.form-row').find('.customerAmount').val() / 100;
+        let freight = $(field).closest('div.form-row').find('.freightAmount').val() * 0.75;
+        let weather = $(field).closest('div.form-row').find('.weather:checked').val();
+
+        let input = $(field).closest('div.form-row').find('#workingHours');
+
+        if (weather == 'regen')
+            customers *= 0.5
+        else if (weather == 'zon')
+            customers *= 1.5;
+        else if (weather == 'bewolkt')
+            customers *= 0.7
+        else if (weather == 'storm')
+            customers *= 0.2
+
+        input.val(Math.round(customers * freight));
+    }
+
+});

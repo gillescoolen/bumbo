@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="~/lib/fullcalendar/main.min.css" />
     <link rel="stylesheet" href="~/lib/font-awesome/css/all.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    
 </head>
 
 <body style="margin-bottom: 0">
@@ -35,7 +38,8 @@
                     <a asp-area="" asp-controller="Home" asp-action="Index" class="list-group-item list-group-item-action bg-light">Dashboard</a>
                     <a asp-area="" asp-controller="Home" asp-action="SubmitHours" class="list-group-item list-group-item-action bg-light">Uren doorgeven</a>
                     <a asp-area="" asp-controller="Schedule" asp-action="Index" class="list-group-item list-group-item-action bg-light">Rooster</a>
-                    <a class="list-group-item list-group-item-action bg-light" asp-area="" asp-controller="AvailableWorktime" asp-action="Index">Available Worktime</a>
+                    <a asp-area="" asp-controller="Prognoses" asp-action="Index" class="list-group-item list-group-item-action bg-light">Prognose</a>
+                    <a asp-area="" asp-controller="AvailableWorktime" asp-action="Index" class="list-group-item list-group-item-action bg-light" >Available Worktime</a>
 
                     @if (User.IsInRole("Manager"))
                     {
