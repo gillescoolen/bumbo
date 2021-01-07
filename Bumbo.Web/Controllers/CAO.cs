@@ -198,7 +198,7 @@ namespace Bumbo.Web.Controllers
             return validationErrors;
         }
 
-        public string LessThanFortyHoursAverageInMonth(User user, int month)
+        private string LessThanFortyHoursAverageInMonth(User user, int month)
         {
             double totalHoursInMonth = 0;
             List<PlannedWorktime> worktimes = _context.PlannedWorktime.Where(u => u.UserId == user.Id && u.WorkDate.Month == month).ToList();
