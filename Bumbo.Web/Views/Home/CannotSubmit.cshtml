@@ -1,0 +1,20 @@
+﻿@{
+    ViewData["Title"] = "Uren doorgeven";
+}
+
+<h1>Uren van vandaag doorgeven</h1>
+<p>U kunt vandaag geen uren doorgeven, dit kan onder andere zijn omdat:</p>
+<ul>
+    <li>U heeft uw uren voor vandaag al doorgegeven</li>
+    <li>U staat niet ingepland om te werken vandaag</li>
+</ul>
+<hr />
+
+<div>
+    <a asp-action="Index">Terug naar het dashboard</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
