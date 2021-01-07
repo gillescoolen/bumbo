@@ -1,5 +1,5 @@
 ﻿@using Bumbo.Data.Models
-@model Bumbo.Data.User
+@model Bumbo.Web.Models.UserViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -112,7 +112,12 @@
 
         <div class="col-md-12">
             <div class="form-group">
-                @* TODO: User Role *@
+                <label asp-for="Role" class="control-label"></label>
+                <select asp-for="Role" class="form-control">
+                    <option value="@Bumbo.Web.Models.UserViewModel.Roles.Manager">Manager</option>
+                    <option value="@Bumbo.Web.Models.UserViewModel.Roles.User">Medewerker</option>
+                    <span asp-validation-for="Role" class="text-danger"></span>
+                </select>
             </div>
         </div>
     </div>
@@ -129,8 +134,8 @@
         <div class="col-md-12">
             <div class="form-group">
                 <label class="control-label">Wachtwoord</label>
-                <input asp-for="PasswordHash" class="form-control" />
-                <span asp-validation-for="PasswordHash" class="text-danger"></span>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
             </div>
         </div>
 

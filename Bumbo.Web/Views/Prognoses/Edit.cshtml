@@ -1,0 +1,61 @@
+﻿@using Bumbo.Data.Models
+@model Bumbo.Data.Models.Prognoses
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Prognoses</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Update" asp-controller="Prognoses" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Date" />
+            <div class="form-group">
+                <label asp-for="AmountOfCustomers" class="control-label">Verwacht aantal bezoekers</label>
+                <input asp-for="AmountOfCustomers" class="form-control" />
+                <span asp-validation-for="AmountOfCustomers" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AmountOfFreight" class="control-label">Verwachte hoeveelheid vracht</label>
+                <input asp-for="AmountOfFreight" class="form-control" />
+                <span asp-validation-for="AmountOfFreight" class="text-danger"></span>
+            </div>
+            <input type="hidden" asp-for="BranchId" />
+            <div class="form-group">
+                <label asp-for="WeatherDescription" class="control-label mx-1">
+                    <i class="fas fa-cloud-showers-heavy"></i>
+                    <input asp-for="WeatherDescription" value="regen" type="radio" class="form-control weather" />
+                </label>
+                <label asp-for="WeatherDescription" class="control-label mx-1">
+                    <i class="fas fa-sun"></i>
+                    <input asp-for="WeatherDescription" value="zon" type="radio" class="form-control weather" />
+                </label>
+                <label asp-for="WeatherDescription" class="control-label mx-1">
+                    <i class="fas fa-cloud-sun"></i>
+                    <input asp-for="WeatherDescription" value="bewolkt" type="radio" class="form-control weather" />
+                </label>
+                <label asp-for="WeatherDescription" class="control-label mx-1">
+                    <i class="fas fa-bolt"></i>
+                    <input asp-for="WeatherDescription" value="storm" type="radio" class="form-control weather" />
+                </label>
+
+                <span asp-validation-for="WeatherDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Terug naar overzicht</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

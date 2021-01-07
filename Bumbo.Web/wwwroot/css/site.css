@@ -125,6 +125,20 @@ body {
     margin-left: 0;
 }
 
+/* Prognoses
+-------------------------------------------------- */
+.row .form-group .fas {
+    font-size: 28px;
+    text-align: center;
+    display: block;
+}
+.row .form-group input[type=radio] {
+    width: 25px;
+    margin: 0 auto;
+}
+
+
+
 @media (min-width: 768px) {
     #sidebar-wrapper {
         margin-left: 0;
