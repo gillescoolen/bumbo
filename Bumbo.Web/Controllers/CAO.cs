@@ -121,30 +121,40 @@ namespace Bumbo.Web.Controllers
         /// <param name="user">Specified user which needs approvement</param>
         /// <param name="plannedWorkWeek">The workweek which needs to be approved</param>
         /// <returns>A boolean which indicates whether the given workweek is approved</returns>
-        public bool ApproveWorkWeek(User user, PlannedWorktime[] plannedWorkWeek)
+        public List<string> WorkWeekValidate(User user, PlannedWorktime[] plannedWorkWeek)
         {
-            bool isApprovable = StandardNorms(plannedWorkWeek);
+            List<string> validationErrors = StandardNorms(plannedWorkWeek);
 
-            if (!isApprovable)
-            {
-                return isApprovable;
-            }
 
             int userage = (int)((DateTime.Today - user.DateOfBirth).TotalDays / 365);
             if (userage == 16 || userage == 17)
             {
-                return SixteenAndSeventeenNorms(user, plannedWorkWeek);
+                List<string> validationErrorsSixteenAndSeventeen = SixteenAndSeventeenNorms(user,plannedWorkWeek);
+                if (validationErrorsSixteenAndSeventeen != null)
+                {
+                    foreach (var error in validationErrorsSixteenAndSeventeen)
+                    {
+                        validationErrors.Add(error);
+                    }
+                }
             } 
             else if (userage < 16)
             {
-                return UnderSixteenNorms(user, plannedWorkWeek);
+                List<string> validationErrorsUnder16 = UnderSixteenNorms(user, plannedWorkWeek);
+                if (validationErrorsUnder16!=null)
+                {
+                    foreach (var error in validationErrorsUnder16)
+                    {
+                       validationErrors.Add(error);
+                    }
+                }
             }
-
-            return isApprovable;
+            return validationErrors;
         }
 
-        private Boolean StandardNorms(PlannedWorktime[] plannedWorkWeek)
+        private List<string> StandardNorms(PlannedWorktime[] plannedWorkWeek)
         {
+            List<string> validationErrors = new List<string>();
             double totalMinutesWorked = 0;
             foreach (PlannedWorktime workDay in plannedWorkWeek)
             {
@@ -152,7 +162,7 @@ namespace Bumbo.Web.Controllers
                 double workedMinutes = workDay.Start.Subtract(workDay.Finish).TotalMinutes;
                 if (workedMinutes > (12 * 60))
                 {
-                    return false;
+                    validationErrors.Add("Medewerker: " + plannedWorkWeek[0].User.GetFullName() + " heeft op :" + workDay.WorkDate + " meer dan 12 uur gepland staan");
                 } 
                 else
                 {
@@ -161,30 +171,34 @@ namespace Bumbo.Web.Controllers
             }
 
             /// Checks if worked hours this week is less than 60 hours
-            return totalMinutesWorked >= (60 * 60);
+            if (totalMinutesWorked >= (60 * 60))
+            {
+                validationErrors.Add("Medewerker: " + plannedWorkWeek[0].User.GetFullName() + " heeft meer dan 60 uur gepland staan in deze week");
+            }
+            return validationErrors;
         }
 
-        private bool SixteenAndSeventeenNorms(User user, PlannedWorktime[] plannedWorkWeek)
+        private List<string> SixteenAndSeventeenNorms(User user, PlannedWorktime[] plannedWorkWeek)
         {
+            List<string> validationErrors = new List<string>();
             foreach (PlannedWorktime workDay in plannedWorkWeek)
             {
                 /// Checks if worked hours + school hours per day is less than 9 hours
                 int? schoolhoursworked = _context.AvailableWorktime.Where(at => at.UserId == user.Id && at.WorkDate == workDay.WorkDate).Select(at => at.SchoolHoursWorked).FirstOrDefault();
                 if ((workDay.Finish.Subtract(workDay.Start).Hours + (int)schoolhoursworked) > 9)
                 {
-                    return false;
+                    validationErrors.Add("Minderjarige van 16-17 jaar oud: " + user.GetFullName() + " heeft meer dan 9 uur gepland staan op :" + workDay.WorkDate);
                 }
             }
 
-            if (!LessThanFortyHoursAverageInMonth(user,plannedWorkWeek[0].WorkDate.Month))
+            if (LessThanFortyHoursAverageInMonth(user,plannedWorkWeek[0].WorkDate.Month)!=null)
             {
-                return false;
+                validationErrors.Add(LessThanFortyHoursAverageInMonth(user, plannedWorkWeek[0].WorkDate.Month));
             }
-
-            return true;
+            return validationErrors;
         }
 
-        public bool LessThanFortyHoursAverageInMonth(User user, int month)
+        public string LessThanFortyHoursAverageInMonth(User user, int month)
         {
             double totalHoursInMonth = 0;
             List<PlannedWorktime> worktimes = _context.PlannedWorktime.Where(u => u.UserId == user.Id && u.WorkDate.Month == month).ToList();
@@ -200,26 +214,24 @@ namespace Bumbo.Web.Controllers
             /// 1 month has roughly 4.34812141 weeks, rounded downwords to minimize risk of overpaying
             if ((totalHoursInMonth / 4.34) < 40)
             {
-                return true;
+                return "Minderjarige van 16-17 jaar oud: " + user.GetFullName() + " heeft meer dan 40 uur gemiddeld in maandnummer: " + month + " gepland staan.";
             }
-            else
-            {
-                return false;
-            }
+            return null;
         }
 
-        private bool UnderSixteenNorms(User user, PlannedWorktime[] plannedWorkWeek)
+        private List<string> UnderSixteenNorms(User user, PlannedWorktime[] plannedWorkWeek)
         {
             int workedDays = 0;
             int workedHoursThisWeek = 0;
             Boolean hadSchool = false;
+            List<string> validationErrors = new List<string>();
 
             foreach (PlannedWorktime workDay in plannedWorkWeek)
             {
                 int? schoolhoursworked = _context.AvailableWorktime.Where(at => at.UserId == user.Id && at.WorkDate == workDay.WorkDate).Select(at => at.SchoolHoursWorked).FirstOrDefault();
                 if ((workDay.Finish.Subtract(workDay.Start).Hours + (int)schoolhoursworked) > 8)
                 {
-                    return false;
+                    validationErrors.Add("Minderjarige onder 16 jaar oud: " + user.GetFullName() + " heeft meer dan 8 uur gepland staan op :" + workDay.WorkDate);
                 }
 
                 if (schoolhoursworked > 0)
@@ -229,7 +241,7 @@ namespace Bumbo.Web.Controllers
 
                 if (workDay.Finish.TotalHours > 19)
                 {
-                    return false;
+                    validationErrors.Add("Minderjarige onder 16 jaar oud: " + user.GetFullName() + " is ingepland na 19:00.");
                 }
 
                 int workedHours = workDay.Finish.Subtract(workDay.Start).Hours;
@@ -245,18 +257,22 @@ namespace Bumbo.Web.Controllers
             {
                 if (workedHoursThisWeek > 12)
                 {
-                    return false;
+                     validationErrors.Add("Minderjarige onder 16 jaar oud: " + user.GetFullName() + " is meer dan 12 uur ingepland in zijn/haar schoolweek.");
                 }
             }
             else
             {
                 if (workedHoursThisWeek > 40)
                 {
-                    return false;
+                    validationErrors.Add("Minderjarige onder 16 jaar oud: " + user.GetFullName() + " is meer dan 40 uur ingepland deze week.");
                 }
             }
 
-            return workedDays < 6;
+            if (workedDays >= 6)
+            {
+                validationErrors.Add("Minderjarige onder 16 jaar oud: " + user.GetFullName() + " is meer dan 5 dagen ingepland in deze week.");
+            }
+            return validationErrors;
         }
     }
 }
