@@ -26,8 +26,9 @@ namespace Bumbo.Web.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var user = await _userManager.GetUserAsync(User);
             var jan1 = new DateTime(DateTime.Today.Year, 1, 1);
             var startOfFirstWeek = jan1.AddDays(1 - (int)(jan1.DayOfWeek));
             var weeks =
@@ -50,6 +51,9 @@ namespace Bumbo.Web.Controllers
                         Tot = x.weekFinish.ToShortDateString(),
                         //WeekNummer = i + 1
                     });
+
+
+            ViewBag.HasPrognoses = HasPrognoses(weeks, user.BranchId);
 
             ViewBag.Weeks = weeks;
 
@@ -88,19 +92,22 @@ namespace Bumbo.Web.Controllers
                         //WeekNummer = i + 1
                     });
 
+            var user = await _userManager.GetUserAsync(User);
+            var branchId = user.BranchId;
+
+            ViewBag.BranchId = branchId;
+
             ViewBag.Weeks = weeks;
-            ViewBag.Prognoses = repo.GetAll(start, end);
+            ViewBag.Prognoses = repo.GetAll(start, end, branchId);
             ViewBag.Start = start;
             ViewBag.End = end;
 
-            var user = await _userManager.GetUserAsync(User);
-            ViewBag.BranchId = user.BranchId;
-
+            ViewBag.HasPrognoses = HasPrognoses(weeks, user.BranchId);
 
             return View("Index");
         }
 
-        public static DateTime FirstDateOfWeek(int year, int weekOfYear, CultureInfo ci)
+        private static DateTime FirstDateOfWeek(int year, int weekOfYear, CultureInfo ci)
         {
             DateTime jan1 = new DateTime(year, 1, 1);
             int daysOffset = (int)ci.DateTimeFormat.FirstDayOfWeek - (int)jan1.DayOfWeek;
@@ -111,12 +118,6 @@ namespace Bumbo.Web.Controllers
                 weekOfYear -= 1;
             }
             return firstWeekDay.AddDays(weekOfYear * 7);
-        }
-
-        public IActionResult Details(DateTime date, int branchId)
-        {
-            var model = repo.Get(date.Date, branchId);
-            return View(model);
         }
 
         [HttpPost]
@@ -226,6 +227,28 @@ namespace Bumbo.Web.Controllers
                 repo.Delete(date.Date, branchId);
             }
             return RedirectToAction("Index");
+        }
+
+        private List<bool> HasPrognoses(IEnumerable<object> weeks, int branchId)
+        {
+            List<bool> b = new List<bool>();
+            var weekNr = 1;
+
+            for(int i = 0; i < weeks.Count();i++)
+            {
+                DateTime start = FirstDateOfWeek(DateTime.Now.Year, weekNr, CultureInfo.CurrentCulture);
+                DateTime end = start.AddDays(6);
+
+                if (repo.GetAll(start, end, branchId).Count() > 0)
+                    b.Add(true);
+                else
+                    b.Add(false);
+
+                weekNr++;
+            }
+            
+            return b;
+
         }
     }
 }

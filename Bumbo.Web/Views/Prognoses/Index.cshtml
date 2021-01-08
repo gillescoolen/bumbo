@@ -19,10 +19,10 @@
             <tbody>
                 @if (ViewBag.Weeks != null)
                 {
-                    int i = 1;
+                    int i = 1; int y = 0;
                     @foreach (var week in ViewBag.Weeks)
                     {
-                        <tr>
+                        <tr class=" @(ViewBag.HasPrognoses[y] == false ? "table-danger" : "")">
                             <td>
                                 <form asp-action="IndexPrognoses" method="post" class="text-right d-inline-block">
                                     <input type="hidden" name="week" value="@i">
@@ -31,7 +31,7 @@
                                 </form>
                             </td>
                         </tr>
-                        i++;
+                        i++; y++;
                     }
                 }
             </tbody>
@@ -82,15 +82,18 @@
                                         <input type="hidden" name="branchId" value="@prog.BranchId">
                                         <button type="submit" class="btn">Bewerk</button>
                                     </form>
-                                    @Html.ActionLink("Details", "Details", new { @prog.Date, @prog.BranchId }) |
-
                                 </td>
                             </tr>
                         }
-                        <form asp-action="Delete" method="post" class="text-right d-inline-block verify-delete">
-                            <input type="hidden" name="prognoses" value="@ViewBag.Prognoses">
-                            <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt mr-2"></i>Verwijder</button>
-                        </form>
+                        <tr>
+                            <td>
+                                <form asp-action="Delete" method="post" class="text-right d-inline-block verify-delete">
+                                    <input type="hidden" name="prognoses" value="@ViewBag.Prognoses">
+                                    <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt mr-2"></i>Verwijder</button>
+                                </form>
+                            </td>
+                        </tr>
+
                     }
                     else
                     {
@@ -105,7 +108,14 @@
                         </tr>
                     }
                 }
-
+                else
+                {
+                    <tr>
+                        <td>
+                            <p>Klik op een week op de verwachting te bekijken</p>
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
