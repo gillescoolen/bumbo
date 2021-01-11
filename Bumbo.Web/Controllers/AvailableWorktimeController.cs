@@ -24,17 +24,43 @@ namespace Bumbo.Web.Controllers
             _userManager = user;
         }
 
-        public async Task<IActionResult> Index()
+        [HttpGet("AvailableWorktime/{order}")]
+        public async Task<IActionResult> Index(string? order)
         {
             var user = _userManager.GetUserAsync(User).Result;
             ViewBag.UserAge = (int)((DateTime.Today - user.DateOfBirth).TotalDays / 365);
             //Als rol = niet bevoegd alle users te zien => ziet alleen eigen available worktime
             CultureInfo dutchculture = new CultureInfo("nl-NL");
             ViewBag.cultureinfo = dutchculture;
+            ViewBag.order = order;
             
-            if (User.IsInRole("Admin"))
+            if (User.IsInRole("Manager"))
             {
-                var applicationDbContext = _context.AvailableWorktime.Include(a => a.User);
+                var applicationDbContext = _context.AvailableWorktime.Include(a => a.User).Where(a => a.UserId == user.Id);
+                if (order != null && order.Equals("Standard"))
+                {
+                    applicationDbContext = _context.AvailableWorktime.Include(a => a.User).OrderBy(a => a.UserId);
+                } 
+                else if (order.Equals("Werkdag"))
+                {
+                    applicationDbContext = _context.AvailableWorktime.Include(a => a.User).OrderBy(a => a.WorkDate);
+                }
+                else if (order.Equals("Starttijd"))
+                {
+                    applicationDbContext = _context.AvailableWorktime.Include(a => a.User).OrderBy(a => a.Start);
+                }
+                else if (order.Equals("Eindtijd"))
+                {
+                    applicationDbContext = _context.AvailableWorktime.Include(a => a.User).OrderBy(a => a.Finish);
+                }
+                else if (order.Equals("Medewerker"))
+                {
+                    applicationDbContext = _context.AvailableWorktime.Include(a => a.User).OrderBy(a => a.User.FirstName);
+                }
+                else if (order.Equals("Schooluren"))
+                {
+                    applicationDbContext = _context.AvailableWorktime.Include(a => a.User).OrderBy(a => a.SchoolHoursWorked);
+                }
                 return View(await applicationDbContext.ToListAsync());
             }
             else
