@@ -116,7 +116,7 @@ namespace Bumbo.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpGet("Edit/{UserId}/{WorkDate}")]
+        [HttpGet("AvailableWorktime/Edit/{UserId}/{WorkDate}")]
         public async Task<IActionResult> Edit(int? UserId, string WorkDate)
         {
 
@@ -191,7 +191,7 @@ namespace Bumbo.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpGet("Delete/{UserId}/{WorkDate}")]
+        [HttpGet("AvailableWorktime/Delete/{UserId}/{WorkDate}")]
         public async Task<IActionResult> Delete(int? UserId, string? WorkDate)
         {
             if (UserId == null || WorkDate == null)
@@ -213,7 +213,7 @@ namespace Bumbo.Web.Controllers
             return View(availableWorktime);
         }
 
-        [HttpGet("DeleteConfirmed/{UserId}/{WorkDate}")]
+        [HttpGet("AvailableWorktime/DeleteConfirmed/{UserId}/{WorkDate}")]
         public async Task<IActionResult> DeleteConfirmed(int UserId, string WorkDate)
         {
             DateTime workDate = DateTime.Parse(HttpUtility.UrlDecode(WorkDate));
