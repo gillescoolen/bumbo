@@ -23,20 +23,40 @@ namespace Bumbo.Web.Controllers
             _userManager = user;
         }
 
-        // GET: WorkedHours
-        public async Task<IActionResult> Index()
+        [HttpGet("WorkedHours/{order}")]
+        public async Task<IActionResult> Index(string? order)
         {
             User user = _userManager.GetUserAsync(User).Result;
             var userHours = _context.ActualTimeWorked.Include(a => a.User).Where(u=>u.UserId == user.Id);
-            ViewBag.user = User;
+
             if (User.IsInRole("Manager"))
             {
-                return View(await _context.ActualTimeWorked.Include(a => a.User).ToListAsync());
-            } 
-            else
-            {
-                return View(await userHours.ToListAsync());
+                userHours = _context.ActualTimeWorked.Include(a => a.User);
             }
+
+            if (order != null && order.Equals("Datum"))
+            {
+                userHours = userHours.OrderBy(u => u.WorkDate);
+            }
+            else if (order.Equals("Starttijd"))
+            {
+                userHours = userHours.OrderBy(u => u.Start);
+            }
+            else if (order.Equals("Eindtijd"))
+            {
+                userHours = userHours.OrderBy(u => u.Finish);
+            }
+            else if (order.Equals("Naam"))
+            {
+                userHours = userHours.OrderBy(u => u.User.FirstName);
+            }
+            else if (order.Equals("Ziek"))
+            {
+                userHours = userHours.OrderBy(u => u.Sickness);
+            }
+            ViewBag.user = User;
+            return View(await userHours.ToListAsync());
+
         }
 
         public async Task<IActionResult> SortIndexName()

@@ -33,41 +33,40 @@ namespace Bumbo.Web.Controllers
             CultureInfo dutchculture = new CultureInfo("nl-NL");
             ViewBag.cultureinfo = dutchculture;
             ViewBag.order = order;
-            
+
+            var applicationDbContext = _context.AvailableWorktime.Include(a => a.User).Where(a => a.UserId == user.Id); ;
+
             if (User.IsInRole("Manager"))
             {
-                var applicationDbContext = _context.AvailableWorktime.Include(a => a.User).Where(a => a.UserId == user.Id);
-                if (order != null && order.Equals("Standard"))
-                {
-                    applicationDbContext = _context.AvailableWorktime.Include(a => a.User).OrderBy(a => a.UserId);
-                } 
-                else if (order.Equals("Werkdag"))
-                {
-                    applicationDbContext = _context.AvailableWorktime.Include(a => a.User).OrderBy(a => a.WorkDate);
-                }
-                else if (order.Equals("Starttijd"))
-                {
-                    applicationDbContext = _context.AvailableWorktime.Include(a => a.User).OrderBy(a => a.Start);
-                }
-                else if (order.Equals("Eindtijd"))
-                {
-                    applicationDbContext = _context.AvailableWorktime.Include(a => a.User).OrderBy(a => a.Finish);
-                }
-                else if (order.Equals("Medewerker"))
-                {
-                    applicationDbContext = _context.AvailableWorktime.Include(a => a.User).OrderBy(a => a.User.FirstName);
-                }
-                else if (order.Equals("Schooluren"))
-                {
-                    applicationDbContext = _context.AvailableWorktime.Include(a => a.User).OrderBy(a => a.SchoolHoursWorked);
-                }
-                return View(await applicationDbContext.ToListAsync());
+                applicationDbContext = _context.AvailableWorktime.Include(a => a.User);
             }
-            else
+
+            if (order != null && order.Equals("Standard"))
             {
-                var applicationDbContext = _context.AvailableWorktime.Include(a => a.User).Where(a => a.UserId == user.Id);
-                return View(await applicationDbContext.ToListAsync());
+                applicationDbContext = applicationDbContext.OrderBy(a => a.UserId);
             }
+            else if (order.Equals("Werkdag"))
+            {
+                applicationDbContext = applicationDbContext.OrderBy(a => a.WorkDate);
+            }
+            else if (order.Equals("Starttijd"))
+            {
+                applicationDbContext = applicationDbContext.OrderBy(a => a.Start);
+            }
+            else if (order.Equals("Eindtijd"))
+            {
+                applicationDbContext = applicationDbContext.OrderBy(a => a.Finish);
+            }
+            else if (order.Equals("Medewerker"))
+            {
+                applicationDbContext = applicationDbContext.OrderBy(a => a.User.FirstName);
+            }
+            else if (order.Equals("Schooluren"))
+            {
+                applicationDbContext = applicationDbContext.OrderBy(a => a.SchoolHoursWorked);
+            }
+
+            return View(await applicationDbContext.ToListAsync());
         }
 
         public IActionResult Create()
