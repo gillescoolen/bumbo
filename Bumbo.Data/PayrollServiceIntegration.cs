@@ -19,6 +19,16 @@ namespace Bumbo.Data
         /// <returns></returns>
         public static async Task Submit(Payroll payroll)
         {
+            if (payroll == null) throw new ArgumentException();
+
+            if (payroll.Items == null || payroll.Items.Count == 0) throw new Exception("The list of items in payroll cannot be empty!");
+
+            foreach (var item in payroll.Items)
+            {
+                if (String.IsNullOrEmpty(item.Bid)) throw new Exception("The Bid cannot be empty!");
+                if (item.Hours !> 0.00 ) throw new Exception("The count of hours has to be more then 0!");
+            }
+            
             await using (var client = new ServiceBusClient(ConnectionString))
             {
                 var sender = client.CreateSender(QueueName);
