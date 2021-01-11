@@ -1,0 +1,81 @@
+﻿@model IEnumerable<Bumbo.Data.Models.ActualTimeWorked>
+
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Gewerkte Uren</h1>
+
+
+<div class="row">
+    @if (ViewBag.user.IsInRole("Manager"))
+    {
+        <form class="col-md-6">
+            <input type="submit" asp-action="SortIndexName" class="btn btn-primary" value="Sorteer op Achternaam" />
+        </form>
+    }
+    <form class="col-md-6">
+        <input type="submit" asp-action="SortIndexDate" class="btn btn-primary" value="Sorteer op Datum" />
+    </form>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Starttijd
+            </th>
+            <th>
+                Eindtijd
+            </th>
+            <th>
+                Datum
+            </th>
+
+            <th>
+                Aanwezig/Ziek
+            </th>
+            <th>
+                Naam
+            </th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Start)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Finish)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.WorkDate)
+                </td>
+                @if (item.Sickness == 0)
+                {
+                    <td style="color:green">Aanwezig</td>
+                }
+                else
+                {
+                    <td style="color:red">Ziek</td>
+                }
+                <td>
+                    @item.User.GetFullName()
+                </td>
+                @if (ViewBag.user.IsInRole("Manager"))
+                {
+                    <td>
+                        @Html.ActionLink("Aanpassen", "Edit", "WorkedHours", new { UserId = item.UserId, WorkDate = item.WorkDate.ToString() }) |
+                        @Html.ActionLink("Verwijderen", "Delete", "WorkedHours", new { UserId = item.UserId, WorkDate = item.WorkDate.ToString() })
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
