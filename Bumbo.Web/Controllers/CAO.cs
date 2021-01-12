@@ -28,7 +28,7 @@ namespace Bumbo.Web.Controllers
             int workedHours = finish.Subtract(start).Hours;
             Dictionary<double, int> halfHourWithSubcharge = new Dictionary<double,int>(); //tijd in double met minuten als /60 - charge in procent
             double startHour = double.Parse(start.ToString("HH")) + (double.Parse(start.ToString("mm")) / 60);
-            double finishHour = double.Parse(finish.ToString("HH")) + (double.Parse(start.ToString("mm")) / 60);
+            double finishHour = double.Parse(finish.ToString("HH")) + (double.Parse(finish.ToString("mm")) / 60);
 
             /// Checks if dates are valid
             if (!start.DayOfWeek.Equals(finish.DayOfWeek))
