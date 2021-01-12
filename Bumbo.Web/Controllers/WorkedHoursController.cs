@@ -211,6 +211,8 @@ namespace Bumbo.Web.Controllers
             }
 
             await PayrollServiceIntegration.Submit(payroll);
+
+            ViewBag.Message = "Uren ingezonden";
             return RedirectToAction(nameof(Index));
         }
     }
