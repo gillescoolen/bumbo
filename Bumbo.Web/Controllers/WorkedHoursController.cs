@@ -185,6 +185,8 @@ namespace Bumbo.Web.Controllers
         {
             var workTimes = await _context.ActualTimeWorked.Where(atw => atw.Accepted == true && atw.Payed == false).ToListAsync();
 
+            if (workTimes.Count == 0) return NotFound();
+            
             var payroll = new Payroll();
             foreach (var workTime in workTimes)
             {
