@@ -59,27 +59,6 @@ namespace Bumbo.Web.Controllers
 
         }
 
-        public async Task<IActionResult> SortIndexName()
-        {
-            var list = await _context.ActualTimeWorked.Include(a => a.User).OrderBy(a => a.User.LastName).ToListAsync();
-            return RedirectToAction("Index", new { workedTime = list });
-        }
-
-        public async Task<IActionResult> SortIndexDate()
-        {
-            User user = _userManager.GetUserAsync(User).Result;
-            List<ActualTimeWorked> timeworked;
-            if (User.IsInRole("Manager"))
-            {
-                timeworked = _context.ActualTimeWorked.Include(a => a.User).OrderBy(a => a.WorkDate).ToList();
-            } 
-            else
-            {
-                timeworked = _context.ActualTimeWorked.Include(a => a.User).Where(u => u.UserId == user.Id).OrderBy(a => a.WorkDate).ToList();
-            }
-            return RedirectToAction("Index", new { workedTime = timeworked });
-        }
-
         // GET: WorkedHours/Edit/5
         [HttpGet("WorkedHours/Edit/{UserId}/{WorkDate}")]
         public async Task<IActionResult> Edit(int? UserId, string WorkDate)
