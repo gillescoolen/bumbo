@@ -17,11 +17,6 @@ namespace Bumbo.Web.Controllers
             _context = context;
         }
 
-        public CAO ()
-        {
-            _context = null;
-        }
-
         /// <summary>
         /// For each half hour worked, calculates the surcharge for the coming half hour
         /// </summary>

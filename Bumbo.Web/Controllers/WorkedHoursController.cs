@@ -65,6 +65,23 @@ namespace Bumbo.Web.Controllers
             return View(await userHours.ToListAsync());
         }
 
+        public IActionResult ViewPerHour(int? userId, string workDate)
+        {
+            if (userId == null)
+            {
+                return NotFound();
+            }
+            ViewBag.user = _context.Users.Where(u => u.Id == userId).FirstOrDefault();
+            var decoded = HttpUtility.UrlDecode(workDate);
+            DateTime date = DateTime.Parse(decoded);
+            ViewBag.date = date.ToString("dd/MM/yyyy");
+            ActualTimeWorked actualTimeWorked = _context.ActualTimeWorked.Where(at => at.User.Id == userId && at.WorkDate == date).FirstOrDefault();
+            DateTime start = date + actualTimeWorked.Start;
+            DateTime finish = date + actualTimeWorked.Finish;
+           
+            return View(_cao.WorkdaySurcharge(start, finish));
+        }
+
         // GET: WorkedHours/Edit/5
         [HttpGet("WorkedHours/Edit/{UserId}/{WorkDate}")]
         public async Task<IActionResult> Edit(int? UserId, string WorkDate)
