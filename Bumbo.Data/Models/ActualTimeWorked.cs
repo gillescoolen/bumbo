@@ -10,7 +10,14 @@ namespace Bumbo.Data.Models
         public TimeSpan Start { get; set; }
         public TimeSpan Finish { get; set; }
         public byte? Sickness { get; set; }
+        public bool Accepted { get; set; } = false;
+        public bool Payed { get; set; } = false;
 
         public virtual User User { get; set; }
+
+        public TimeSpan CalculateHours()
+        {
+            
+        }
     }
 }

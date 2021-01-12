@@ -223,7 +223,6 @@ namespace Bumbo.Web.Controllers
                 }
             }
 
-
             return View("CannotSubmit");
         }
 

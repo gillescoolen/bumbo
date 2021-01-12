@@ -9,6 +9,7 @@ using Bumbo.Data;
 using Bumbo.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Web;
+using Bumbo.Data.Models.PayrollServiceIntegration;
 
 namespace Bumbo.Web.Controllers
 {
@@ -29,14 +30,14 @@ namespace Bumbo.Web.Controllers
         public async Task<IActionResult> Index(string order)
         {
             User user = _userManager.GetUserAsync(User).Result;
-            var userHours = _context.ActualTimeWorked.Include(a => a.User).Where(u=>u.UserId == user.Id);
+            var userHours = _context.ActualTimeWorked.Include(a => a.User).Where(u => u.UserId == user.Id);
 
             if (User.IsInRole("Manager"))
             {
                 userHours = _context.ActualTimeWorked.Include(a => a.User);
             }
 
-            if (order!="")
+            if (order != "")
             {
                 if (order.Equals("Datum"))
                 {
@@ -59,6 +60,7 @@ namespace Bumbo.Web.Controllers
                     userHours = userHours.OrderBy(u => u.Sickness);
                 }
             }
+
             ViewBag.user = User;
             return View(await userHours.ToListAsync());
         }
@@ -71,14 +73,17 @@ namespace Bumbo.Web.Controllers
             {
                 return NotFound();
             }
+
             var decoded = HttpUtility.UrlDecode(WorkDate);
             DateTime date = DateTime.Parse(decoded);
 
-            var actualTimeWorked = await _context.ActualTimeWorked.Where(at => at.User.Id == UserId && at.WorkDate == date).FirstOrDefaultAsync();
+            var actualTimeWorked = await _context.ActualTimeWorked
+                .Where(at => at.User.Id == UserId && at.WorkDate == date).FirstOrDefaultAsync();
             if (actualTimeWorked == null)
             {
                 return NotFound();
             }
+
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Bid", actualTimeWorked.UserId);
             return View(actualTimeWorked);
         }
@@ -93,7 +98,8 @@ namespace Bumbo.Web.Controllers
                 return NotFound();
             }
 
-            ActualTimeWorked toBeUpdated = _context.ActualTimeWorked.Where(a => a.UserId == userId && a.WorkDate == worktime.WorkDate).FirstOrDefault();
+            ActualTimeWorked toBeUpdated = _context.ActualTimeWorked
+                .Where(a => a.UserId == userId && a.WorkDate == worktime.WorkDate).FirstOrDefault();
             try
             {
                 if (ModelState.IsValid)
@@ -116,6 +122,7 @@ namespace Bumbo.Web.Controllers
                     throw;
                 }
             }
+
             return RedirectToAction("Standard", "WorkedHours");
         }
 
@@ -145,7 +152,8 @@ namespace Bumbo.Web.Controllers
         public async Task<IActionResult> DeleteConfirmed(int UserId, string WorkDate)
         {
             DateTime workDate = DateTime.Parse(HttpUtility.UrlDecode(WorkDate));
-            var workedTime = await _context.ActualTimeWorked.Where(at => at.UserId == UserId && at.WorkDate == workDate).FirstOrDefaultAsync();
+            var workedTime = await _context.ActualTimeWorked.Where(at => at.UserId == UserId && at.WorkDate == workDate)
+                .FirstOrDefaultAsync();
             _context.ActualTimeWorked.Remove(workedTime);
             await _context.SaveChangesAsync();
             return RedirectToAction("Standard", "WorkedHours");
@@ -154,6 +162,39 @@ namespace Bumbo.Web.Controllers
         private bool ActualTimeWorkedExists(DateTime id)
         {
             return _context.ActualTimeWorked.Any(e => e.WorkDate == id);
+        }
+
+        public async Task<IActionResult> Payout()
+        {
+            var workTimes = await _context.ActualTimeWorked.Where(atw => atw.Accepted == true && atw.Payed == false).ToListAsync();
+
+            var payroll = new Payroll();
+            foreach (var workTime in workTimes)
+            {
+                var additions = _cao.WorkdaySurcharge(workTime.WorkDate + workTime.Start, workTime.WorkDate + workTime.Finish);
+                var percentages = 0;
+                foreach (var keyValuePair in additions)
+                {
+                    percentages += keyValuePair.Value;
+                }
+
+                var dayAddition = percentages / additions.Count;
+                
+                payroll.Items.Add(new PayrollItem
+                {
+                    Bid = workTime.User.Bid,
+                    Hours = Double.Parse(workTime.Finish.Subtract(workTime.Start).ToString()),
+                    Addition = dayAddition
+                });
+                
+
+                workTime.Payed = true;
+                _context.ActualTimeWorked.Update(workTime);
+                await _context.SaveChangesAsync();
+            }
+
+            await PayrollServiceIntegration.Submit(payroll);
+            return RedirectToAction(nameof(Index));
         }
     }
 }
