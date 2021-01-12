@@ -43,5 +43,7 @@
         @Html.ActionLink("Verwijder", "DeleteConfirmed","AvailableWorktime", new { UserId = Model.UserId, WorkDate = Model.WorkDate.ToString() })
     </form>
 
-    <a asp-action="Index">Terug naar overzicht</a>
+    <div>
+        <a asp-area="" asp-controller="AvailableWorktime" asp-action="Standard">Terug naar het overzicht</a>
+    </div>
 </div>

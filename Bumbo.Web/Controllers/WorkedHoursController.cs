@@ -16,11 +16,13 @@ namespace Bumbo.Web.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly CAO _cao;
 
         public WorkedHoursController(ApplicationDbContext context, UserManager<User> user)
         {
             _context = context;
             _userManager = user;
+            _cao = new CAO(_context);
         }
 
         [HttpGet("WorkedHours/{order}")]
