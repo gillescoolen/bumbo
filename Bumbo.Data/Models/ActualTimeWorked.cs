@@ -14,10 +14,5 @@ namespace Bumbo.Data.Models
         public bool Payed { get; set; } = false;
 
         public virtual User User { get; set; }
-
-        public TimeSpan CalculateHours()
-        {
-            
-        }
     }
 }
