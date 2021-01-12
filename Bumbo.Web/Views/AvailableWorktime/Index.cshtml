@@ -48,7 +48,7 @@
         @{TimeSpan tempTimeSpan = new TimeSpan(0, 01, 00, 00); }
         @foreach (var item in Model)
         {
-            if (item.WorkDate.Subtract(DateTime.Today).Days < 0)
+            if (item.WorkDate.Subtract(DateTime.Today).Days >= 0)
             {
                 <tr>
                     <td>
