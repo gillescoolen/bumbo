@@ -37,6 +37,8 @@
             </th>
             <th>
             </th>
+            <th>
+            </th>
         </tr>
 
     </thead>
@@ -64,6 +66,9 @@
             }
             <td>
                 @item.User.GetFullName()
+            </td>
+            <td>
+                @Html.ActionLink("Uren inzien", "ViewPerHour", "WorkedHours", new { UserId = item.UserId, WorkDate = item.WorkDate.ToString() })
             </td>
             @if (ViewBag.user.IsInRole("Manager"))
             {
