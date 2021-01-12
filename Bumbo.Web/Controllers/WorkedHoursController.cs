@@ -24,7 +24,7 @@ namespace Bumbo.Web.Controllers
         }
 
         [HttpGet("WorkedHours/{order}")]
-        public async Task<IActionResult> Index(string? order)
+        public async Task<IActionResult> Index(string order)
         {
             User user = _userManager.GetUserAsync(User).Result;
             var userHours = _context.ActualTimeWorked.Include(a => a.User).Where(u=>u.UserId == user.Id);
@@ -34,29 +34,31 @@ namespace Bumbo.Web.Controllers
                 userHours = _context.ActualTimeWorked.Include(a => a.User);
             }
 
-            if (order != null && order.Equals("Datum"))
+            if (order!="")
             {
-                userHours = userHours.OrderBy(u => u.WorkDate);
-            }
-            else if (order.Equals("Starttijd"))
-            {
-                userHours = userHours.OrderBy(u => u.Start);
-            }
-            else if (order.Equals("Eindtijd"))
-            {
-                userHours = userHours.OrderBy(u => u.Finish);
-            }
-            else if (order.Equals("Naam"))
-            {
-                userHours = userHours.OrderBy(u => u.User.FirstName);
-            }
-            else if (order.Equals("Ziek"))
-            {
-                userHours = userHours.OrderBy(u => u.Sickness);
+                if (order.Equals("Datum"))
+                {
+                    userHours = userHours.OrderBy(u => u.WorkDate);
+                }
+                else if (order.Equals("Starttijd"))
+                {
+                    userHours = userHours.OrderBy(u => u.Start);
+                }
+                else if (order.Equals("Eindtijd"))
+                {
+                    userHours = userHours.OrderBy(u => u.Finish);
+                }
+                else if (order.Equals("Naam"))
+                {
+                    userHours = userHours.OrderBy(u => u.User.FirstName);
+                }
+                else if (order.Equals("Ziek"))
+                {
+                    userHours = userHours.OrderBy(u => u.Sickness);
+                }
             }
             ViewBag.user = User;
             return View(await userHours.ToListAsync());
-
         }
 
         // GET: WorkedHours/Edit/5
@@ -112,7 +114,7 @@ namespace Bumbo.Web.Controllers
                     throw;
                 }
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { order = ""});
         }
 
         // GET: WorkedHours/Delete/5
@@ -144,7 +146,7 @@ namespace Bumbo.Web.Controllers
             var workedTime = await _context.ActualTimeWorked.Where(at => at.UserId == UserId && at.WorkDate == workDate).FirstOrDefaultAsync();
             _context.ActualTimeWorked.Remove(workedTime);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { order = "" });
         }
 
         private bool ActualTimeWorkedExists(DateTime id)
