@@ -11,37 +11,25 @@ document.addEventListener('DOMContentLoaded', function () {
         $("#wrapper").toggleClass("toggled");
     });
 
-    const update = () => console.log('update...');
-
-    const create = () => console.log('create...');
 
     const calendar = new FullCalendar.Calendar(calendarElement, {
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
-            right: 'timeGridWeek'
+            right: ''
         },
 
-        intitialView: 'timeGridWeek',
+        initialView: 'timeGridWeek',
         initialDate: new Date().toISOString().split('T')[0],
 
         nowIndicator: true,
         navLinks: true,
-        editable: true,
-
-        eventClick: () => console.log('click...'),
-
-        dateClick: () => console.log('click...'),
-
-        eventDrop: update,
-        eventResize: update,
+        editable: false,
 
         events: {
-            url: 'api/schedule',
+            url,
         }
     });
-
-    eventForm.addEventListener("submit", (e) => create(e), false);
 
     calendar.render();
 });
@@ -49,33 +37,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
 //TODO: Vanilla js?
 $(function () {
+    $("input.customerAmount").focusout(() => changeWorkingHours(this));
+    $("input.freightAmount").focusout(() => changeWorkingHours(this));
+    $("input.weather").click(() => changeWorkingHours(this));
 
-    $("input.customerAmount").focusout(function () {
-        ChangeWorkingHours(this);
-    });
-    $("input.freightAmount").focusout(function () {
-        ChangeWorkingHours(this);
-    });
-    $("input.weather").click(function () {
-        ChangeWorkingHours(this);
-    });
-
-
-    function ChangeWorkingHours(field) {
+    const changeWorkingHours = (field) => {
+        const freight = $(field).closest('div.form-row').find('.freightAmount').val() * 0.75;
+        const weather = $(field).closest('div.form-row').find('.weather:checked').val();
+        const input = $(field).closest('div.form-row').find('#workingHours');
+        
         let customers = $(field).closest('div.form-row').find('.customerAmount').val() / 100;
-        let freight = $(field).closest('div.form-row').find('.freightAmount').val() * 0.75;
-        let weather = $(field).closest('div.form-row').find('.weather:checked').val();
 
-        let input = $(field).closest('div.form-row').find('#workingHours');
-
-        if (weather == 'regen')
-            customers *= 0.5
-        else if (weather == 'zon')
-            customers *= 1.5;
-        else if (weather == 'bewolkt')
-            customers *= 0.7
-        else if (weather == 'storm')
-            customers *= 0.2
+        switch (weather) {
+            case 'regen':
+                customers *= 0.5
+                break;
+            case 'zon':
+                customers *= 1.5
+                break;
+            case 'bewolkt':
+                customers *= 0.7
+                break;
+            case 'storm':
+                customers *= 0.2
+                break;
+            default:
+                break;
+        }
 
         input.val(Math.round(customers * freight));
     }
