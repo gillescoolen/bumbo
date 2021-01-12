@@ -16,9 +16,10 @@
     <tbody>
         @foreach (var item in Model)
         {
+            TimeSpan timespan = TimeSpan.FromHours(item.Key);
             <tr>
                 <td>
-                    @item.Key
+                    @timespan.ToString("hh\\:mm")
                 </td>
                 <td>
                     @item.Value%

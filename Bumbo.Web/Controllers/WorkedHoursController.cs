@@ -59,8 +59,25 @@ namespace Bumbo.Web.Controllers
                 {
                     userHours = userHours.OrderBy(u => u.Sickness);
                 }
+                else if (order.Equals("Geaccepteerd"))
+                {
+                    userHours = userHours.OrderBy(u => u.Accepted);
+                }
+                else if (order.Equals("Betaald"))
+                {
+                    userHours = userHours.OrderBy(u => u.Payed);
+                }
             }
 
+            var workTimes = await _context.ActualTimeWorked.Where(atw => atw.Accepted == true && atw.Payed == false).ToListAsync();
+            if (workTimes.Count > 0)
+            {
+                ViewBag.ShowButton = true;
+            }
+            else
+            {
+                ViewBag.ShowButton = false;
+            }
             ViewBag.user = User;
             return View(await userHours.ToListAsync());
         }
@@ -215,7 +232,7 @@ namespace Bumbo.Web.Controllers
             await PayrollServiceIntegration.Submit(payroll);
 
             ViewBag.Message = "Uren ingezonden";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Standard", "WorkedHours");
         }
     }
 }

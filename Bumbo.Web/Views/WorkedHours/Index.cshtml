@@ -7,6 +7,20 @@
 
 <h1>Gewerkte Uren</h1>
 
+@if (ViewBag.ShowButton)
+{
+    <p>
+        <a asp-action="Payout"> <button class="btn btn-primary">Betaal alle onbetaalde werktijden</button></a>
+    </p>
+}
+
+@if (ViewBag.Message != null)
+{
+    <i>
+        *@ViewBag.Message
+    </i>
+}
+
 <table class="table">
     <thead>
         <tr>
@@ -31,6 +45,16 @@
                 </a>
             </th>
             <th>
+                <a asp-controller="WorkedHours" asp-action="Geaccepteerd">
+                    <button class="btn, btn-primary">Geaccepteerd</button>
+                </a>
+            </th>
+            <th>
+                <a asp-controller="WorkedHours" asp-action="Betaald">
+                    <button class="btn, btn-primary">Uitbetaald</button>
+                </a>
+            </th>
+            <th>
                 <a asp-controller="WorkedHours" asp-action="Naam">
                     <button class="btn, btn-primary">Naam</button>
                 </a>
@@ -48,13 +72,13 @@
         {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.WorkDate)
+                @item.WorkDate.Date.ToString("dd/MM/yyyy")
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Start)
+                @item.Start.ToString("hh\\:mm")
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Finish)
+                @item.Finish.ToString("hh\\:mm")
             </td>
             @if (item.Sickness == 0)
             {
@@ -63,6 +87,22 @@
             else
             {
                 <td style="color:red">Ziek</td>
+            }
+            @if (item.Accepted)
+            {
+                <td style="color:green">Geaccepteerd</td>
+            }
+            else
+            {
+                <td style="color:red">In afwachting</td>
+            }
+            @if (item.Payed)
+            {
+                <td style="color:green">Betaald</td>
+            }
+            else
+            {
+                <td style="color:red">In afwachting</td>
             }
             <td>
                 @item.User.GetFullName()
