@@ -114,7 +114,7 @@ namespace Bumbo.Web.Controllers
                     throw;
                 }
             }
-            return RedirectToAction(nameof(Index), new { order = ""});
+            return RedirectToAction("Standard", "WorkedHours");
         }
 
         // GET: WorkedHours/Delete/5
@@ -146,7 +146,7 @@ namespace Bumbo.Web.Controllers
             var workedTime = await _context.ActualTimeWorked.Where(at => at.UserId == UserId && at.WorkDate == workDate).FirstOrDefaultAsync();
             _context.ActualTimeWorked.Remove(workedTime);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index), new { order = "" });
+            return RedirectToAction("Standard", "WorkedHours");
         }
 
         private bool ActualTimeWorkedExists(DateTime id)

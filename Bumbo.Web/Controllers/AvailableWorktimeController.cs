@@ -29,7 +29,6 @@ namespace Bumbo.Web.Controllers
         {
             var user = _userManager.GetUserAsync(User).Result;
             ViewBag.UserAge = (int)((DateTime.Today - user.DateOfBirth).TotalDays / 365);
-            //Als rol = niet bevoegd alle users te zien => ziet alleen eigen available worktime
             CultureInfo dutchculture = new CultureInfo("nl-NL");
             ViewBag.cultureinfo = dutchculture;
             ViewBag.order = order;
@@ -118,7 +117,7 @@ namespace Bumbo.Web.Controllers
             {
                 if (model.Start[index].CompareTo(model.Finish[index]) > 0)
                 {
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Standard", "AvailableWorktime");
                 }
             }
 
@@ -138,7 +137,7 @@ namespace Bumbo.Web.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Standard", "AvailableWorktime");
         }
 
         [HttpGet("AvailableWorktime/Edit/{UserId}/{WorkDate}")]
@@ -155,7 +154,7 @@ namespace Bumbo.Web.Controllers
 
             if (date.Subtract(DateTime.Today.AddDays(7)).Days < 0)
             {
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Standard", "AvailableWorktime");
             }
 
             var user = _userManager.GetUserAsync(User).Result;
@@ -182,12 +181,12 @@ namespace Bumbo.Web.Controllers
 
             if (availableWorktime.WorkDate.Subtract(DateTime.Today.AddDays(7)).Days < 0)
             {
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Standard", "AvailableWorktime");
             }
 
             if (availableWorktime.Start.CompareTo(availableWorktime.Finish) > 0)
             {
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Standard", "AvailableWorktime");
             }
 
             AvailableWorktime toBeUpdated = _context.AvailableWorktime.Where(a => a.UserId == userId && a.WorkDate == availableWorktime.WorkDate).FirstOrDefault();
@@ -213,7 +212,7 @@ namespace Bumbo.Web.Controllers
                     throw;
                 }
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Standard", "AvailableWorktime");
         }
 
         [HttpGet("AvailableWorktime/Delete/{UserId}/{WorkDate}")]
@@ -249,7 +248,7 @@ namespace Bumbo.Web.Controllers
             var availableWorktime = await _context.AvailableWorktime.Where(at => at.UserId == UserId && at.WorkDate == workDate).FirstOrDefaultAsync();
             _context.AvailableWorktime.Remove(availableWorktime);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Standard", "AvailableWorktime");
         }
 
         private bool AvailableWorktimeExists(DateTime id)
