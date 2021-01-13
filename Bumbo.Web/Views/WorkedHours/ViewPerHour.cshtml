@@ -1,0 +1,34 @@
+﻿@model Dictionary<double, int>
+@{
+}
+<h4>@ViewBag.user.FirstName @ViewBag.user.LastName's werkdag: @ViewBag.date</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Gewerkt half uur
+            </th>
+            <th>
+                Toeslag
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            TimeSpan timespan = TimeSpan.FromHours(item.Key);
+            <tr>
+                <td>
+                    @timespan.ToString("hh\\:mm")
+                </td>
+                <td>
+                    @item.Value%
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div>
+    <a asp-area="" asp-controller="WorkedHours" asp-action="Standard">Terug naar het overzicht</a>
+</div>
+

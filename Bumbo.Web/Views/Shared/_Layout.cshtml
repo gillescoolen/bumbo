@@ -40,13 +40,13 @@
                     <a asp-area="" asp-controller="Schedule" asp-action="Index" class="list-group-item list-group-item-action bg-light">Rooster</a>
                     <a asp-area="" asp-controller="Schedule" asp-action="Plan" class="list-group-item list-group-item-action bg-light">Inplannen</a>
                     <a asp-area="" asp-controller="Prognoses" asp-action="Index" class="list-group-item list-group-item-action bg-light">Prognose</a>
-                    <a asp-area="" asp-controller="AvailableWorktime" asp-action="Index" class="list-group-item list-group-item-action bg-light" >Available Worktime</a>
+                    <a asp-area="" asp-controller="WorkedHours" asp-action="Standard" class="list-group-item list-group-item-action bg-light">Gewerkte uren inzien</a>
+                    <a asp-area="" asp-controller="AvailableWorktime" asp-action="Standard" class="list-group-item list-group-item-action bg-light" >Beschikbaarheid doorgeven</a>
 
                     @if (User.IsInRole("Manager"))
                     {
                         <a asp-area="" asp-controller="Users" asp-action="Index" class="list-group-item list-group-item-action bg-light">Medewerkers</a>
                     }
-
                 }
                 else
                 {
