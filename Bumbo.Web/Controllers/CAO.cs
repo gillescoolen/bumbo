@@ -1,6 +1,7 @@
 ﻿using Bumbo.Data;
 using Bumbo.Data.Models;
 using Microsoft.AspNetCore.Identity;
+using Nager.Date;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,41 +44,12 @@ namespace Bumbo.Web.Controllers
             {
                 throw new System.ArgumentException("Start time cannot be more than Finish Time, and vice versa");
             }
+            
             /// Determines subcharge per half hour worked
             for (double i = startHour; i < finishHour; i=i+0.5)
             {
-                /// Nieuwjaar holiday
-                if (start.Month == 1 && start.Day == 1)
-                {
-                    halfHourWithSubcharge.Add(i, 100);
-                }
-                /// Pasen holiday
-                else if (start.Month == 4 && (start.Day==12 || start.Day==13))
-                {
-                    halfHourWithSubcharge.Add(i, 100);
-                }
-                /// Koningsdag holiday
-                else if (start.Month == 4 && start.Day==27)
-                {
-                    halfHourWithSubcharge.Add(i, 100);
-                }
-                /// Bevrijdingsdag
-                else if (start.Month == 5 && start.Day==5)
-                {
-                    halfHourWithSubcharge.Add(i, 100);
-                }
-                /// Hemelvaartsdag holiday
-                else if (start.Month == 5 && start.Day == 21)
-                {
-                    halfHourWithSubcharge.Add(i, 100);
-                }
-                /// Pinksteren holiday
-                else if (start.Month == 5 && start.Day == 31 || start.Month==6 && start.Day == 1)
-                {
-                    halfHourWithSubcharge.Add(i, 100);
-                }
-                /// Kerst holiday
-                else if (start.Month == 12 && start.Day == 25 || start.Month==4 && start.Day==26)
+                ///Holiday check
+                if (DateSystem.IsPublicHoliday(start,CountryCode.NL))
                 {
                     halfHourWithSubcharge.Add(i, 100);
                 }
