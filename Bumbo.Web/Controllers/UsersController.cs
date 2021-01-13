@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Bumbo.Data;
+using Bumbo.Data.Models;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 using Bumbo.Web.Models;
 using Microsoft.AspNetCore.Authorization;
+using Bumbo.Data;
 
 namespace Bumbo.Web.Controllers
 {

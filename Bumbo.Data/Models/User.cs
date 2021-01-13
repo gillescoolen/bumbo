@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bumbo.Data
+namespace Bumbo.Data.Models
 {
     public class User : IdentityUser<int>
     {

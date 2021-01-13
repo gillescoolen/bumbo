@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Bumbo.Data;
+using Bumbo.Data.Models;
 
 namespace Bumbo.Web.Areas.Identity.Pages.Account.Manage
 {

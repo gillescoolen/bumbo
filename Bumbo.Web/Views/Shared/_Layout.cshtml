@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using Bumbo.Data
+@using Bumbo.Data.Models
 @inject UserManager<User> UserManager
 
 <!DOCTYPE html>
@@ -38,6 +38,7 @@
                     <a asp-area="" asp-controller="Home" asp-action="Index" class="list-group-item list-group-item-action bg-light">Dashboard</a>
                     <a asp-area="" asp-controller="Home" asp-action="SubmitHours" class="list-group-item list-group-item-action bg-light">Uren doorgeven</a>
                     <a asp-area="" asp-controller="Schedule" asp-action="Index" class="list-group-item list-group-item-action bg-light">Rooster</a>
+                    <a asp-area="" asp-controller="Schedule" asp-action="Plan" class="list-group-item list-group-item-action bg-light">Inplannen</a>
                     <a asp-area="" asp-controller="Prognoses" asp-action="Index" class="list-group-item list-group-item-action bg-light">Prognose</a>
                     <a asp-area="" asp-controller="AvailableWorktime" asp-action="Index" class="list-group-item list-group-item-action bg-light" >Available Worktime</a>
 
