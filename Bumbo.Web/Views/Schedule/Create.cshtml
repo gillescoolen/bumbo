@@ -116,7 +116,7 @@
                     <td>@Model.Prognoses[i].AmountOfCustomers</td>
                     <td>@Model.Prognoses[i].AmountOfFreight</td>
                 } else {
-                    <td>Geen prognose beschikbaar voor @Model.MinimumDate.AddDays(i)</td>
+                    <td>Geen prognose beschikbaar voor @Model.MinimumDate.AddDays(i).ToShortDateString()</td>
                 }
             </tr>
         }
