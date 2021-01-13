@@ -240,13 +240,18 @@ namespace Bumbo.Web.Controllers
                 }
 
                 var dayAddition = percentages / additions.Count;
+                TimeSpan worked = workTime.Finish.Subtract(workTime.Start);
+                double hours = worked.TotalMinutes / 60;
                 
-                payroll.Items.Add(new PayrollItem
+                if (hours > 0)
                 {
-                    Bid = workTime.User.Bid,
-                    Hours = Double.Parse(workTime.Finish.Subtract(workTime.Start).ToString()),//hier gaat iets fout
-                    Addition = dayAddition
-                });
+                    payroll.Items.Add(new PayrollItem
+                    {
+                        Bid = workTime.User.Bid,
+                        Hours = hours,//hier gaat iets fout
+                        Addition = dayAddition
+                    });
+                }
                 
 
                 workTime.Payed = true;
