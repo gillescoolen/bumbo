@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Bumbo.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System;
 
 namespace Bumbo.Web.Controllers
 {
@@ -15,16 +17,23 @@ namespace Bumbo.Web.Controllers
     public class ScheduleApiController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public ScheduleApiController(ApplicationDbContext context)
+        public ScheduleApiController(ApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PlannedWorktime>>> GetPlannedWorkTime()
         {
-            return await _context.PlannedWorktime.ToListAsync();
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            return await _context.PlannedWorktime
+                .Where(p => p.WorkDate >= DateTime.Today.AddDays(-31))
+                .Where(p => p.UserId == user.Id)
+                .ToListAsync();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Bumbo.Web.Models
         public Branch Branch { get; set; }
 
         [Display(Name = "Telefoonnummer")]
-        public int? PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the first name for this user.

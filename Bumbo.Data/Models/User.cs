@@ -26,7 +26,7 @@ namespace Bumbo.Data.Models
         /// </summary>
         [PersonalData]
         [Display(Name = "Telefoonnummer")]
-        public int? PhoneNumber { get; set; }
+        override public string PhoneNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the first name for this user.
