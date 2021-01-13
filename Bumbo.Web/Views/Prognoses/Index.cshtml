@@ -1,9 +1,7 @@
 ﻿@using Bumbo.Data.Models
-@model IEnumerable<Bumbo.Data.Models.Prognoses>
 
 @{
     ViewData["Title"] = "Index";
-    //ViewData["UseContainer"] = false;
 }
 
 <h1>Prognoses</h1>
@@ -21,10 +19,10 @@
             <tbody>
                 @if (ViewBag.Weeks != null)
                 {
-                    int i = 1;
+                    int i = 1; int y = 0;
                     @foreach (var week in ViewBag.Weeks)
                     {
-                        <tr>
+                        <tr class=" @(ViewBag.HasPrognoses[y] == false ? "table-danger" : "")">
                             <td>
                                 <form asp-action="IndexPrognoses" method="post" class="text-right d-inline-block">
                                     <input type="hidden" name="week" value="@i">
@@ -33,7 +31,7 @@
                                 </form>
                             </td>
                         </tr>
-                        i++;
+                        i++; y++;
                     }
                 }
             </tbody>
@@ -84,7 +82,6 @@
                                         <input type="hidden" name="branchId" value="@prog.BranchId">
                                         <button type="submit" class="btn">Bewerk</button>
                                     </form>
-                                    @Html.ActionLink("Details", "Details", new { @prog.Date, @prog.BranchId }) |
                                 </td>
                             </tr>
                         }
@@ -112,7 +109,14 @@
                         </tr>
                     }
                 }
-
+                else
+                {
+                    <tr>
+                        <td>
+                            <p>Klik op een week op de verwachting te bekijken</p>
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>

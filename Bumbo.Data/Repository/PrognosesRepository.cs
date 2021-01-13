@@ -9,12 +9,12 @@ namespace Bumbo.Data.Repository
 {
     public class PrognosesRepository : IPrognosesRepository
     {
-        public List<Prognoses> GetAll(DateTime start, DateTime end)
+        public List<Prognoses> GetAll(DateTime start, DateTime end, int branchId)
         {
             using (var ctx = new ContextFactory().CreateDbContext(null))
             {
                 //return ctx.Prognoses.ToList();
-                return ctx.Prognoses.Where(n => n.Date >= start).Where(n => n.Date <= end).ToList();
+                return ctx.Prognoses.Where(n => n.Date >= start).Where(n => n.Date <= end).Where(n => n.BranchId == branchId).ToList();
             }
         }
 

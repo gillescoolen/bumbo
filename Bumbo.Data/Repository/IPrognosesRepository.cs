@@ -6,7 +6,7 @@ namespace Bumbo.Data.Repository
 {
     public interface IPrognosesRepository
     {
-        List<Prognoses> GetAll(DateTime start, DateTime end);
+        List<Prognoses> GetAll(DateTime start, DateTime end, int branchId);
 
         Prognoses Get(DateTime date, int branchId);
 
