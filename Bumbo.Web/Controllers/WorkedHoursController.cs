@@ -131,19 +131,25 @@ namespace Bumbo.Web.Controllers
             {
                 return NotFound();
             }
+            if (User.IsInRole("Manager"))
+            {
+                var decoded = HttpUtility.UrlDecode(WorkDate);
+                DateTime date = DateTime.Parse(decoded);
 
-            var decoded = HttpUtility.UrlDecode(WorkDate);
-            DateTime date = DateTime.Parse(decoded);
+                var actualTimeWorked = await _context.ActualTimeWorked
+                    .Where(at => at.User.Id == UserId && at.WorkDate == date).FirstOrDefaultAsync();
+                if (actualTimeWorked == null)
+                {
+                    return NotFound();
+                }
 
-            var actualTimeWorked = await _context.ActualTimeWorked
-                .Where(at => at.User.Id == UserId && at.WorkDate == date).FirstOrDefaultAsync();
-            if (actualTimeWorked == null)
+                ViewData["UserId"] = new SelectList(_context.Users, "Id", "Bid", actualTimeWorked.UserId);
+                return View(actualTimeWorked);
+            } 
+            else
             {
                 return NotFound();
             }
-
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Bid", actualTimeWorked.UserId);
-            return View(actualTimeWorked);
         }
 
         // POST: WorkedHours/EditConfirmed/5
@@ -192,19 +198,25 @@ namespace Bumbo.Web.Controllers
             {
                 return NotFound();
             }
+            if (User.IsInRole("Manager"))
+            {
+                var decoded = HttpUtility.UrlDecode(WorkDate);
+                DateTime date = DateTime.Parse(decoded);
+                var workedTime = await _context.ActualTimeWorked
+                    .Include(a => a.User)
+                    .FirstOrDefaultAsync(at => at.UserId == UserId && at.WorkDate == date);
 
-            var decoded = HttpUtility.UrlDecode(WorkDate);
-            DateTime date = DateTime.Parse(decoded);
-            var workedTime = await _context.ActualTimeWorked
-                .Include(a => a.User)
-                .FirstOrDefaultAsync(at => at.UserId == UserId && at.WorkDate == date);
+                if (workedTime == null)
+                {
+                    return NotFound();
+                }
 
-            if (workedTime == null)
+                return View(workedTime);
+            } 
+            else
             {
                 return NotFound();
             }
-
-            return View(workedTime);
         }
 
         public async Task<IActionResult> DeleteConfirmed(int UserId, string WorkDate)
