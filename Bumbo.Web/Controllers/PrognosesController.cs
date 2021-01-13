@@ -188,7 +188,7 @@ namespace Bumbo.Web.Controllers
                     return View("Create", model);
                 }
             }
-            
+
 
             return RedirectToAction(nameof(Index));
         }
@@ -219,12 +219,15 @@ namespace Bumbo.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Delete(DateTime date, int branchId)
+        public IActionResult Delete(DateTime start, int branchId)
         {
-            if (repo.Get(date.Date, branchId) != null)
+            for (int i = 0; i < 7; i++)
             {
-                repo.Delete(date.Date, branchId);
+                var prognoseDate = start.AddDays(i);
+                if(repo.Get(prognoseDate,branchId) != null)
+                    repo.Delete(prognoseDate, branchId);
             }
+
             return RedirectToAction("Index");
         }
     }

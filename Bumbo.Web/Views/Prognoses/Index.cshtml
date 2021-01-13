@@ -85,22 +85,27 @@
                                         <button type="submit" class="btn">Bewerk</button>
                                     </form>
                                     @Html.ActionLink("Details", "Details", new { @prog.Date, @prog.BranchId }) |
-                                    <form asp-action="Delete" method="post" class="text-right d-inline-block verify-delete">
-                                        <input type="hidden" name="date" value="@prog.Date">
-                                        <input type="hidden" name="branchId" value="@prog.BranchId">
-                                        <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt mr-2"></i>Verwijder</button>
-                                    </form>
                                 </td>
                             </tr>
                         }
+                        <tr>
+                            <td>
+                                <form asp-action="Delete" method="post" class="text-right d-inline-block verify-delete">
+                                    <input type="hidden" name="start" value="@ViewBag.Start">
+                                    <input type="hidden" name="branchId" value="@ViewBag.BranchId" />
+                                    <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt mr-2"></i>Verwijder</button>
+                                </form>
+                            </td>
+                        </tr>
+
                     }
                     else
                     {
                         <tr>
                             <td>
                                 <form asp-action="Create" method="post">
-                                    <input type="hidden" name="start" value="@ViewBag.Start"/>
-                                    <input type="hidden" name="branchId" value="@ViewBag.BranchId"/>
+                                    <input type="hidden" name="start" value="@ViewBag.Start" />
+                                    <input type="hidden" name="branchId" value="@ViewBag.BranchId" />
                                     <button type="submit" class="btn">Maak nieuwe verwachting</button>
                                 </form>
                             </td>
