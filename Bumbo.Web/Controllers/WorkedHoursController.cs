@@ -82,6 +82,30 @@ namespace Bumbo.Web.Controllers
             return View(await userHours.ToListAsync());
         }
 
+        public IActionResult ApproveHours(int? userId, string workDate)
+        {
+            if (User.IsInRole("Manager"))
+            {
+                if (userId == null)
+                {
+                    return NotFound();
+                }
+                ViewBag.user = _context.Users.Where(u => u.Id == userId).FirstOrDefault();
+                var decoded = HttpUtility.UrlDecode(workDate);
+                DateTime date = DateTime.Parse(decoded);
+                ViewBag.date = date.ToString("dd/MM/yyyy");
+                ActualTimeWorked toBeUpdated = _context.ActualTimeWorked.Where(at => at.User.Id == userId && at.WorkDate == date).FirstOrDefault();
+                toBeUpdated.Accepted = true;
+                _context.Update(toBeUpdated);
+                _context.SaveChanges();
+                return RedirectToAction("Standard", "WorkedHours");
+            } 
+            else
+            {
+                return NotFound();
+            }
+        }
+
         public IActionResult ViewPerHour(int? userId, string workDate)
         {
             if (userId == null)
@@ -200,11 +224,12 @@ namespace Bumbo.Web.Controllers
 
         public async Task<IActionResult> Payout()
         {
-            var workTimes = await _context.ActualTimeWorked.Where(atw => atw.Accepted == true && atw.Payed == false).ToListAsync();
+            var workTimes = await _context.ActualTimeWorked.Include(a => a.User).Where(atw => atw.Accepted == true && atw.Payed == false).ToListAsync();
 
             if (workTimes.Count == 0) return NotFound();
             
             var payroll = new Payroll();
+            payroll.Items = new List<PayrollItem>();
             foreach (var workTime in workTimes)
             {
                 var additions = _cao.WorkdaySurcharge(workTime.WorkDate + workTime.Start, workTime.WorkDate + workTime.Finish);
@@ -219,7 +244,7 @@ namespace Bumbo.Web.Controllers
                 payroll.Items.Add(new PayrollItem
                 {
                     Bid = workTime.User.Bid,
-                    Hours = Double.Parse(workTime.Finish.Subtract(workTime.Start).ToString()),
+                    Hours = Double.Parse(workTime.Finish.Subtract(workTime.Start).ToString()),//dit returnt een timespan geen double
                     Addition = dayAddition
                 });
                 

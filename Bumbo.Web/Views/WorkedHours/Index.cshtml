@@ -63,6 +63,8 @@
             </th>
             <th>
             </th>
+            <th>
+            </th>
         </tr>
 
     </thead>
@@ -112,10 +114,20 @@
             </td>
             @if (ViewBag.user.IsInRole("Manager"))
             {
-                <td>
-                    @Html.ActionLink("Aanpassen", "Edit", "WorkedHours", new { UserId = item.UserId, WorkDate = item.WorkDate.ToString() }) |
-                    @Html.ActionLink("Verwijderen", "Delete", "WorkedHours", new { UserId = item.UserId, WorkDate = item.WorkDate.ToString() })
-                </td>
+                @if (!item.Payed && !item.Accepted)
+                {
+                    <td>
+                        <form>
+                            <input type="hidden" value="@item.UserId" name="userId" />
+                            <input type="hidden" value="@item.WorkDate.ToString()" name="workDate" />
+                            <input type="submit" value="Goedkeuren" class="btn-primary" asp-action="ApproveHours" />
+                        </form>
+                    </td>
+                    <td>
+                        @Html.ActionLink("Aanpassen", "Edit", "WorkedHours", new { UserId = item.UserId, WorkDate = item.WorkDate.ToString() })
+                        @Html.ActionLink("Verwijderen", "Delete", "WorkedHours", new { UserId = item.UserId, WorkDate = item.WorkDate.ToString() })
+                    </td>
+                }
             }
         </tr>
         }

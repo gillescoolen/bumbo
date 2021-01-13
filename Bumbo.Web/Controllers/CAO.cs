@@ -43,7 +43,6 @@ namespace Bumbo.Web.Controllers
             {
                 throw new System.ArgumentException("Start time cannot be more than Finish Time, and vice versa");
             }
-
             /// Determines subcharge per half hour worked
             for (double i = startHour; i < finishHour; i=i+0.5)
             {
