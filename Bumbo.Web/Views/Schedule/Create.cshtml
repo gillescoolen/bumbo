@@ -7,14 +7,12 @@
 <h4>Inplannen voor @Model.User.GetFullName()</h4>
 <hr />
 
-<button class="btn btn-secondary btn-lg btn-block my-2" type="button" data-toggle="collapse" data-target="#rules" aria-expanded="false" aria-controls="rules">
-    CAO Regels
-</button>
 <div class="collapse" id="rules">
   <div class="card card-body">
     Hier komen de CAO regels.
   </div>
 </div>
+
 <br>
 <form asp-action="Store" asp-controller="Schedule" method="post">
     <div class="row">
@@ -86,7 +84,15 @@
                 </li>
             }
         </ul>   
-        <button name="submitSchedule" type="submit" class="btn btn-primary btn-lg btn-block my-2">Planning opslaan</button>
+        <br>
+    </div>
+    <div class="row my-4">
+        <div class="col-6">
+            <button class="btn btn-primary btn-lg btn-block" name="submitSchedule" type="submit">Planning opslaan</button>
+        </div>
+        <div class="col-6">
+            <button class="btn btn-secondary btn-lg btn-block" type="button" data-toggle="collapse" data-target="#rules" aria-expanded="false" aria-controls="rules">CAO Regels</button>
+        </div>
     </div>
 </form>
 

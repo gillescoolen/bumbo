@@ -29,30 +29,30 @@ namespace Bumbo.Web.Controllers
             return View();
         }
 
-        public IActionResult Plan()
+        [Authorize(Roles = "Manager")]
+        public async Task<IActionResult> Plan(PlanViewModel model)
         {
-            var user = _userManager.GetUserAsync(User).Result;
+            var user = await _userManager.GetUserAsync(User);
+            var users = await _context.Users.Where(u => u.BranchId == user.BranchId).ToListAsync();
+            var date = model.Date >= DateTime.Today ? model.Date : getBeginningOfWeek(DateTime.Today);
 
-            var users = _context.Users.ToList().Where(u => u.BranchId == user.BranchId);
-
-            var model = new PlanViewModel
+            var newModel = new PlanViewModel
             {
                 Users = users,
-                Date = DateTime.Now
+                Date = date
             };
 
-            return View(model);
+            return View(newModel);
         }
 
-        public async Task<IActionResult> Create(int userId, int increment = 0)
+        [Authorize(Roles = "Manager")]
+        public async Task<IActionResult> Create(int userId, DateTime date)
         {
-            var beginningOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Monday);
-
-            if (increment == 0) beginningOfWeek.AddDays(7 * increment);
-
-            var endOfWeek = beginningOfWeek.AddDays(7);
+            if (userId < 1 || date == null) return View("Plan");
 
             var user = await _context.Users.FindAsync(userId);
+            var beginningOfWeek = getBeginningOfWeek(date);
+            var endOfWeek = beginningOfWeek.AddDays(7);
 
             var availableTimes = await _context.AvailableWorktime
                 .Where(t => t.UserId == user.Id)
@@ -94,6 +94,7 @@ namespace Bumbo.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> Store(CreateViewModel model)
         {
             foreach (var plannedWorktime in model.PlannedWorktimes)
@@ -111,6 +112,11 @@ namespace Bumbo.Web.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Plan");
+        }
+
+        private DateTime getBeginningOfWeek(DateTime date)
+        {
+            return date.AddDays(-(int)date.DayOfWeek + (int)DayOfWeek.Monday);
         }
     }
 }
