@@ -12,7 +12,7 @@ namespace Bumbo.Data.Repository
 
         bool Create(Prognoses prog);
 
-        Prognoses Update(Prognoses prog);
+        bool Update(Prognoses prog);
 
         bool Delete(DateTime date, int branchId);
     }

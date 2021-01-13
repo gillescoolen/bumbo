@@ -47,9 +47,8 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-//TODO: Vanilla js?
-$(function () {
 
+$(function () {
     $("input.customerAmount").focusout(function () {
         ChangeWorkingHours(this);
     });
@@ -62,22 +61,28 @@ $(function () {
 
 
     function ChangeWorkingHours(field) {
-        let customers = $(field).closest('div.form-row').find('.customerAmount').val() / 100;
-        let freight = $(field).closest('div.form-row').find('.freightAmount').val() * 0.75;
+        let customers = $(field).closest('div.form-row').find('.customerAmount').val();
+        let freight = $(field).closest('div.form-row').find('.freightAmount').val();
         let weather = $(field).closest('div.form-row').find('.weather:checked').val();
 
         let input = $(field).closest('div.form-row').find('#workingHours');
 
         if (weather == 'regen')
-            customers *= 0.5
+            customers *= 0.6
         else if (weather == 'zon')
-            customers *= 1.5;
+            customers *= 1.2;
         else if (weather == 'bewolkt')
             customers *= 0.7
         else if (weather == 'storm')
-            customers *= 0.2
+            customers *= 0.4
 
-        input.val(Math.round(customers * freight));
+        customers /= 50;
+        freight /= 100;
+
+        let estimated = Math.round(customers * freight);
+        if (estimated < 5) estimated = 5;
+
+        input.val(estimated);
     }
 
 });

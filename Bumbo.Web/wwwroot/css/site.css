@@ -136,6 +136,9 @@ body {
     width: 25px;
     margin: 0 auto;
 }
+tr.nohover:hover {
+    background-color: transparent !important;
+}
 
 
 
