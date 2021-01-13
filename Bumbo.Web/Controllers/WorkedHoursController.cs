@@ -244,7 +244,7 @@ namespace Bumbo.Web.Controllers
                 payroll.Items.Add(new PayrollItem
                 {
                     Bid = workTime.User.Bid,
-                    Hours = Double.Parse(workTime.Finish.Subtract(workTime.Start).ToString()),//dit returnt een timespan geen double
+                    Hours = Double.Parse(workTime.Finish.Subtract(workTime.Start).ToString()),//hier gaat iets fout
                     Addition = dayAddition
                 });
                 
