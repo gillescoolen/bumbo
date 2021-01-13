@@ -1,0 +1,28 @@
+﻿@model Bumbo.Web.Models.PlanViewModel
+
+@{
+    ViewData["Title"] = "Inplannen";
+}
+
+<h4>Inplannen</h4>
+<hr />
+<div class="row">
+    <div class="col-12">
+        <ul class="list-group">
+        @foreach (var user in Model.Users)
+        {
+            <li class="list-group-item">
+                @user.GetFullName() 
+                <form asp-action="Create" method="post" class="text-right d-inline-block verify-delete">
+                    <input type="hidden" name="userId" value="@user.Id">
+                    <button type="submit pull-right" class="btn btn-primary">Inplannen</button>
+                </form>
+            </li>
+        }
+        </ul>   
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
