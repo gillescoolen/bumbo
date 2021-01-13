@@ -30,7 +30,7 @@ namespace Bumbo.Web.Controllers
         public async Task<IActionResult> Index(string order)
         {
             User user = _userManager.GetUserAsync(User).Result;
-            var userHours = _context.ActualTimeWorked.Include(a => a.User).Where(u => u.UserId == user.Id);
+            var userHours = _context.ActualTimeWorked.Include(a => a.User).Where(u => u.UserId == user.Id && u.User.BranchId == user.BranchId);
 
             if (User.IsInRole("Manager"))
             {

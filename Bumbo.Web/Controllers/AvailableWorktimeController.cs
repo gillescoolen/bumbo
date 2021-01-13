@@ -33,7 +33,7 @@ namespace Bumbo.Web.Controllers
             ViewBag.cultureinfo = dutchculture;
             ViewBag.order = order;
 
-            var applicationDbContext = _context.AvailableWorktime.Include(a => a.User).Where(a => a.UserId == user.Id); ;
+            var applicationDbContext = _context.AvailableWorktime.Include(a => a.User).Where(a => a.UserId == user.Id && a.User.BranchId == user.BranchId); ;
 
             if (User.IsInRole("Manager"))
             {
