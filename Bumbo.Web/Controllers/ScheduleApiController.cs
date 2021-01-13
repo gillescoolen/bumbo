@@ -8,6 +8,7 @@ using Bumbo.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System;
+using Bumbo.Web.Models;
 
 namespace Bumbo.Web.Controllers
 {
@@ -26,14 +27,29 @@ namespace Bumbo.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PlannedWorktime>>> GetPlannedWorkTime()
+        public async Task<ActionResult<List<ApiViewModel>>> GetPlannedWorkTime(DateTime start, DateTime end)
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
 
-            return await _context.PlannedWorktime
-                .Where(p => p.WorkDate >= DateTime.Today.AddDays(-31))
+            var plannedWorktimes = await _context.PlannedWorktime
+                .Where(p => p.WorkDate >= start)
+                .Where(p => p.WorkDate <= end )
                 .Where(p => p.UserId == user.Id)
                 .ToListAsync();
+
+            var times = new List<ApiViewModel>();
+
+            foreach (var time in plannedWorktimes)
+            {
+                times.Add(new ApiViewModel
+                {
+                    Section = time.Section,
+                    Start = time.WorkDate.AddHours(time.Start.TotalHours),
+                    End = time.WorkDate.AddHours(time.Finish.TotalHours)
+                });
+            }
+
+            return times;
         }
     }
 }
