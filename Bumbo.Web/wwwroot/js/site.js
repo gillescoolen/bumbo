@@ -11,77 +11,65 @@ document.addEventListener('DOMContentLoaded', function () {
         $("#wrapper").toggleClass("toggled");
     });
 
-    const update = () => console.log('update...');
-
-    const create = () => console.log('create...');
 
     const calendar = new FullCalendar.Calendar(calendarElement, {
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
-            right: 'timeGridWeek'
+            right: ''
         },
 
-        intitialView: 'timeGridWeek',
+        initialView: 'timeGridWeek',
         initialDate: new Date().toISOString().split('T')[0],
 
         nowIndicator: true,
         navLinks: true,
-        editable: true,
-
-        eventClick: () => console.log('click...'),
-
-        dateClick: () => console.log('click...'),
-
-        eventDrop: update,
-        eventResize: update,
+        editable: false,
 
         events: {
-            url: 'api/schedule',
+            url,
         }
     });
-
-    eventForm.addEventListener("submit", (e) => create(e), false);
 
     calendar.render();
 });
 
 
-
 $(function () {
-    $("input.customerAmount").focusout(function () {
-        ChangeWorkingHours(this);
-    });
-    $("input.freightAmount").focusout(function () {
-        ChangeWorkingHours(this);
-    });
-    $("input.weather").click(function () {
-        ChangeWorkingHours(this);
-    });
+    $("input.customerAmount").focusout(() => changeWorkingHours(this));
+    $("input.freightAmount").focusout(() => changeWorkingHours(this));
+    $("input.weather").click(() => changeWorkingHours(this));
 
-
-    function ChangeWorkingHours(field) {
+    const changeWorkingHours = (field) => {
+        const freight = $(field).closest('div.form-row').find('.freightAmount').val();
+        const weather = $(field).closest('div.form-row').find('.weather:checked').val();
+        const input = $(field).closest('div.form-row').find('#workingHours');
+        
         let customers = $(field).closest('div.form-row').find('.customerAmount').val();
-        let freight = $(field).closest('div.form-row').find('.freightAmount').val();
-        let weather = $(field).closest('div.form-row').find('.weather:checked').val();
 
-        let input = $(field).closest('div.form-row').find('#workingHours');
-
-        if (weather == 'regen')
-            customers *= 0.6
-        else if (weather == 'zon')
-            customers *= 1.2;
-        else if (weather == 'bewolkt')
-            customers *= 0.7
-        else if (weather == 'storm')
-            customers *= 0.4
-
-        customers /= 50;
+        switch (weather) {
+            case 'regen':
+                customers *= 0.5
+                break;
+            case 'zon':
+                customers *= 1.5
+                break;
+            case 'bewolkt':
+                customers *= 0.7
+                break;
+            case 'storm':
+                customers *= 0.2
+                break;
+            default:
+                break;
+        }
+		
+		customers /= 50;
         freight /= 100;
 
-        let estimated = Math.round(customers * freight);
+		let estimated = Math.round(customers * freight);
         if (estimated < 5) estimated = 5;
-
+		
         input.val(estimated);
     }
 
