@@ -1,0 +1,50 @@
+﻿@model Bumbo.Data.Models.ActualTimeWorked
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Aanpassen</h1>
+
+<h4>Gewerkte uren</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditConfirmed">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="UserId" />
+            <div class="form-group">
+                <input type="hidden" asp-for="WorkDate" class="form-control" value="@Model.WorkDate" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Start" class="control-label"></label>
+                <input asp-for="Start" class="form-control" />
+                <span asp-validation-for="Start" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Finish" class="control-label"></label>
+                <input asp-for="Finish" class="form-control" />
+                <span asp-validation-for="Finish" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Sickness" class="control-label"></label>
+                <select asp-for="Sickness" class="form-control">
+                    <option value=0>Niet ziek</option>
+                    <option value=1>Ziek</option>
+                </select>
+                <span asp-validation-for="Sickness" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Opslaan" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-area="" asp-controller="WorkedHours" asp-action="Standard">Terug naar het overzicht</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
