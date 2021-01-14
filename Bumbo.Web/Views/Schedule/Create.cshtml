@@ -9,7 +9,15 @@
 
 <div class="collapse" id="rules">
   <div class="card card-body">
-    Hier komen de CAO regels.
+    Zorg ervoor dat:
+    <ul>
+        <li>Werknemers niet meer dan 60 uur per week werken.</li>
+        <li>Minderjarigen niet meer dan 8 uur per dag werken.</li>
+        <li>Minderjarigen niet na dan 19:00 ingepland zijn.</li>
+        <li>Minderjarigen niet meer dan 40 uur gemiddeld per week werken.</li>
+        <li>Minderjarigen niet meer dan 12 uur zijn ingepland tijdens een schoolweek.</li>
+        <li>Minderjarigen niet meer dan 5 dagen zijn ingepland per week.</li>
+    </ul>
   </div>
 </div>
 
@@ -27,7 +35,6 @@
         {
             <div class="alert alert-danger" style="width: 100%" role="alert">
                 <ul>
-                    <li><b>De wijzigingen zijn opgeslagen, maar:</b></li>
                     @foreach (var error in Model.Errors)
                     {
                         <li>@error</li>
