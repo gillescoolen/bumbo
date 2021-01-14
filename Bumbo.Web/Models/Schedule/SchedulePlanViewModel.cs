@@ -9,5 +9,6 @@ namespace Bumbo.Web.Models
     {
         public IEnumerable<User> Users { get; set; }
         public DateTime Date { get; set; }
+        public List<string> Errors { get; set; }
     }
 }
