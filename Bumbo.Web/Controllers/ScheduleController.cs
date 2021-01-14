@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using Bumbo.Web.Models;
 using System;
+using Bumbo.Data.Services;
 
 namespace Bumbo.Web.Controllers
 {
@@ -17,11 +18,13 @@ namespace Bumbo.Web.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly ICAOService _caoService;
 
-        public ScheduleController(ApplicationDbContext context, UserManager<User> userManager)
+        public ScheduleController(ApplicationDbContext context, UserManager<User> userManager, ICAOService caoService)
         {
             _context = context;
             _userManager = userManager;
+            _caoService = caoService;
         }
 
         public async Task<IActionResult> IndexAsync(ScheduleViewModel model)
@@ -81,12 +84,13 @@ namespace Bumbo.Web.Controllers
 
             var model = new ScheduleCreateViewModel
             {
-                User = user,
                 AvailableWorkTimes = new List<AvailableWorktime>(),
                 PlannedWorktimes = new List<PlannedWorktime>(),
                 Prognoses = new List<Prognoses>(),
                 MinimumDate = beginningOfWeek,
-                MaximumDate = endOfWeek
+                MaximumDate = endOfWeek,
+                UserName = user.GetFullName(),
+                UserId = userId
             };
 
             for (int i = 0; i < 7; i++)
@@ -105,6 +109,11 @@ namespace Bumbo.Web.Controllers
         [Authorize(Roles = "Manager")]
         public async Task<IActionResult> Store(ScheduleCreateViewModel model)
         {
+            var user = await _context.Users.FindAsync(model.UserId);
+            model.Errors = _caoService.WorkWeekValidate(user, model.PlannedWorktimes.ToArray());
+
+            if (model.Errors.Count() > 0) return await ShowErrorsAsync(model);
+
             foreach (var plannedWorktime in model.PlannedWorktimes)
             {
                 var exists = await _context.PlannedWorktime
@@ -113,13 +122,74 @@ namespace Bumbo.Web.Controllers
                     .Where(p => p.WorkDate == plannedWorktime.WorkDate)
                     .AnyAsync();
 
+                if (plannedWorktime.Start.TotalHours == 0 && plannedWorktime.Finish.TotalHours == 0)
+                {
+                    if (exists) _context.PlannedWorktime.Remove(plannedWorktime);
+                    continue;
+                }
+
+                if (plannedWorktime.Start.TotalHours == 0 || plannedWorktime.Finish.TotalHours == 0)
+                {
+                    model.Errors.Add($"{plannedWorktime.WorkDate.ToShortDateString()} - Een van de tijden mist!");
+                    break;
+                }
+
+                if (plannedWorktime.Start >= plannedWorktime.Finish)
+                {
+                    model.Errors.Add($"{plannedWorktime.WorkDate.ToShortDateString()} - Startijd kan niet hoger zijn dan eindtijd!");
+                    break;
+                }
+
+                if (
+                    plannedWorktime.Start.Hours < 8 ||
+                    plannedWorktime.Finish.Hours > 19 ||
+                    plannedWorktime.Start.Hours > 19 ||
+                    plannedWorktime.Finish.Hours < 8
+                )
+                {
+                    model.Errors.Add($"{plannedWorktime.WorkDate.ToShortDateString()} - Tijden mogen niet buiten 08:00 en 19:00 vallen!");
+                    break;
+                }              
+
                 if (exists) _context.PlannedWorktime.Update(plannedWorktime);
                 else await _context.PlannedWorktime.AddAsync(plannedWorktime);
             }
 
+            if (model.Errors.Count > 0) return await ShowErrorsAsync(model);
+
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Plan");
+        }
+
+        private async Task<IActionResult> ShowErrorsAsync(ScheduleCreateViewModel model)
+        {
+            var beginningOfWeek = getBeginningOfWeek(model.MinimumDate);
+            var endOfWeek = beginningOfWeek.AddDays(7);
+
+            var availableWorktimes = await _context.AvailableWorktime
+                .Where(t => t.UserId == model.UserId)
+                .Where(t => t.WorkDate >= beginningOfWeek)
+                .Where(t => t.WorkDate <= endOfWeek)
+                .ToListAsync();
+
+            var prognoses = await _context.Prognoses
+                .Where(p => p.Date >= beginningOfWeek)
+                .Where(p => p.Date <= endOfWeek)
+                .ToListAsync();
+
+            model.AvailableWorkTimes = new List<AvailableWorktime>();
+            model.Prognoses = new List<Prognoses>();
+
+            for (int i = 0; i < 7; i++)
+            {
+                var day = beginningOfWeek.AddDays(i);
+
+                model.AvailableWorkTimes.Add(availableWorktimes.Find(t => t.WorkDate == day));
+                model.Prognoses.Add(prognoses.Find(p => p.Date == day));
+            }
+
+            return View("Create", model);
         }
 
         private DateTime getBeginningOfWeek(DateTime date)

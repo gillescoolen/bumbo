@@ -16,14 +16,15 @@ namespace Bumbo.Web.Controllers
 {
     public class PrognosesController : Controller
     {
-        private IPrognosesRepository repo = new PrognosesRepository();
+        private readonly IPrognosesRepository _repository;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
 
-        public PrognosesController(ApplicationDbContext context, UserManager<User> userManager)
+        public PrognosesController(ApplicationDbContext context, UserManager<User> userManager, IPrognosesRepository repository)
         {
             _context = context;
             _userManager = userManager;
+            _repository = repository;
         }
 
         public async Task<IActionResult> Index()
@@ -98,7 +99,7 @@ namespace Bumbo.Web.Controllers
             ViewBag.BranchId = branchId;
 
             ViewBag.Weeks = weeks;
-            ViewBag.Prognoses = repo.GetAll(start, end, branchId);
+            ViewBag.Prognoses = _repository.GetAll(start, end, branchId);
             ViewBag.Start = start;
             ViewBag.End = end;
 
@@ -133,8 +134,8 @@ namespace Bumbo.Web.Controllers
                     {
                         Date = prognoseDate,
                         BranchId = branchId,
-                        LastWeekVisitors = repo.Get(prognoseDate.AddDays(-7), branchId)?.AmountOfCustomers ?? 0,
-                        LastYearVisitors = repo.Get(prognoseDate.AddYears(-1), branchId)?.AmountOfCustomers ?? 0
+                        LastWeekVisitors = _repository.Get(prognoseDate.AddDays(-7), branchId)?.AmountOfCustomers ?? 0,
+                        LastYearVisitors = _repository.Get(prognoseDate.AddYears(-1), branchId)?.AmountOfCustomers ?? 0
                     }
                 );
 
@@ -181,7 +182,7 @@ namespace Bumbo.Web.Controllers
                         Branch = prognoseViewModel.Branch
                     };
 
-                    if (!repo.Create(prognose)) return View("Create", model);
+                    if (!_repository.Create(prognose)) return View("Create", model);
                 }
                 else
                 {
@@ -201,7 +202,7 @@ namespace Bumbo.Web.Controllers
             for (int i = 0; i < 7; i++)
             {
                 var prognoseDate = start.AddDays(i);
-                var prog = repo.Get(prognoseDate, branchId);
+                var prog = _repository.Get(prognoseDate, branchId);
                 if (prog != null)
                 {
                     prognoses.Add(
@@ -212,8 +213,8 @@ namespace Bumbo.Web.Controllers
                         AmountOfCustomers = prog.AmountOfCustomers,
                         AmountOfFreight = prog.AmountOfFreight,
                         WeatherDescription = prog.WeatherDescription,
-                        LastWeekVisitors = repo.Get(prognoseDate.AddDays(-7), branchId)?.AmountOfCustomers ?? 0,
-                        LastYearVisitors = repo.Get(prognoseDate.AddYears(-1), branchId)?.AmountOfCustomers ?? 0
+                        LastWeekVisitors = _repository.Get(prognoseDate.AddDays(-7), branchId)?.AmountOfCustomers ?? 0,
+                        LastYearVisitors = _repository.Get(prognoseDate.AddYears(-1), branchId)?.AmountOfCustomers ?? 0
 
                     });
 
@@ -258,7 +259,7 @@ namespace Bumbo.Web.Controllers
                         Branch = prognoseViewModel.Branch
                     };
 
-                    if (!repo.Update(prognose)) return View("Edit", model);
+                    if (!_repository.Update(prognose)) return View("Edit", model);
                 }
                 else
                 {
@@ -276,8 +277,8 @@ namespace Bumbo.Web.Controllers
             for (int i = 0; i < 7; i++)
             {
                 var prognoseDate = start.AddDays(i);
-                if (repo.Get(prognoseDate, branchId) != null)
-                    repo.Delete(prognoseDate, branchId);
+                if (_repository.Get(prognoseDate, branchId) != null)
+                    _repository.Delete(prognoseDate, branchId);
             }
 
             return RedirectToAction("Index");
@@ -293,7 +294,7 @@ namespace Bumbo.Web.Controllers
                 DateTime start = FirstDateOfWeek(DateTime.Now.Year, weekNr, CultureInfo.CurrentCulture);
                 DateTime end = start.AddDays(6);
 
-                if (repo.GetAll(start, end, branchId).Count() > 0)
+                if (_repository.GetAll(start, end, branchId).Count() > 0)
                     b.Add(true);
                 else
                     b.Add(false);

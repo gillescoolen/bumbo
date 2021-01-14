@@ -14,6 +14,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Bumbo.Web.Models.Options;
+using Bumbo.Data.Repository;
+using Bumbo.Data.Services;
 
 namespace Bumbo.Web
 {
@@ -58,6 +60,9 @@ namespace Bumbo.Web
                 );
 
             services.AddRazorPages();
+
+            services.AddScoped<IPrognosesRepository, PrognosesRepository>();
+            services.AddScoped<ICAOService, CAOService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

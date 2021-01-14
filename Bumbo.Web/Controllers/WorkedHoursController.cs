@@ -11,6 +11,7 @@ using Bumbo.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Web;
 using Bumbo.Data.Models.PayrollServiceIntegration;
+using Bumbo.Data.Services;
 
 namespace Bumbo.Web.Controllers
 {
@@ -18,13 +19,13 @@ namespace Bumbo.Web.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
-        private readonly CAO _cao;
+        private readonly CAOService _caoService;
 
         public WorkedHoursController(ApplicationDbContext context, UserManager<User> user)
         {
             _context = context;
             _userManager = user;
-            _cao = new CAO(_context);
+            _caoService = new CAOService(_context);
         }
 
         [HttpGet("WorkedHours/{order}")]
@@ -121,7 +122,7 @@ namespace Bumbo.Web.Controllers
             DateTime start = date + actualTimeWorked.Start;
             DateTime finish = date + actualTimeWorked.Finish;
            
-            return View(_cao.WorkdaySurcharge(start, finish));
+            return View(_caoService.WorkdaySurcharge(start, finish));
         }
 
         // GET: WorkedHours/Edit/5
@@ -245,7 +246,7 @@ namespace Bumbo.Web.Controllers
             payroll.Items = new List<PayrollItem>();
             foreach (var workTime in workTimes)
             {
-                var additions = _cao.WorkdaySurcharge(workTime.WorkDate + workTime.Start, workTime.WorkDate + workTime.Finish);
+                var additions = _caoService.WorkdaySurcharge(workTime.WorkDate + workTime.Start, workTime.WorkDate + workTime.Finish);
                 var percentages = 0;
                 foreach (var keyValuePair in additions)
                 {
