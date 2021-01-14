@@ -43,7 +43,7 @@ namespace Bumbo.Web.Controllers
             {
                 times.Add(new ApiViewModel
                 {
-                    Section = time.Section,
+                    Title = $"Werken - {time.Section}",
                     Start = time.WorkDate.AddHours(time.Start.TotalHours),
                     End = time.WorkDate.AddHours(time.Finish.TotalHours)
                 });
