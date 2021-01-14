@@ -30,5 +30,11 @@ namespace Bumbo.Data.Models
             return day + "-" + month + "-" + Date.Year;
         }
 
+        public string GetDayName()
+        {
+            var culture = new System.Globalization.CultureInfo("nl-NL");
+
+            return culture.TextInfo.ToTitleCase(culture.DateTimeFormat.GetDayName(Date.DayOfWeek)); ;
+        }
     }
 }
