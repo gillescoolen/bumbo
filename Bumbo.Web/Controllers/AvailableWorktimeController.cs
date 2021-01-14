@@ -34,39 +34,39 @@ namespace Bumbo.Web.Controllers
             ViewBag.cultureinfo = dutchculture;
             ViewBag.order = order;
 
-            var applicationDbContext = _context.AvailableWorktime.Include(a => a.User).Where(a => a.UserId == user.Id && a.User.BranchId == user.BranchId); ;
+            var availableWorkTime = _context.AvailableWorktime.Include(a => a.User).Where(a => a.UserId == user.Id && a.User.BranchId == user.BranchId); ;
 
             if (User.IsInRole("Manager"))
             {
-                applicationDbContext = _context.AvailableWorktime.Include(a => a.User);
+                availableWorkTime = _context.AvailableWorktime.Include(a => a.User);
             }
 
             if (order != null && order.Equals("Standard"))
             {
-                applicationDbContext = applicationDbContext.OrderBy(a => a.UserId);
+                availableWorkTime = availableWorkTime.OrderBy(a => a.UserId);
             }
             else if (order.Equals("Werkdag"))
             {
-                applicationDbContext = applicationDbContext.OrderBy(a => a.WorkDate);
+                availableWorkTime = availableWorkTime.OrderBy(a => a.WorkDate);
             }
             else if (order.Equals("Starttijd"))
             {
-                applicationDbContext = applicationDbContext.OrderBy(a => a.Start);
+                availableWorkTime = availableWorkTime.OrderBy(a => a.Start);
             }
             else if (order.Equals("Eindtijd"))
             {
-                applicationDbContext = applicationDbContext.OrderBy(a => a.Finish);
+                availableWorkTime = availableWorkTime.OrderBy(a => a.Finish);
             }
             else if (order.Equals("Medewerker"))
             {
-                applicationDbContext = applicationDbContext.OrderBy(a => a.User.FirstName);
+                availableWorkTime = availableWorkTime.OrderBy(a => a.User.FirstName);
             }
             else if (order.Equals("Schooluren"))
             {
-                applicationDbContext = applicationDbContext.OrderBy(a => a.SchoolHoursWorked);
+                availableWorkTime = availableWorkTime.OrderBy(a => a.SchoolHoursWorked);
             }
 
-            return View(await applicationDbContext.ToListAsync());
+            return View(await availableWorkTime.ToListAsync());
         }
 
         public IActionResult Create()
