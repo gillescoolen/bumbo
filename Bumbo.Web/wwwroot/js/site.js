@@ -1,15 +1,21 @@
+// @ts-nocheck
 $(function () {
-    $("input.customerAmount").focusout(() => changeWorkingHours(this));
-    $("input.freightAmount").focusout(() => changeWorkingHours(this));
-    $("input.weather").click(() => changeWorkingHours(this));
+    $("input.freightAmount").focusout(function () {
+        changeWorkingHours(this);
+    });
+    $("input.weather").click(function () {
+        changeWorkingHours(this);
+    });
+    $("input.customerAmount").focusout(function () {
+        changeWorkingHours(this);
+    });
 
     const changeWorkingHours = (field) => {
-        const freight = $(field).closest('div.form-row').find('.freightAmount').val() /= 100;
-        const weather = $(field).closest('div.form-row').find('.weather:checked').val();
+        let customers = $(field).closest('div.form-row').find('.customerAmount').val() / 100;
+        let freight = $(field).closest('div.form-row').find('.freightAmount').val() * 0.75;
+        let weather = $(field).closest('div.form-row').find('.weather:checked').val();
         let input = $(field).closest('div.form-row').find('#workingHours');
         
-        let customers = $(field).closest('div.form-row').find('.customerAmount').val();
-
         switch (weather) {
             case 'regen':
                 customers *= 0.7
@@ -31,7 +37,7 @@ $(function () {
 
 		let estimated = Math.round(customers * freight);
         if (estimated < 5) estimated = 5;
-		
+
         input.val(estimated);
     }
 
