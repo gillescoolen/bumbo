@@ -4,7 +4,7 @@
     ViewData["Title"] = "Create";
 }
 
-<h4>Prognoses</h4>
+<h4>Maak nieuwe verwachting</h4>
 <hr />
 <div class="row mb-3">
     <div class="col-12">
@@ -56,21 +56,21 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label class="control-label">Te maken arbeidsuren</label>
-                                <input readonly id="workingHours" class="form-control disabled" />
+                                <input id="workingHours" class="form-control disabled" />
                             </div>
                         </div>
                     </div>
                     <input type="hidden" asp-for="@Model.Prognoses[i].BranchId"/>
                     <input type="hidden" asp-for="@Model.Prognoses[i].Date"/>
                     <div class="col-4 my-4">
-                        @if (Model.Prognoses[i].LastWeekVisitors != null)
+                        @if (Model.Prognoses[i].LastWeekVisitors != 0)
                         {
                             <div class="p-2 border rounded">
                                 <p>Bezoekers vorige week:</p>
                                 <h4>@Model.Prognoses[i].LastWeekVisitors</h4>
                             </div>
                         }
-                        @if (Model.Prognoses[i].LastYearVisitors != null)
+                        @if (Model.Prognoses[i].LastYearVisitors != 0)
                         {
                             <div class="p-2 border rounded">
                                 <p>Bezoekers vorig jaar:</p>
