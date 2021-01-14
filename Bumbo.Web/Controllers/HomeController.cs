@@ -57,7 +57,7 @@ namespace Bumbo.Web.Controllers
             List<Prognoses> prognoses = _context.Prognoses.ToList();
 
             // User is a manager
-            if (User.IsInRole("Manager") || true == true)
+            if (User.IsInRole("Manager"))
             {
                 #region Prognoses
 
@@ -79,7 +79,8 @@ namespace Bumbo.Web.Controllers
                             Type = Message.MessageType.List,
                             Title = "Ontbrekende prognose",
                             Content = $"Er is nog geen prognose aangemaakt voor deze dag!",
-                            RelatedDate = checkDate
+                            RelatedDate = checkDate,
+                            Location = "/Prognoses"
                         });
                     }
                 }
@@ -109,6 +110,12 @@ namespace Bumbo.Web.Controllers
             // User is NOT an Admin
             else
             {
+                messages.Add(new Message
+                {
+                    Type = Message.MessageType.Card,
+                    Content = "Welkom terug, er is op dit moment geen content voor je dashboard.",
+                    Title = "Leeg dashboard"
+                });
             }
 
             #region Worked Hours
