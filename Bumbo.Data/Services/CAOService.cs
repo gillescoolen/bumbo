@@ -87,8 +87,7 @@ namespace Bumbo.Data.Services
         /// <returns>A boolean which indicates whether the given workweek is approved</returns>
         public List<string> WorkWeekValidate(User user, PlannedWorktime[] plannedWorkWeek)
         {
-            List<string> validationErrors = StandardNorms(plannedWorkWeek);
-
+            List<string> validationErrors = StandardNorms(plannedWorkWeek, user);
 
             int userage = (int)((DateTime.Today - user.DateOfBirth).TotalDays / 365);
             if (userage == 16 || userage == 17)
@@ -116,7 +115,7 @@ namespace Bumbo.Data.Services
             return validationErrors;
         }
 
-        public List<string> StandardNorms(PlannedWorktime[] plannedWorkWeek)
+        public List<string> StandardNorms(PlannedWorktime[] plannedWorkWeek, User user)
         {
             List<string> validationErrors = new List<string>();
             double totalMinutesWorked = 0;
@@ -126,7 +125,7 @@ namespace Bumbo.Data.Services
                 double workedMinutes = workDay.Start.Subtract(workDay.Finish).TotalMinutes;
                 if (workedMinutes > (12 * 60))
                 {
-                    validationErrors.Add("Medewerker: " + plannedWorkWeek[0].User.GetFullName() + " heeft op :" + workDay.WorkDate + " meer dan 12 uur gepland staan");
+                    validationErrors.Add(user.GetFullName() + " heeft op: " + workDay.WorkDate.ToShortDateString() + " meer dan 12 uur gepland staan");
                 }
                 else
                 {
@@ -137,8 +136,9 @@ namespace Bumbo.Data.Services
             /// Checks if worked hours this week is less than 60 hours
             if (totalMinutesWorked >= (60 * 60))
             {
-                validationErrors.Add("Medewerker: " + plannedWorkWeek[0].User.GetFullName() + " heeft meer dan 60 uur gepland staan in deze week");
+                validationErrors.Add(user.GetFullName() + " heeft meer dan 60 uur gepland staan in deze week");
             }
+            
             return validationErrors;
         }
 
@@ -151,7 +151,7 @@ namespace Bumbo.Data.Services
                 int? schoolhoursworked = _context.AvailableWorktime.Where(at => at.UserId == user.Id && at.WorkDate == workDay.WorkDate).Select(at => at.SchoolHoursWorked).FirstOrDefault();
                 if ((workDay.Finish.Subtract(workDay.Start).Hours + (int)schoolhoursworked) > 9)
                 {
-                    validationErrors.Add("Minderjarige van 16-17 jaar oud: " + user.GetFullName() + " heeft meer dan 9 uur gepland staan op :" + workDay.WorkDate);
+                    validationErrors.Add("Minderjarige van 16-17 jaar oud: " + user.GetFullName() + " heeft meer dan 9 uur gepland staan op: " + workDay.WorkDate.ToShortDateString());
                 }
             }
 
@@ -192,20 +192,24 @@ namespace Bumbo.Data.Services
 
             foreach (PlannedWorktime workDay in plannedWorkWeek)
             {
-                int? schoolhoursworked = _context.AvailableWorktime.Where(at => at.UserId == user.Id && at.WorkDate == workDay.WorkDate).Select(at => at.SchoolHoursWorked).FirstOrDefault();
-                if ((workDay.Finish.Subtract(workDay.Start).Hours + (int)schoolhoursworked) > 8)
+                var schoolhoursworked = _context.AvailableWorktime.Where(at => at.UserId == user.Id && at.WorkDate == workDay.WorkDate).Select(at => at.SchoolHoursWorked).FirstOrDefault();
+               
+                if (schoolhoursworked != null)
                 {
-                    validationErrors.Add("Minderjarige onder 16 jaar oud: " + user.GetFullName() + " heeft meer dan 8 uur gepland staan op :" + workDay.WorkDate);
-                }
+                    if ((workDay.Finish.Subtract(workDay.Start).Hours + (int)schoolhoursworked) > 8)
+                    {
+                        validationErrors.Add(user.GetFullName() + " heeft meer dan 8 uur gepland staan op: " + workDay.WorkDate.ToShortDateString() + ".");
+                    }
 
-                if (schoolhoursworked > 0)
-                {
-                    hadSchool = true;
+                    if (schoolhoursworked > 0)
+                    {
+                        hadSchool = true;
+                    }
                 }
 
                 if (workDay.Finish.TotalHours > 19)
                 {
-                    validationErrors.Add("Minderjarige onder 16 jaar oud: " + user.GetFullName() + " is ingepland na 19:00.");
+                    validationErrors.Add(user.GetFullName() + " is ingepland na 19:00.");
                 }
 
                 int workedHours = workDay.Finish.Subtract(workDay.Start).Hours;
@@ -221,20 +225,20 @@ namespace Bumbo.Data.Services
             {
                 if (workedHoursThisWeek > 12)
                 {
-                    validationErrors.Add("Minderjarige onder 16 jaar oud: " + user.GetFullName() + " is meer dan 12 uur ingepland in zijn/haar schoolweek.");
+                    validationErrors.Add(user.GetFullName() + " is meer dan 12 uur ingepland in zijn/haar schoolweek.");
                 }
             }
             else
             {
                 if (workedHoursThisWeek > 40)
                 {
-                    validationErrors.Add("Minderjarige onder 16 jaar oud: " + user.GetFullName() + " is meer dan 40 uur ingepland deze week.");
+                    validationErrors.Add(user.GetFullName() + " is meer dan 40 uur ingepland deze week.");
                 }
             }
 
             if (workedDays >= 6)
             {
-                validationErrors.Add("Minderjarige onder 16 jaar oud: " + user.GetFullName() + " is meer dan 5 dagen ingepland in deze week.");
+                validationErrors.Add(user.GetFullName() + " is meer dan 5 dagen ingepland in deze week.");
             }
 
             return validationErrors;
