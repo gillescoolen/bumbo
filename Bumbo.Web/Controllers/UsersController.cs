@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Bumbo.Data;
+using Bumbo.Data.Models;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 using Bumbo.Web.Models;
 using Microsoft.AspNetCore.Authorization;
+using Bumbo.Data;
 
 namespace Bumbo.Web.Controllers
 {
@@ -53,7 +54,7 @@ namespace Bumbo.Web.Controllers
             if (userRole == "Manager") role = UserViewModel.Roles.Manager;
             else role = UserViewModel.Roles.User;
 
-            UserViewModel userViewModel = new Models.UserViewModel
+            UserViewModel userViewModel = new UserViewModel
             {
                 Id = dataUser.Id,
                 Bid = dataUser.Bid,

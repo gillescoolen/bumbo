@@ -31,7 +31,7 @@ namespace Bumbo.Web.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             List<Message> messages = GetMessages();
 
@@ -71,7 +71,7 @@ namespace Bumbo.Web.Controllers
                 {
                     DateTime checkDate = currentDate.AddDays(i + 1);
 
-                    if (prognoses.Where(p => p.Date == checkDate).Count() == 0)
+                    if (prognosesCard.Where(p => p.Date == checkDate).Count() == 0)
                     {
                         messages.Add(new Message
                         {
@@ -79,10 +79,8 @@ namespace Bumbo.Web.Controllers
                             Type = Message.MessageType.List,
                             Title = "Ontbrekende prognose",
                             Content = $"Er is nog geen prognose aangemaakt voor deze dag!",
-                            Location = "/todo/prognoses",
                             RelatedDate = checkDate
                         });
-                        ;
                     }
                 }
 
@@ -90,8 +88,8 @@ namespace Bumbo.Web.Controllers
 
                 #region Todays Prognose
 
-                Prognoses todaysPrognose = prognoses.Where(p => p.BranchId == user.BranchId)
-                    .Where(p => p.Date == DateTime.Today).FirstOrDefault();
+                Prognoses todaysPrognose = prognoses
+                    .Where(p => p.BranchId == user.BranchId).FirstOrDefault(p => p.Date == DateTime.Today);
 
                 if (todaysPrognose != null)
                 {
@@ -118,6 +116,7 @@ namespace Bumbo.Web.Controllers
             //This weeks hours
             List<AvailableWorktime> availableWorktimes =
                 _context.AvailableWorktime.Where(pwt => pwt.UserId == user.Id).ToList();
+            
             List<ActualTimeWorked> actualTimeWorked =
                 _context.ActualTimeWorked.Where(awt => awt.UserId == user.Id).ToList();
 
@@ -141,9 +140,8 @@ namespace Bumbo.Web.Controllers
 
             foreach (DateTime day in week)
             {
-                AvailableWorktime availableDay =
-                    availableWorktimes.Where(available => available.WorkDate == day).FirstOrDefault();
-                ActualTimeWorked actualDay = actualTimeWorked.Where(actual => actual.WorkDate == day).FirstOrDefault();
+                AvailableWorktime availableDay = availableWorktimes.FirstOrDefault(available => available.WorkDate == day);
+                ActualTimeWorked actualDay = actualTimeWorked.FirstOrDefault(actual => actual.WorkDate == day);
 
                 if (availableDay != null) totalAvailable = totalAvailable.Add(availableDay.Finish - availableDay.Start);
                 if (actualDay != null) totalActual = totalActual.Add(actualDay.Finish - actualDay.Start);
@@ -174,32 +172,6 @@ namespace Bumbo.Web.Controllers
 
             #endregion
 
-            #region Verlofaanvragen
-
-            List<FurloughRequest> requests = _context.FurloughRequest
-                .Where(fr => fr.UserId == user.Id)
-                .Where(fr => fr.WorkDate > DateTime.Now)
-                .ToList();
-
-            if (requests.Count() > 0)
-            {
-                int approvedRequests = requests
-                    .Where(fr => fr.IsApproved == 1)
-                    .Count();
-
-                messages.Add(new Message
-                {
-                    Priority = Message.Priorities.Low,
-                    Type = Message.MessageType.Card,
-                    Title = "Verlofaanvragen",
-                    Content =
-                        $"<span style='font-size: xx-large; vertical-align: middle;'>{approvedRequests}/{requests.Count()}</span> <span style='font-size: large; vertical-align: middle;'>aanvragen zijn geaccepteerd</span>",
-                    Location = "/todo/verlofaanvragen"
-                });
-            }
-
-            #endregion
-
             return messages;
         }
 
@@ -207,22 +179,18 @@ namespace Bumbo.Web.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
 
-            PlannedWorktime plannedWorktime =
-                _context.PlannedWorktime.FirstOrDefault(pwt =>
-                    pwt.UserId == user.Id && pwt.WorkDate == DateTime.Today);
-            
+            PlannedWorktime plannedWorktime = _context.PlannedWorktime.FirstOrDefault(pwt => pwt.UserId == user.Id && pwt.WorkDate == DateTime.Today);
+
             if (plannedWorktime != null)
             {
-                ActualTimeWorked actualTimeWorked =
-                    _context.ActualTimeWorked.FirstOrDefault(atw =>
-                        atw.UserId == user.Id && atw.WorkDate == DateTime.Today);
+                ActualTimeWorked actualTimeWorked = _context.ActualTimeWorked.FirstOrDefault(atw => atw.UserId == user.Id && atw.WorkDate == DateTime.Today);
 
                 if (actualTimeWorked == null)
                 {
                     return View(new SubmitHoursModel());
                 }
             }
-
+            
             return View("CannotSubmit");
         }
 
@@ -245,7 +213,7 @@ namespace Bumbo.Web.Controllers
                     PlannedWorktime plannedWorktime =
                         _context.PlannedWorktime.FirstOrDefault(pwt =>
                             pwt.UserId == user.Id && pwt.WorkDate == DateTime.Today);
-                    
+
                     if (plannedWorktime != null)
                     {
                         actualTimeWorked.Start = plannedWorktime.Start;

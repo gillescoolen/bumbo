@@ -1,4 +1,4 @@
-﻿$(function () {
+$(function () {
     $("input.customerAmount").focusout(() => changeWorkingHours(this));
     $("input.freightAmount").focusout(() => changeWorkingHours(this));
     $("input.weather").click(() => changeWorkingHours(this));
