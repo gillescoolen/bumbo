@@ -113,6 +113,12 @@ namespace Bumbo.Web.Controllers
                     UserName = userViewModel.Email
                 };
 
+                if (!_context.Branch.Any(branch => branch.Id == dataUser.BranchId))
+                {
+                    ViewBag.Branches = _context.Branch.ToList();
+                    return View(userViewModel);
+                }
+
                 var result = await _userManager.CreateAsync(dataUser, userViewModel.Password);
 
                 if (result.Succeeded)
@@ -203,6 +209,12 @@ namespace Bumbo.Web.Controllers
 
                 UserViewModel.Roles role = userViewModel.Role;
 
+                if (!_context.Branch.Any(branch => branch.Id == dataUser.BranchId))
+                {
+                    ViewBag.Branches = _context.Branch.ToList();
+                    return View(userViewModel);
+                }
+                
                 try
                 {
                     var result = await _userManager.UpdateAsync(dataUser);
