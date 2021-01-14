@@ -54,7 +54,7 @@ namespace Bumbo.Web.Controllers
             if (userRole == "Manager") role = UserViewModel.Roles.Manager;
             else role = UserViewModel.Roles.User;
 
-            UserViewModel userViewModel = new Models.UserViewModel
+            UserViewModel userViewModel = new UserViewModel
             {
                 Id = dataUser.Id,
                 Bid = dataUser.Bid,

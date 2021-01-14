@@ -22,7 +22,7 @@ namespace Bumbo.Data.Repository
         {
             using (var ctx = new ContextFactory().CreateDbContext(null))
             {
-                return ctx.Prognoses.Where(n => n.Date == date.Date).Where(n => n.BranchId == branchId).FirstOrDefault();
+                return ctx.Prognoses.Where(n => n.Date == date.Date).FirstOrDefault(n => n.BranchId == branchId);
             }
         }
 
