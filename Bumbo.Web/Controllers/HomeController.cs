@@ -184,6 +184,11 @@ namespace Bumbo.Web.Controllers
 
         public async Task<ActionResult> SubmitHours()
         {
+            if (User.IsInRole("Manager"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             var user = await _userManager.GetUserAsync(User);
 
             PlannedWorktime plannedWorktime = _context.PlannedWorktime.FirstOrDefault(pwt => pwt.UserId == user.Id && pwt.WorkDate == DateTime.Today);
