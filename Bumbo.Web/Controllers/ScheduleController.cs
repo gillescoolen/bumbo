@@ -94,7 +94,7 @@ namespace Bumbo.Web.Controllers
                 UserName = user.GetFullName(),
                 UserId = userId,
                 Errors = _caoService.WorkWeekValidate(user, plannedWorktimes.ToArray())
-        };
+            };
 
             for (int i = 0; i < 7; i++)
             {
@@ -142,13 +142,13 @@ namespace Bumbo.Web.Controllers
                 }
 
                 if (
-                    plannedWorktime.Start.Hours < 8 ||
-                    plannedWorktime.Finish.Hours > 19 ||
-                    plannedWorktime.Start.Hours > 19 ||
-                    plannedWorktime.Finish.Hours < 8
+                    plannedWorktime.Start.Hours < 6 ||
+                    plannedWorktime.Finish.Hours > 23 ||
+                    plannedWorktime.Start.Hours > 23 ||
+                    plannedWorktime.Finish.Hours < 6
                 )
                 {
-                    model.Errors.Add($"{plannedWorktime.WorkDate.ToShortDateString()} - Tijden mogen niet buiten 08:00 en 19:00 vallen!");
+                    model.Errors.Add($"{plannedWorktime.WorkDate.ToShortDateString()} - Tijden mogen niet buiten 06:00 en 23:00 vallen!");
                     break;
                 }              
 
