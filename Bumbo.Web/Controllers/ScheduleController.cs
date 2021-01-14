@@ -105,6 +105,8 @@ namespace Bumbo.Web.Controllers
         [Authorize(Roles = "Manager")]
         public async Task<IActionResult> Store(ScheduleCreateViewModel model)
         {
+            var errors = new List<string>();
+
             foreach (var plannedWorktime in model.PlannedWorktimes)
             {
                 var exists = await _context.PlannedWorktime
@@ -114,7 +116,11 @@ namespace Bumbo.Web.Controllers
                     .AnyAsync();
 
                 if (exists) _context.PlannedWorktime.Update(plannedWorktime);
-                else await _context.PlannedWorktime.AddAsync(plannedWorktime);
+                else
+                {
+                    
+                    await _context.PlannedWorktime.AddAsync(plannedWorktime);
+                }
             }
 
             await _context.SaveChangesAsync();

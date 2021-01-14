@@ -7,11 +7,11 @@ using System.Linq;
 
 namespace Bumbo.Data.Services
 {
-    public class CAOService
+    public class CAOService : ICAOService
     {
         private readonly ApplicationDbContext _context;
 
-        public CAOService (ApplicationDbContext context)
+        public CAOService(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -22,10 +22,10 @@ namespace Bumbo.Data.Services
         /// <param name="start">Starttime</param>
         /// <param name="finish">Finishtime</param>
         /// <returns>A list of the surcharges per half hour. Note: The surcharge is for the next half hour worked</returns>
-        public Dictionary<double,int> WorkdaySurcharge(DateTime start, DateTime finish)
+        public Dictionary<double, int> WorkdaySurcharge(DateTime start, DateTime finish)
         {
             int workedHours = finish.Subtract(start).Hours;
-            Dictionary<double, int> halfHourWithSubcharge = new Dictionary<double,int>(); //tijd in double met minuten als /60 - charge in procent
+            Dictionary<double, int> halfHourWithSubcharge = new Dictionary<double, int>(); //tijd in double met minuten als /60 - charge in procent
             double startHour = double.Parse(start.ToString("HH")) + (double.Parse(start.ToString("mm")) / 60);
             double finishHour = double.Parse(finish.ToString("HH")) + (double.Parse(finish.ToString("mm")) / 60);
 
@@ -33,21 +33,21 @@ namespace Bumbo.Data.Services
             if (!start.DayOfWeek.Equals(finish.DayOfWeek))
             {
                 throw new System.ArgumentException("Start and finish times are on different days");
-            } 
+            }
             else if (workedHours <= 0)
             {
                 throw new System.ArgumentException("Cannot have worked 0 hours or less");
             }
-            else if (start>finish || finish < start)
+            else if (start > finish || finish < start)
             {
                 throw new System.ArgumentException("Start time cannot be more than Finish Time, and vice versa");
             }
-            
+
             /// Determines subcharge per half hour worked
-            for (double i = startHour; i < finishHour; i=i+0.5)
+            for (double i = startHour; i < finishHour; i = i + 0.5)
             {
                 ///Holiday check
-                if (DateSystem.IsPublicHoliday(start,CountryCode.NL))
+                if (DateSystem.IsPublicHoliday(start, CountryCode.NL))
                 {
                     halfHourWithSubcharge.Add(i, 100);
                 }
@@ -70,7 +70,7 @@ namespace Bumbo.Data.Services
                 else if (i >= 0 && i <= 6.00)
                 {
                     halfHourWithSubcharge.Add(i, 50);
-                } 
+                }
                 else
                 {
                     halfHourWithSubcharge.Add(i, 0);
@@ -93,7 +93,7 @@ namespace Bumbo.Data.Services
             int userage = (int)((DateTime.Today - user.DateOfBirth).TotalDays / 365);
             if (userage == 16 || userage == 17)
             {
-                List<string> validationErrorsSixteenAndSeventeen = SixteenAndSeventeenNorms(user,plannedWorkWeek);
+                List<string> validationErrorsSixteenAndSeventeen = SixteenAndSeventeenNorms(user, plannedWorkWeek);
                 if (validationErrorsSixteenAndSeventeen != null)
                 {
                     foreach (var error in validationErrorsSixteenAndSeventeen)
@@ -101,22 +101,22 @@ namespace Bumbo.Data.Services
                         validationErrors.Add(error);
                     }
                 }
-            } 
+            }
             else if (userage < 16)
             {
                 List<string> validationErrorsUnder16 = UnderSixteenNorms(user, plannedWorkWeek);
-                if (validationErrorsUnder16!=null)
+                if (validationErrorsUnder16 != null)
                 {
                     foreach (var error in validationErrorsUnder16)
                     {
-                       validationErrors.Add(error);
+                        validationErrors.Add(error);
                     }
                 }
             }
             return validationErrors;
         }
 
-        private List<string> StandardNorms(PlannedWorktime[] plannedWorkWeek)
+        public List<string> StandardNorms(PlannedWorktime[] plannedWorkWeek)
         {
             List<string> validationErrors = new List<string>();
             double totalMinutesWorked = 0;
@@ -127,7 +127,7 @@ namespace Bumbo.Data.Services
                 if (workedMinutes > (12 * 60))
                 {
                     validationErrors.Add("Medewerker: " + plannedWorkWeek[0].User.GetFullName() + " heeft op :" + workDay.WorkDate + " meer dan 12 uur gepland staan");
-                } 
+                }
                 else
                 {
                     totalMinutesWorked = totalMinutesWorked + workedMinutes;
@@ -142,7 +142,7 @@ namespace Bumbo.Data.Services
             return validationErrors;
         }
 
-        private List<string> SixteenAndSeventeenNorms(User user, PlannedWorktime[] plannedWorkWeek)
+        public List<string> SixteenAndSeventeenNorms(User user, PlannedWorktime[] plannedWorkWeek)
         {
             List<string> validationErrors = new List<string>();
             foreach (PlannedWorktime workDay in plannedWorkWeek)
@@ -155,21 +155,21 @@ namespace Bumbo.Data.Services
                 }
             }
 
-            if (LessThanFortyHoursAverageInMonth(user,plannedWorkWeek[0].WorkDate.Month)!=null)
+            if (LessThanFortyHoursAverageInMonth(user, plannedWorkWeek[0].WorkDate.Month) != null)
             {
                 validationErrors.Add(LessThanFortyHoursAverageInMonth(user, plannedWorkWeek[0].WorkDate.Month));
             }
             return validationErrors;
         }
 
-        private string LessThanFortyHoursAverageInMonth(User user, int month)
+        public string LessThanFortyHoursAverageInMonth(User user, int month)
         {
             double totalHoursInMonth = 0;
             List<PlannedWorktime> worktimes = _context.PlannedWorktime.Where(u => u.UserId == user.Id && u.WorkDate.Month == month).ToList();
             foreach (var time in worktimes)
             {
                 int? schoolhoursworked = _context.AvailableWorktime.Where(at => at.UserId == user.Id && at.WorkDate == time.WorkDate).Select(at => at.SchoolHoursWorked).FirstOrDefault();
-                if (schoolhoursworked==null)
+                if (schoolhoursworked == null)
                 {
                     schoolhoursworked = 0;
                 }
@@ -183,7 +183,7 @@ namespace Bumbo.Data.Services
             return null;
         }
 
-        private List<string> UnderSixteenNorms(User user, PlannedWorktime[] plannedWorkWeek)
+        public List<string> UnderSixteenNorms(User user, PlannedWorktime[] plannedWorkWeek)
         {
             int workedDays = 0;
             int workedHoursThisWeek = 0;
@@ -216,12 +216,12 @@ namespace Bumbo.Data.Services
 
                 workedHoursThisWeek = workedHoursThisWeek + workedHours;
             }
-            
+
             if (hadSchool)
             {
                 if (workedHoursThisWeek > 12)
                 {
-                     validationErrors.Add("Minderjarige onder 16 jaar oud: " + user.GetFullName() + " is meer dan 12 uur ingepland in zijn/haar schoolweek.");
+                    validationErrors.Add("Minderjarige onder 16 jaar oud: " + user.GetFullName() + " is meer dan 12 uur ingepland in zijn/haar schoolweek.");
                 }
             }
             else
