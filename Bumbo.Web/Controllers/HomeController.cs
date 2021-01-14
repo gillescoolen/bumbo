@@ -31,7 +31,7 @@ namespace Bumbo.Web.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             List<Message> messages = GetMessages();
 

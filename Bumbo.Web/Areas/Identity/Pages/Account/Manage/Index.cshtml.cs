@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Bumbo.Data;
+using Bumbo.Data.Models;
 
 namespace Bumbo.Web.Areas.Identity.Pages.Account.Manage
 {
@@ -38,7 +38,7 @@ namespace Bumbo.Web.Areas.Identity.Pages.Account.Manage
             public string PhoneNumber { get; set; }
         }
 
-        private async Task LoadAsync(User user)
+        private void Load(User user)
         {
             var userName = user.UserName;
             var phoneNumber = user.PhoneNumber.ToString();
@@ -59,7 +59,7 @@ namespace Bumbo.Web.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Kon gebruiker met ID '{_userManager.GetUserId(User)}' niet laden.");
             }
 
-            await LoadAsync(user);
+            Load(user);
             return Page();
         }
 
@@ -73,7 +73,7 @@ namespace Bumbo.Web.Areas.Identity.Pages.Account.Manage
 
             if (!ModelState.IsValid)
             {
-                await LoadAsync(user);
+                Load(user);
                 return Page();
             }
 

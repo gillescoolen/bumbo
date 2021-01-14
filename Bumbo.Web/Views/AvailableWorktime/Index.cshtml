@@ -14,29 +14,29 @@
         <tr>
             <th>
                 <a asp-controller="AvailableWorktime" asp-action="Werkdag">
-                    <button class="btn, btn-primary">Werkdag</button>
+                    <button class="btn btn-primary">Werkdag</button>
                 </a>
             </th>
             <th>
                 <a asp-controller="AvailableWorktime" asp-action="Starttijd">
-                    <button class="btn, btn-primary">Starttijd</button>
+                    <button class="btn btn-primary">Starttijd</button>
                 </a>
             </th>
             <th>
                 <a asp-controller="AvailableWorktime" asp-action="Eindtijd">
-                    <button class="btn, btn-primary">Eindtijd</button>
+                    <button class="btn btn-primary">Eindtijd</button>
                 </a>
             </th>
             <th>
                 <a asp-controller="AvailableWorktime" asp-action="Medewerker">
-                    <button class="btn, btn-primary">Medewerker</button>
+                    <button class="btn btn-primary">Medewerker</button>
                 </a>
             </th>
             @if (ViewBag.UserAge < 18)
             {
                 <th>
                     <a asp-controller="AvailableWorktime" asp-action="Schooluren">
-                        <button class="btn, btn-primary">Schooluren</button>
+                        <button class="btn btn-primary">Schooluren</button>
                     </a>
                 </th>
             }

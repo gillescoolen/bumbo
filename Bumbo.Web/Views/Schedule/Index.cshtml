@@ -1,60 +1,72 @@
-﻿<div class="p-5">
-    <h2 class="mb-4">Schedule</h2>
-    <div class="card">
-        <div class="card-body p-0">
-            <div id="calendar"></div>
-        </div>
-    </div>
-</div>
+﻿@model Bumbo.Web.Models.ScheduleViewModel
 
-<div id="event" class="modal modal-top fade calendar-modal">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body">
-                <h4 class="modal-title" id="event-title"></h4>
-                <div id="event-date"></div>
-                <div id="event-start"></div>
-                <div id="event-end"></div>
-                <hr/>
-                <div id="event-description"></div>
+@{
+    ViewData["Title"] = "Rooster";
+}
+
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <h4>Rooster</h4>
+        <form style="width: 512px" asp-action="Index" class="input-group">
+            <div class="input-group-prepend">
+                <label id="userSelect" class="input-group-text">Rooster voor:</label>
             </div>
-
-            <div class="modal-footer">
-
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
+            <select onchange="this.form.submit()" asp-for="@Model.UserId" class="form-control" >
+                @foreach (var user in Model.Users)
+                {
+                    <option value="@user.Id">@user.GetFullName()</option>
+                }
+            </select>
+        </form>
     </div>
 </div>
 
-<div id="event-add" class="modal modal-top fade calendar-modal">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form id="add-event">
-                <div class="modal-body">
-                    <h4>Add Event</h4>
-                    <div class="form-group">
-                        <label>Title</label>
-                        <input id="new-title" type="text" class="form-control" name="title">
-                    </div>
-                    <div class="form-group">
-                        <label>Start</label>
-                        <input id="new-start" type='datetime-local' class="datetimepicker form-control" name="date">
-                    </div>
-                    <div class="form-group">
-                        <label>End</label>
-                        <input id="new-end" type='datetime-local' class="datetimepicker form-control" name="date">
-                    </div>
-                    <div class="form-group">
-                        <label>Description</label>
-                        <textarea id="new-description" class="form-control" name="description"></textarea>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Save</button>
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </form>
-        </div>
+<div class="row">
+    <div class="col-12">
+        <div id="calendar"></div>
     </div>
 </div>
+
+<script>
+const url = new URL(`${window.location.protocol}//${window.location.host}/api/schedule`);
+const id = @Model.UserId;
+
+document.addEventListener('DOMContentLoaded', function () {
+    const calendarElement = document.getElementById('calendar');
+    const eventForm = document.getElementById('add-event');
+
+    url.searchParams.append('id', id);
+
+    $("#menu-toggle").click(function (e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+
+
+    const calendar = new FullCalendar.Calendar(calendarElement, {
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: ''
+        },
+
+        locale: 'nl',
+        buttonText: {
+            today: 'vandaag',
+        },
+
+        initialView: 'timeGridWeek',
+        initialDate: new Date().toISOString().split('T')[0],
+
+        nowIndicator: true,
+        navLinks: true,
+        editable: false,
+
+        events: {
+            url,
+        }
+    });
+
+    calendar.render();
+});
+</script>

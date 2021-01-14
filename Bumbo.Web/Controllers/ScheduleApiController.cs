@@ -1,3 +1,4 @@
+#nullable enable
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -7,6 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Bumbo.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System;
+using Bumbo.Web.Models;
 
 namespace Bumbo.Web.Controllers
 {
@@ -25,10 +29,33 @@ namespace Bumbo.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PlannedWorktime>>> GetPlannedWorkTime()
+        public async Task<ActionResult<List<ScheduleResponseViewModel>>> GetPlannedWorkTime(DateTime start, DateTime end, int? id)
         {
-            var user = await _userManager.GetUserAsync(User);
-            return await _context.PlannedWorktime.Include(worktime => worktime.User).Where(worktime => worktime.User.BranchId == user.BranchId).ToListAsync();
+            if (id == null || id == 0)
+            {
+                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                id = user.Id;
+            }
+
+            var plannedWorktimes = await _context.PlannedWorktime
+                .Where(p => p.WorkDate >= start)
+                .Where(p => p.WorkDate <= end )
+                .Where(p => p.UserId == id)
+                .ToListAsync();
+
+            var times = new List<ScheduleResponseViewModel>();
+
+            foreach (var time in plannedWorktimes)
+            {
+                times.Add(new ScheduleResponseViewModel
+                {
+                    Title = $"Werken - {time.Section}",
+                    Start = time.WorkDate.AddHours(time.Start.TotalHours),
+                    End = time.WorkDate.AddHours(time.Finish.TotalHours)
+                });
+            }
+
+            return times;
         }
     }
 }
