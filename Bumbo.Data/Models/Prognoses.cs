@@ -28,7 +28,15 @@ namespace Bumbo.Data.Models
         {
             WeatherDescription = "Default";
         }
-        
+
+
+        public string GetDayName()
+        {
+            var culture = new System.Globalization.CultureInfo("nl-NL");
+
+            return culture.TextInfo.ToTitleCase(culture.DateTimeFormat.GetDayName(Date.DayOfWeek)); ;
+        }
+
     }
 
 }

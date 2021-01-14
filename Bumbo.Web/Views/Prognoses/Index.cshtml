@@ -69,7 +69,7 @@
                         {
                             <tr>
                                 <td>
-                                    @prog.Date.ToShortDateString()
+                                    @prog.GetDayName()
                                 </td>
                                 <td>
                                     @prog.AmountOfCustomers
@@ -84,12 +84,12 @@
                                 <form asp-action="Edit" method="post" class="text-right d-inline-block">
                                     <input type="hidden" name="start" value="@ViewBag.Start">
                                     <input type="hidden" name="branchId" value="@ViewBag.BranchId">
-                                    <button type="submit" class="btn btn-primary d-inline-block">Bewerk</button>
+                                    <button type="submit" class="btn btn-primary d-inline-block">Bewerken</button>
                                 </form>
                                 <form asp-action="Delete" method="post" class="text-right d-inline-block verify-delete">
                                     <input type="hidden" name="start" value="@ViewBag.Start">
                                     <input type="hidden" name="branchId" value="@ViewBag.BranchId" />
-                                    <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt mr-2"></i>Verwijder</button>
+                                    <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt mr-2"></i>Verwijderen</button>
                                 </form>
                             </td>
                         </tr>
