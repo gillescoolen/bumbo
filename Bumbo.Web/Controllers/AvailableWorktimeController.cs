@@ -10,6 +10,7 @@ using Bumbo.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Bumbo.Web.Models;
 using System.Web;
+using System.Globalization;
 
 namespace Bumbo.Web.Controllers
 {
@@ -23,25 +24,54 @@ namespace Bumbo.Web.Controllers
             _userManager = user;
         }
 
-        public async Task<IActionResult> Index()
+        [HttpGet("AvailableWorktime/{order}")]
+        public async Task<IActionResult> Index(string? order)
         {
             var user = _userManager.GetUserAsync(User).Result;
             ViewBag.UserAge = (int)((DateTime.Today - user.DateOfBirth).TotalDays / 365);
-            //Als rol = niet bevoegd alle users te zien => ziet alleen eigen available worktime
-            if (User.IsInRole("Admin"))
+            CultureInfo dutchculture = new CultureInfo("nl-NL");
+            ViewBag.cultureinfo = dutchculture;
+            ViewBag.order = order;
+
+            var applicationDbContext = _context.AvailableWorktime.Include(a => a.User).Where(a => a.UserId == user.Id && a.User.BranchId == user.BranchId); ;
+
+            if (User.IsInRole("Manager"))
             {
-                var applicationDbContext = _context.AvailableWorktime.Include(a => a.User);
-                return View(await applicationDbContext.ToListAsync());
+                applicationDbContext = _context.AvailableWorktime.Include(a => a.User);
             }
-            else
+
+            if (order != null && order.Equals("Standard"))
             {
-                var applicationDbContext = _context.AvailableWorktime.Include(a => a.User).Where(a => a.UserId == user.Id);
-                return View(await applicationDbContext.ToListAsync());
+                applicationDbContext = applicationDbContext.OrderBy(a => a.UserId);
             }
+            else if (order.Equals("Werkdag"))
+            {
+                applicationDbContext = applicationDbContext.OrderBy(a => a.WorkDate);
+            }
+            else if (order.Equals("Starttijd"))
+            {
+                applicationDbContext = applicationDbContext.OrderBy(a => a.Start);
+            }
+            else if (order.Equals("Eindtijd"))
+            {
+                applicationDbContext = applicationDbContext.OrderBy(a => a.Finish);
+            }
+            else if (order.Equals("Medewerker"))
+            {
+                applicationDbContext = applicationDbContext.OrderBy(a => a.User.FirstName);
+            }
+            else if (order.Equals("Schooluren"))
+            {
+                applicationDbContext = applicationDbContext.OrderBy(a => a.SchoolHoursWorked);
+            }
+
+            return View(await applicationDbContext.ToListAsync());
         }
 
         public IActionResult Create()
         {
+            CultureInfo dutchculture = new CultureInfo("nl-NL");
+            ViewBag.cultureinfo = dutchculture;
             var user = _userManager.GetUserAsync(User).Result;
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Bid");
             DateTime maxDate = DateTime.Today;
@@ -87,7 +117,7 @@ namespace Bumbo.Web.Controllers
             {
                 if (model.Start[index].CompareTo(model.Finish[index]) > 0)
                 {
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Standard", "AvailableWorktime");
                 }
             }
 
@@ -107,12 +137,11 @@ namespace Bumbo.Web.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Standard", "AvailableWorktime");
         }
 
-        //Werkt nog niet ivm workdate
-        [HttpGet("Edit/{UserId}/{WorkDate}")]
-        public async Task<IActionResult> Edit(int? UserId, string? WorkDate)
+        [HttpGet("AvailableWorktime/Edit/{UserId}/{WorkDate}")]
+        public async Task<IActionResult> Edit(int? UserId, string WorkDate)
         {
 
             if (UserId == null || WorkDate == null)
@@ -125,7 +154,7 @@ namespace Bumbo.Web.Controllers
 
             if (date.Subtract(DateTime.Today.AddDays(7)).Days < 0)
             {
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Standard", "AvailableWorktime");
             }
 
             var user = _userManager.GetUserAsync(User).Result;
@@ -152,15 +181,15 @@ namespace Bumbo.Web.Controllers
 
             if (availableWorktime.WorkDate.Subtract(DateTime.Today.AddDays(7)).Days < 0)
             {
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Standard", "AvailableWorktime");
             }
 
             if (availableWorktime.Start.CompareTo(availableWorktime.Finish) > 0)
             {
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Standard", "AvailableWorktime");
             }
 
-            var toBeUpdated = _context.AvailableWorktime.Where(a => a.UserId == userId && a.WorkDate == availableWorktime.WorkDate).FirstOrDefault();
+            AvailableWorktime toBeUpdated = _context.AvailableWorktime.Where(a => a.UserId == userId && a.WorkDate == availableWorktime.WorkDate).FirstOrDefault();
             try
             {
                 if (ModelState.IsValid)
@@ -183,10 +212,10 @@ namespace Bumbo.Web.Controllers
                     throw;
                 }
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Standard", "AvailableWorktime");
         }
 
-        [HttpGet("Delete/{UserId}/{WorkDate}")]
+        [HttpGet("AvailableWorktime/Delete/{UserId}/{WorkDate}")]
         public async Task<IActionResult> Delete(int? UserId, string? WorkDate)
         {
             if (UserId == null || WorkDate == null)
@@ -208,14 +237,18 @@ namespace Bumbo.Web.Controllers
             return View(availableWorktime);
         }
 
-        [HttpGet("DeleteConfirmed/{UserId}/{WorkDate}")]
+        [HttpGet("AvailableWorktime/DeleteConfirmed/{UserId}/{WorkDate}")]
         public async Task<IActionResult> DeleteConfirmed(int UserId, string WorkDate)
         {
             DateTime workDate = DateTime.Parse(HttpUtility.UrlDecode(WorkDate));
+            if (workDate.Subtract(DateTime.Today.AddDays(7)).Days < 0)
+            {
+                return RedirectToAction(nameof(Index));
+            }
             var availableWorktime = await _context.AvailableWorktime.Where(at => at.UserId == UserId && at.WorkDate == workDate).FirstOrDefaultAsync();
             _context.AvailableWorktime.Remove(availableWorktime);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Standard", "AvailableWorktime");
         }
 
         private bool AvailableWorktimeExists(DateTime id)

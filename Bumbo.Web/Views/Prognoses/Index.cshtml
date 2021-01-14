@@ -19,19 +19,20 @@
             <tbody>
                 @if (ViewBag.Weeks != null)
                 {
-                    int i = 1;
+                    int i = 1; int y = 0;
                     @foreach (var week in ViewBag.Weeks)
                     {
-                        <tr>
+                        <tr class=" @(ViewBag.HasPrognoses[y] == false ? "table-danger" : "")">
                             <td>
-                                <form asp-action="IndexPrognoses" method="post" class="text-right d-inline-block">
+                                <form asp-action="IndexPrognoses" method="post" class="text-right d-inline-block position-relative">
                                     <input type="hidden" name="week" value="@i">
                                     <label class="small mb-0">@week</label>
-                                    <button type="submit" class="btn pt-0"><i class="bi bi-arrow-right"></i>Weeknummer: @i</button>
+                                    <label class="mb-0">Weeknummer: @i</label>
+                                    <button style="top:0" type="submit" class="btn pt-0 position-absolute d-block w-100 h-100"></button>
                                 </form>
                             </td>
                         </tr>
-                        i++;
+                        i++; y++;
                     }
                 }
             </tbody>
@@ -40,7 +41,7 @@
     </div>
 
     <div class="col-8">
-        <table class="table">
+        <table class="table table-hover">
             <thead>
                 <tr>
                     <th>
@@ -54,13 +55,13 @@
                     @if (ViewBag.Prognoses.Count > 0)
                     {
                         <tr>
-                            <th>
+                            <th class="border-top-0">
                                 Dag
                             </th>
-                            <th>
+                            <th class="border-top-0">
                                 Aantal bezoekers
                             </th>
-                            <th>
+                            <th class="border-top-0">
                                 Hoeveelheid vracht
                             </th>
                         </tr>
@@ -76,21 +77,23 @@
                                 <td>
                                     @prog.AmountOfFreight
                                 </td>
-                                <td>
-                                    <form asp-action="Edit" method="post" class="text-right d-inline-block">
-                                        <input type="hidden" name="date" value="@prog.Date">
-                                        <input type="hidden" name="branchId" value="@prog.BranchId">
-                                        <button type="submit" class="btn">Bewerk</button>
-                                    </form>
-                                    @Html.ActionLink("Details", "Details", new { @prog.Date, @prog.BranchId }) |
-
-                                </td>
                             </tr>
                         }
-                        <form asp-action="Delete" method="post" class="text-right d-inline-block verify-delete">
-                            <input type="hidden" name="prognoses" value="@ViewBag.Prognoses">
-                            <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt mr-2"></i>Verwijder</button>
-                        </form>
+                        <tr class="nohover">
+                            <td class="border-top-0">
+                                <form asp-action="Edit" method="post" class="text-right d-inline-block">
+                                    <input type="hidden" name="start" value="@ViewBag.Start">
+                                    <input type="hidden" name="branchId" value="@ViewBag.BranchId">
+                                    <button type="submit" class="btn btn-primary d-inline-block">Bewerk</button>
+                                </form>
+                                <form asp-action="Delete" method="post" class="text-right d-inline-block verify-delete">
+                                    <input type="hidden" name="start" value="@ViewBag.Start">
+                                    <input type="hidden" name="branchId" value="@ViewBag.BranchId" />
+                                    <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt mr-2"></i>Verwijder</button>
+                                </form>
+                            </td>
+                        </tr>
+
                     }
                     else
                     {
@@ -105,7 +108,14 @@
                         </tr>
                     }
                 }
-
+                else
+                {
+                    <tr>
+                        <td>
+                            <p>Klik op een week op de verwachting te bekijken</p>
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>

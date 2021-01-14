@@ -26,8 +26,9 @@ namespace Bumbo.Web.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var user = await _userManager.GetUserAsync(User);
             var jan1 = new DateTime(DateTime.Today.Year, 1, 1);
             var startOfFirstWeek = jan1.AddDays(1 - (int)(jan1.DayOfWeek));
             var weeks =
@@ -50,6 +51,9 @@ namespace Bumbo.Web.Controllers
                         Tot = x.weekFinish.ToShortDateString(),
                         //WeekNummer = i + 1
                     });
+
+
+            ViewBag.HasPrognoses = HasPrognoses(weeks, user.BranchId);
 
             ViewBag.Weeks = weeks;
 
@@ -88,19 +92,22 @@ namespace Bumbo.Web.Controllers
                         //WeekNummer = i + 1
                     });
 
+            var user = await _userManager.GetUserAsync(User);
+            var branchId = user.BranchId;
+
+            ViewBag.BranchId = branchId;
+
             ViewBag.Weeks = weeks;
-            ViewBag.Prognoses = repo.GetAll(start, end);
+            ViewBag.Prognoses = repo.GetAll(start, end, branchId);
             ViewBag.Start = start;
             ViewBag.End = end;
 
-            var user = await _userManager.GetUserAsync(User);
-            ViewBag.BranchId = user.BranchId;
-
+            ViewBag.HasPrognoses = HasPrognoses(weeks, user.BranchId);
 
             return View("Index");
         }
 
-        public static DateTime FirstDateOfWeek(int year, int weekOfYear, CultureInfo ci)
+        private static DateTime FirstDateOfWeek(int year, int weekOfYear, CultureInfo ci)
         {
             DateTime jan1 = new DateTime(year, 1, 1);
             int daysOffset = (int)ci.DateTimeFormat.FirstDayOfWeek - (int)jan1.DayOfWeek;
@@ -111,12 +118,6 @@ namespace Bumbo.Web.Controllers
                 weekOfYear -= 1;
             }
             return firstWeekDay.AddDays(weekOfYear * 7);
-        }
-
-        public IActionResult Details(DateTime date, int branchId)
-        {
-            var model = repo.Get(date.Date, branchId);
-            return View(model);
         }
 
         [HttpPost]
@@ -134,7 +135,6 @@ namespace Bumbo.Web.Controllers
                         BranchId = branchId,
                         LastWeekVisitors = repo.Get(prognoseDate.AddDays(-7), branchId)?.AmountOfCustomers ?? 0,
                         LastYearVisitors = repo.Get(prognoseDate.AddYears(-1), branchId)?.AmountOfCustomers ?? 0
-
                     }
                 );
 
@@ -188,44 +188,121 @@ namespace Bumbo.Web.Controllers
                     return View("Create", model);
                 }
             }
-            
+
 
             return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
-        public IActionResult Edit(DateTime date, int branchId)
+        public IActionResult Edit(DateTime start, int branchId)
         {
-            if (TempData["Error"] != null) ViewBag.Error = TempData["Error"].ToString();
+            var prognoses = new List<PrognoseViewModel>();
 
-            var model = repo.Get(date.Date, branchId);
+            for (int i = 0; i < 7; i++)
+            {
+                var prognoseDate = start.AddDays(i);
+                var prog = repo.Get(prognoseDate, branchId);
+                if (prog != null)
+                {
+                    prognoses.Add(
+                    new PrognoseViewModel()
+                    {
+                        Date = prog.Date,
+                        BranchId = branchId,
+                        AmountOfCustomers = prog.AmountOfCustomers,
+                        AmountOfFreight = prog.AmountOfFreight,
+                        WeatherDescription = prog.WeatherDescription,
+                        LastWeekVisitors = repo.Get(prognoseDate.AddDays(-7), branchId)?.AmountOfCustomers ?? 0,
+                        LastYearVisitors = repo.Get(prognoseDate.AddYears(-1), branchId)?.AmountOfCustomers ?? 0
 
-            return View("Edit", model);
+                    });
+
+                    //Handle holidays
+                    if (DateSystem.IsPublicHoliday(prognoses[i].Date, CountryCode.NL))
+                    {
+                        var holidays = DateSystem.GetPublicHoliday(prognoses[i].Date, prognoses[i].Date, CountryCode.NL);
+                        foreach (var publicHoliday in holidays)
+                        {
+                            prognoses[i].Holiday = publicHoliday.LocalName;
+                        }
+                    }
+                }
+            }
+
+            PrognosesViewModel viewModel = new PrognosesViewModel()
+            {
+                Prognoses = prognoses
+            };
+            ViewBag.Branches = _context.Branch.ToList();
+            return View(viewModel);
         }
 
         [HttpPost]
-        public IActionResult Update(DateTime Date, Prognoses updatedProg, int BranchId)
+        public async Task<IActionResult> Update(PrognosesViewModel model)
         {
-            if (Date.Date != updatedProg.Date) return NotFound();
+            var user = await _userManager.GetUserAsync(User);
 
-            if (updatedProg.AmountOfCustomers == 0)
+            foreach (var prognoseViewModel in model.Prognoses)
             {
-                TempData["Error"] = "Veld mag niet leeg zijn";
-                return RedirectToAction("Edit", new { Date, BranchId });
+                if (prognoseViewModel.Date != null && prognoseViewModel.BranchId != 0)
+                {
+                    if (prognoseViewModel.BranchId != user.BranchId) return Unauthorized();
+
+                    Prognoses prognose = new Prognoses
+                    {
+                        Date = prognoseViewModel.Date,
+                        AmountOfCustomers = prognoseViewModel.AmountOfCustomers,
+                        AmountOfFreight = prognoseViewModel.AmountOfFreight,
+                        BranchId = prognoseViewModel.BranchId,
+                        WeatherDescription = prognoseViewModel.WeatherDescription,
+                        Branch = prognoseViewModel.Branch
+                    };
+
+                    if (!repo.Update(prognose)) return View("Edit", model);
+                }
+                else
+                {
+                    return View("Edit", model);
+                }
             }
 
-            repo.Update(updatedProg);
-            return RedirectToAction("Index");
+
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
-        public IActionResult Delete(DateTime date, int branchId)
+        public IActionResult Delete(DateTime start, int branchId)
         {
-            if (repo.Get(date.Date, branchId) != null)
+            for (int i = 0; i < 7; i++)
             {
-                repo.Delete(date.Date, branchId);
+                var prognoseDate = start.AddDays(i);
+                if (repo.Get(prognoseDate, branchId) != null)
+                    repo.Delete(prognoseDate, branchId);
             }
+
             return RedirectToAction("Index");
+        }
+
+        private List<bool> HasPrognoses(IEnumerable<object> weeks, int branchId)
+        {
+            List<bool> b = new List<bool>();
+            var weekNr = 1;
+
+            for (int i = 0; i < weeks.Count(); i++)
+            {
+                DateTime start = FirstDateOfWeek(DateTime.Now.Year, weekNr, CultureInfo.CurrentCulture);
+                DateTime end = start.AddDays(6);
+
+                if (repo.GetAll(start, end, branchId).Count() > 0)
+                    b.Add(true);
+                else
+                    b.Add(false);
+
+                weekNr++;
+            }
+
+            return b;
+
         }
     }
 }
