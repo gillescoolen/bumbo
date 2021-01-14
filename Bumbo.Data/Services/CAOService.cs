@@ -1,19 +1,17 @@
 ﻿using Bumbo.Data;
 using Bumbo.Data.Models;
-using Microsoft.AspNetCore.Identity;
 using Nager.Date;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
-namespace Bumbo.Web.Controllers
+namespace Bumbo.Data.Services
 {
-    public class CAO
+    public class CAOService
     {
         private readonly ApplicationDbContext _context;
 
-        public CAO (ApplicationDbContext context)
+        public CAOService (ApplicationDbContext context)
         {
             _context = context;
         }
@@ -238,6 +236,7 @@ namespace Bumbo.Web.Controllers
             {
                 validationErrors.Add("Minderjarige onder 16 jaar oud: " + user.GetFullName() + " is meer dan 5 dagen ingepland in deze week.");
             }
+
             return validationErrors;
         }
     }
