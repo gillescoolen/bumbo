@@ -71,6 +71,11 @@ namespace Bumbo.Web.Controllers
 
         public IActionResult Create()
         {
+            if (User.IsInRole("Manager"))
+            {
+                return RedirectToAction("Standard", "AvailableWorktime");
+            }
+
             CultureInfo dutchculture = new CultureInfo("nl-NL");
             ViewBag.cultureinfo = dutchculture;
             var user = _userManager.GetUserAsync(User).Result;
@@ -112,6 +117,11 @@ namespace Bumbo.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AvailableWorkTimeViewModel model)
         {
+            if (User.IsInRole("Manager"))
+            {
+                return RedirectToAction("Standard", "AvailableWorktime");
+            }
+
             var user = _userManager.GetUserAsync(User).Result;
 
             for (int index = 0; index < model.Start.Count; index++)
