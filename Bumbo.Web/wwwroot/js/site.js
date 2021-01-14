@@ -4,7 +4,7 @@ $(function () {
     $("input.weather").click(() => changeWorkingHours(this));
 
     const changeWorkingHours = (field) => {
-        const freight = $(field).closest('div.form-row').find('.freightAmount').val() /= 100;
+        const freight = $(field).closest('div.form-row').find('.freightAmount').val() / 100;
         const weather = $(field).closest('div.form-row').find('.weather:checked').val();
         let input = $(field).closest('div.form-row').find('#workingHours');
         
