@@ -24,10 +24,10 @@
                     {
                         <tr class=" @(ViewBag.HasPrognoses[y] == false ? "table-danger" : "")">
                             <td>
-                                <form asp-action="IndexPrognoses" method="post" class="text-right d-inline-block position-relative">
+                                <form asp-action="IndexPrognoses" method="post" class="text-right d-inline-block position-relative float-right">
                                     <input type="hidden" name="week" value="@i">
                                     <label class="small mb-0">@week</label>
-                                    <label class="mb-0">Weeknummer: @i</label>
+                                    <label class="mb-0 d-block" style="font-weight:600;">Weeknummer: @i</label>
                                     <button style="top:0" type="submit" class="btn pt-0 position-absolute d-block w-100 h-100"></button>
                                 </form>
                             </td>
@@ -41,7 +41,7 @@
     </div>
 
     <div class="col-8">
-        <table class="table table-hover">
+        <table class="table table-hover" style="table-layout:fixed;">
             <thead>
                 <tr>
                     <th>
@@ -55,6 +55,9 @@
                     @if (ViewBag.Prognoses.Count > 0)
                     {
                         <tr>
+                            <th class="border-top-0 w-50">
+                                Datum
+                            </th>
                             <th class="border-top-0">
                                 Dag
                             </th>
@@ -69,7 +72,10 @@
                         {
                             <tr>
                                 <td>
-                                    @prog.Date.DayOfWeek
+                                    @prog.Date.ToShortDateString()
+                                </td>
+                                <td>
+                                    @prog.GetDayName()
                                 </td>
                                 <td>
                                     @prog.AmountOfCustomers
@@ -80,16 +86,16 @@
                             </tr>
                         }
                         <tr class="nohover">
-                            <td class="border-top-0">
-                                <form asp-action="Edit" method="post" class="text-right d-inline-block">
+                            <td class="border-top-0" colspan="2">
+                                <form asp-action="Edit" method="post" class="text-right d-inline-block mr-2">
                                     <input type="hidden" name="start" value="@ViewBag.Start">
                                     <input type="hidden" name="branchId" value="@ViewBag.BranchId">
-                                    <button type="submit" class="btn btn-primary d-inline-block">Bewerk</button>
+                                    <button type="submit" class="btn btn-primary d-inline-block"><i class="fas fa-edit mr-2"></i>Bewerken</button>
                                 </form>
                                 <form asp-action="Delete" method="post" class="text-right d-inline-block verify-delete">
                                     <input type="hidden" name="start" value="@ViewBag.Start">
                                     <input type="hidden" name="branchId" value="@ViewBag.BranchId" />
-                                    <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt mr-2"></i>Verwijder</button>
+                                    <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt mr-2"></i>Verwijderen</button>
                                 </form>
                             </td>
                         </tr>
