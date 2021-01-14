@@ -189,12 +189,12 @@ namespace Bumbo.Web.Controllers
 
             if (availableWorktime.WorkDate.Subtract(DateTime.Today.AddDays(7)).Days < 0)
             {
-                return RedirectToAction("Standard", "AvailableWorktime");
+                return RedirectToAction("Edit", "AvailableWorktime", new {UserId= userId , WorkDate = availableWorktime.WorkDate.ToString()});
             }
 
             if (availableWorktime.Start.CompareTo(availableWorktime.Finish) > 0)
             {
-                return RedirectToAction("Standard", "AvailableWorktime");
+                return RedirectToAction("Edit", "AvailableWorktime", new { UserId = userId, WorkDate = availableWorktime.WorkDate.ToString() });
             }
 
             if (availableWorktime.SchoolHoursWorked < 0)
