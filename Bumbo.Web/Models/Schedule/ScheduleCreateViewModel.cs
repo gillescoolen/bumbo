@@ -5,7 +5,7 @@ using Bumbo.Data.Models;
 
 namespace Bumbo.Web.Models
 {
-    public class CreateViewModel
+    public class ScheduleCreateViewModel
     {
         [Required]
         public User User { get; set; }

@@ -1,18 +1,41 @@
-﻿<div class="p-5">
-    <h2 class="mb-4">Rooster</h2>
-    <div class="card">
-        <div class="card-body p-0">
-            <div id="calendar"></div>
-        </div>
+﻿@model Bumbo.Web.Models.ScheduleViewModel
+
+@{
+    ViewData["Title"] = "Rooster";
+}
+
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <h4>Rooster</h4>
+        <form style="width: 512px" asp-action="Index" class="input-group">
+            <div class="input-group-prepend">
+                <label id="userSelect" class="input-group-text">Rooster voor:</label>
+            </div>
+            <select onchange="this.form.submit()" asp-for="@Model.UserId" class="form-control" >
+                @foreach (var user in Model.Users)
+                {
+                    <option value="@user.Id">@user.GetFullName()</option>
+                }
+            </select>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div id="calendar"></div>
     </div>
 </div>
 
 <script>
-const url = 'api/schedule';
+const url = new URL(`${window.location.protocol}//${window.location.host}/api/schedule`);
+const id = @Model.UserId;
 
 document.addEventListener('DOMContentLoaded', function () {
     const calendarElement = document.getElementById('calendar');
     const eventForm = document.getElementById('add-event');
+
+    url.searchParams.append('id', id);
 
     $("#menu-toggle").click(function (e) {
         e.preventDefault();
@@ -25,6 +48,11 @@ document.addEventListener('DOMContentLoaded', function () {
             left: 'prev,next today',
             center: 'title',
             right: ''
+        },
+
+        locale: 'nl',
+        buttonText: {
+            today: 'vandaag',
         },
 
         initialView: 'timeGridWeek',

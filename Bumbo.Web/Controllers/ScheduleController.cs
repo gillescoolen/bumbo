@@ -24,19 +24,27 @@ namespace Bumbo.Web.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync(ScheduleViewModel model)
         {
-            return View();
+            var user = await _userManager.GetUserAsync(User);
+
+            var newModel = new ScheduleViewModel
+            {
+                UserId = model.UserId != 0 ? model.UserId : user.Id,
+                Users = User.IsInRole("Manager") ? await _context.Users.Where(u => u.BranchId == user.BranchId).ToListAsync() : null
+            };
+
+            return View(newModel);
         }
 
         [Authorize(Roles = "Manager")]
-        public async Task<IActionResult> Plan(PlanViewModel model)
+        public async Task<IActionResult> Plan(SchedulePlanViewModel model)
         {
             var user = await _userManager.GetUserAsync(User);
             var users = await _context.Users.Where(u => u.BranchId == user.BranchId).ToListAsync();
             var date = model.Date >= DateTime.Today ? model.Date : getBeginningOfWeek(DateTime.Today);
 
-            var newModel = new PlanViewModel
+            var newModel = new SchedulePlanViewModel
             {
                 Users = users,
                 Date = date
@@ -71,7 +79,7 @@ namespace Bumbo.Web.Controllers
                 .Where(p => p.Date <= endOfWeek)
                 .ToListAsync();
 
-            var model = new CreateViewModel
+            var model = new ScheduleCreateViewModel
             {
                 User = user,
                 AvailableWorkTimes = new List<AvailableWorktime>(),
@@ -95,7 +103,7 @@ namespace Bumbo.Web.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Manager")]
-        public async Task<IActionResult> Store(CreateViewModel model)
+        public async Task<IActionResult> Store(ScheduleCreateViewModel model)
         {
             foreach (var plannedWorktime in model.PlannedWorktimes)
             {
@@ -103,10 +111,10 @@ namespace Bumbo.Web.Controllers
                     .AsNoTracking()
                     .Where(p => p.UserId == plannedWorktime.UserId)
                     .Where(p => p.WorkDate == plannedWorktime.WorkDate)
-                    .FirstAsync();
+                    .AnyAsync();
 
-                if (exists == null) await _context.PlannedWorktime.AddAsync(plannedWorktime);
-                else  _context.PlannedWorktime.Update(plannedWorktime);
+                if (exists) _context.PlannedWorktime.Update(plannedWorktime);
+                else await _context.PlannedWorktime.AddAsync(plannedWorktime);
             }
 
             await _context.SaveChangesAsync();

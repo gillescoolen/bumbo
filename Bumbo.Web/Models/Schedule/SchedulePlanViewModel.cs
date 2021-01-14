@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Bumbo.Web.Models
 {
-    public class PlanViewModel
+    public class SchedulePlanViewModel
     {
         public IEnumerable<User> Users { get; set; }
         public DateTime Date { get; set; }

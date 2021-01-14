@@ -1,3 +1,4 @@
+#nullable enable
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -27,21 +28,25 @@ namespace Bumbo.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ApiViewModel>>> GetPlannedWorkTime(DateTime start, DateTime end)
+        public async Task<ActionResult<List<ScheduleResponseViewModel>>> GetPlannedWorkTime(DateTime start, DateTime end, int? id)
         {
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (id == null || id == 0)
+            {
+                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                id = user.Id;
+            }
 
             var plannedWorktimes = await _context.PlannedWorktime
                 .Where(p => p.WorkDate >= start)
                 .Where(p => p.WorkDate <= end )
-                .Where(p => p.UserId == user.Id)
+                .Where(p => p.UserId == id)
                 .ToListAsync();
 
-            var times = new List<ApiViewModel>();
+            var times = new List<ScheduleResponseViewModel>();
 
             foreach (var time in plannedWorktimes)
             {
-                times.Add(new ApiViewModel
+                times.Add(new ScheduleResponseViewModel
                 {
                     Title = $"Werken - {time.Section}",
                     Start = time.WorkDate.AddHours(time.Start.TotalHours),

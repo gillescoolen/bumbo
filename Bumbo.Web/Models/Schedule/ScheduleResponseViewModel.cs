@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Bumbo.Web.Models
 {
-    public class ApiViewModel
+    public class ScheduleResponseViewModel
     {
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
