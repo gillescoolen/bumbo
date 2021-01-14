@@ -24,10 +24,10 @@
                     {
                         <tr class=" @(ViewBag.HasPrognoses[y] == false ? "table-danger" : "")">
                             <td>
-                                <form asp-action="IndexPrognoses" method="post" class="text-right d-inline-block position-relative">
+                                <form asp-action="IndexPrognoses" method="post" class="text-right d-inline-block position-relative float-right">
                                     <input type="hidden" name="week" value="@i">
                                     <label class="small mb-0">@week</label>
-                                    <label class="mb-0">Weeknummer: @i</label>
+                                    <label class="mb-0 d-block">Weeknummer: @i</label>
                                     <button style="top:0" type="submit" class="btn pt-0 position-absolute d-block w-100 h-100"></button>
                                 </form>
                             </td>
@@ -56,7 +56,7 @@
                     {
                         <tr>
                             <th class="border-top-0">
-                                Dag
+                                Datum
                             </th>
                             <th class="border-top-0">
                                 Aantal bezoekers
@@ -69,7 +69,7 @@
                         {
                             <tr>
                                 <td>
-                                    @prog.Date.DayOfWeek
+                                    @prog.Date.ToShortDateString()
                                 </td>
                                 <td>
                                     @prog.AmountOfCustomers
