@@ -1,11 +1,12 @@
+// @ts-nocheck
 $(function () {
     $("input.customerAmount").focusout(() => changeWorkingHours(this));
     $("input.freightAmount").focusout(() => changeWorkingHours(this));
     $("input.weather").click(() => changeWorkingHours(this));
 
     const changeWorkingHours = (field) => {
-        const freight = $(field).closest('div.form-row').find('.freightAmount').val() / 100;
-        const weather = $(field).closest('div.form-row').find('.weather:checked').val();
+        let freight = $(field).closest('div.form-row').find('.freightAmount').val() / 100;
+        let weather = $(field).closest('div.form-row').find('.weather:checked').val();
         let input = $(field).closest('div.form-row').find('#workingHours');
         
         let customers = $(field).closest('div.form-row').find('.customerAmount').val();
@@ -34,5 +35,4 @@ $(function () {
 		
         input.val(estimated);
     }
-
 });
