@@ -1,8 +1,8 @@
 // @ts-nocheck
 $(function () {
-    $("input.customerAmount").focusout(() => changeWorkingHours(this));
-    $("input.freightAmount").focusout(() => changeWorkingHours(this));
-    $("input.weather").click(() => changeWorkingHours(this));
+    $("input.customerAmount").focusout(function () {changeWorkingHours(this)});
+    $("input.freightAmount").focusout(function () {changeWorkingHours(this)});
+    $("input.weather").click(function () {changeWorkingHours(this)});
 
     const changeWorkingHours = (field) => {
         let freight = $(field).closest('div.form-row').find('.freightAmount').val() / 100;
