@@ -1,71 +1,33 @@
-﻿// @ts-nocheck
-const url = 'api/schedule';
-
-document.addEventListener('DOMContentLoaded', function () {
-    const calendarElement = document.getElementById('calendar');
-    const eventForm = document.getElementById('add-event');
-
-    /* todo: replace jquery with vanilla js */
-    $("#menu-toggle").click(function (e) {
-        e.preventDefault();
-        $("#wrapper").toggleClass("toggled");
-    });
-
-
-    const calendar = new FullCalendar.Calendar(calendarElement, {
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: ''
-        },
-
-        initialView: 'timeGridWeek',
-        initialDate: new Date().toISOString().split('T')[0],
-
-        nowIndicator: true,
-        navLinks: true,
-        editable: false,
-
-        events: {
-            url,
-        }
-    });
-
-    calendar.render();
-});
-
-
-$(function () {
+﻿$(function () {
     $("input.customerAmount").focusout(() => changeWorkingHours(this));
     $("input.freightAmount").focusout(() => changeWorkingHours(this));
     $("input.weather").click(() => changeWorkingHours(this));
 
     const changeWorkingHours = (field) => {
-        const freight = $(field).closest('div.form-row').find('.freightAmount').val();
+        const freight = $(field).closest('div.form-row').find('.freightAmount').val() /= 100;
         const weather = $(field).closest('div.form-row').find('.weather:checked').val();
-        const input = $(field).closest('div.form-row').find('#workingHours');
+        let input = $(field).closest('div.form-row').find('#workingHours');
         
         let customers = $(field).closest('div.form-row').find('.customerAmount').val();
 
         switch (weather) {
             case 'regen':
-                customers *= 0.5
-                break;
-            case 'zon':
-                customers *= 1.5
-                break;
-            case 'bewolkt':
                 customers *= 0.7
                 break;
+            case 'zon':
+                customers *= 1.2
+                break;
+            case 'bewolkt':
+                customers *= 0.9
+                break;
             case 'storm':
-                customers *= 0.2
+                customers *= 0.6
                 break;
             default:
                 break;
         }
 		
 		customers /= 50;
-        freight /= 100;
 
 		let estimated = Math.round(customers * freight);
         if (estimated < 5) estimated = 5;
