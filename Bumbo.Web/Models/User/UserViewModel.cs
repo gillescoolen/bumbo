@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Azure.Amqp.Framing;
 
 namespace Bumbo.Web.Models
 {
@@ -14,6 +15,7 @@ namespace Bumbo.Web.Models
         public Branch Branch { get; set; }
 
         [Display(Name = "Telefoonnummer")]
+        [DataType(DataType.PhoneNumber)]
         public string PhoneNumber { get; set; }
 
         /// <summary>
@@ -46,6 +48,7 @@ namespace Bumbo.Web.Models
         [Required]
         [DataType(DataType.PostalCode)]
         [Display(Name = "Postcode")]
+        [RegularExpression("[0-9]{4}[A-Z]{2}", ErrorMessage = "The Postcode field does not meet the correct format  (1234 AZ)")]
         [StringLength(10)]
         public string PostalCode { get; set; }
 
@@ -62,13 +65,15 @@ namespace Bumbo.Web.Models
         /// </summary>
         [Required]
         [Display(Name = "Huisnummer")]
+        [Range(0, Int32.MaxValue)]
         public int HouseNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the house number letter for this user.
         /// </summary>
         [Display(Name = "Toevoeging")]
-        [StringLength(10)]
+        [RegularExpression("[A-Z]", ErrorMessage = "The Toevoeging field does not meet the correct format (A-Z)")]
+        [StringLength(1)]
         public string HouseNumberLetter { get; set; }
 
         /// <summary>
@@ -94,7 +99,6 @@ namespace Bumbo.Web.Models
         [Display(Name = "Filiaal")]
         public int BranchId { get; set; }
 
-
         /// <summary>
         /// Gets or sets the bumbo id for this user.
         /// </summary>
@@ -111,6 +115,8 @@ namespace Bumbo.Web.Models
 
         [Display(Name = "Rol")]
         public Roles Role { get; set; }
+        
+        public List<Branch> AllBranches { get; set; }
 
         public enum Roles
         {
