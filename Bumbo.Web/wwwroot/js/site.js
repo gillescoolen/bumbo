@@ -3,7 +3,12 @@ $(function () {
     $("input.customerAmount").focusout(function () {changeWorkingHours(this)});
     $("input.freightAmount").focusout(function () {changeWorkingHours(this)});
     $("input.weather").click(function () {changeWorkingHours(this)});
-
+    
+    $("#menu-toggle").click(function (e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+    
     const changeWorkingHours = (field) => {
         let freight = $(field).closest('div.form-row').find('.freightAmount').val() / 100;
         let weather = $(field).closest('div.form-row').find('.weather:checked').val();
