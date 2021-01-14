@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Bumbo.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Bumbo.Data;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace Bumbo.Web.Controllers
 {
@@ -283,6 +284,22 @@ namespace Bumbo.Web.Controllers
             }
 
             var user = await _userManager.FindByIdAsync(id.ToString());
+            
+            // delete everything from the user
+            var userAtw = _context.ActualTimeWorked.Where(worked => worked.UserId == user.Id);
+            _context.ActualTimeWorked.RemoveRange(userAtw);
+            
+            var userAwt = _context.AvailableWorktime.Where(worked => worked.UserId == user.Id);
+            _context.AvailableWorktime.RemoveRange(userAwt);
+            
+            var userFr = _context.FurloughRequest.Where(worked => worked.UserId == user.Id);
+            _context.FurloughRequest.RemoveRange(userFr);
+            
+            var userPwt = _context.PlannedWorktime.Where(worked => worked.UserId == user.Id);
+            _context.PlannedWorktime.RemoveRange(userPwt);
+
+            await _context.SaveChangesAsync();
+            
             await _userManager.DeleteAsync(user);
             return RedirectToAction(nameof(Index));
         }
