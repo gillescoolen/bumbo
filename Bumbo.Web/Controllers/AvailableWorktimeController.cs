@@ -118,7 +118,7 @@ namespace Bumbo.Web.Controllers
             {
                 if (model.Start[index].CompareTo(model.Finish[index]) > 0)
                 {
-                    return RedirectToAction("Standard", "AvailableWorktime");
+                    return RedirectToAction("Create", "AvailableWorktime");
                 }
             }
 
@@ -132,7 +132,14 @@ namespace Bumbo.Web.Controllers
                     Start = model.Start[index],
                     Finish = model.Finish[index]
                 };
-
+                if (availableWorktime.SchoolHoursWorked < 0)
+                {
+                    availableWorktime.SchoolHoursWorked = 0;
+                }
+                if (availableWorktime.Start > availableWorktime.Finish)
+                {
+                    return RedirectToAction("Create", "AvailableWorktime");
+                }
                 _context.Add(availableWorktime);
 
                 await _context.SaveChangesAsync();
@@ -190,6 +197,10 @@ namespace Bumbo.Web.Controllers
                 return RedirectToAction("Standard", "AvailableWorktime");
             }
 
+            if (availableWorktime.SchoolHoursWorked < 0)
+            {
+                availableWorktime.SchoolHoursWorked = 0;
+            }
             AvailableWorktime toBeUpdated = _context.AvailableWorktime.Where(a => a.UserId == userId && a.WorkDate == availableWorktime.WorkDate).FirstOrDefault();
             try
             {
