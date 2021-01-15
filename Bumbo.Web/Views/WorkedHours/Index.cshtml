@@ -77,7 +77,7 @@
         {
             <tr>
                 <td>
-                    @item.WorkDate.Date.ToString("dd/MM/yyyy")
+                    @item.WorkDate.Date.ToShortDateString()
                 </td>
                 <td>
                     @item.Start.ToString("hh\\:mm")
@@ -120,15 +120,23 @@
                     @if (!item.Payed && !item.Accepted)
                     {
                         <td>
-                            <form>
+                            <form asp-action="ApproveHours" asp-controller="WorkedHours" method="post">
                                 <input type="hidden" value="@item.UserId" name="userId" />
-                                <input type="hidden" value="@item.WorkDate.ToString()" name="workDate" />
-                                <input type="submit" value="Goedkeuren" class="btn-primary" asp-action="ApproveHours" />
+                                <input type="hidden" value="@item.WorkDate" name="workDate" />
+                                <button type="submit" class="btn-primary btn">Verwijderen</button>
                             </form>
                         </td>
                         <td>
-                            @Html.ActionLink("Aanpassen", "Edit", "WorkedHours", new { UserId = item.UserId, WorkDate = item.WorkDate.ToString() })
-                            @Html.ActionLink("Verwijderen", "Delete", "WorkedHours", new { UserId = item.UserId, WorkDate = item.WorkDate.ToString() })
+                            <form asp-action="Edit" asp-controller="WorkedHours" method="post">
+                                <input type="hidden" value="@item.UserId" name="UserId" />
+                                <input type="hidden" value="@item.WorkDate" name="WorkDate" />
+                                <button type="submit" class="btn-primary btn" asp-action="ApproveHours">Aanpassen</button>
+                            </form>
+                            <form asp-action="Delete" asp-controller="WorkedHours" method="post">
+                                <input type="hidden" value="@item.UserId" name="UserId" />
+                                <input type="hidden" value="@item.WorkDate" name="WorkDate" />
+                                <button type="submit" class="btn-primary btn" asp-action="ApproveHours">Verwijderen</button>
+                            </form>
                         </td>
                     }
                 }

@@ -6,7 +6,7 @@
 <h1>Geef nieuwe beschikbaarheid door</h1>
 
 <hr />
-<form asp-action="Create">
+<form asp-action="Create" asp-controller="AvailableWorktime" method="post">
 
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -22,7 +22,7 @@
                 <div class="card" style="width: 15rem; margin:3px;">
                     <div class="card-body">
                         <div class="form-group">
-                            <b><label asp-for="@date" class="control-label">@char.ToUpper(ViewBag.cultureinfo.DateTimeFormat.GetDayName(date.DayOfWeek)[0])@ViewBag.cultureinfo.DateTimeFormat.GetDayName(date.DayOfWeek).Substring(1)-@date.Day-@char.ToUpper(ViewBag.cultureinfo.DateTimeFormat.GetMonthName(date.Month)[0])@ViewBag.cultureinfo.DateTimeFormat.GetMonthName(date.Month).Substring(1)</label></b>
+                            <b><label asp-for="@date" class="control-label">@date.ToShortDateString()</label></b>
                             <input asp-for="Dates" type="hidden" value="@date" class="form-control" />
                             <span asp-validation-for="WorkDate" class="text-danger"></span>
                         </div>
