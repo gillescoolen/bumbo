@@ -138,14 +138,13 @@ namespace Bumbo.Web.Controllers
                     Start = model.Start[index],
                     Finish = model.Finish[index]
                 };
+               
                 if (availableWorktime.SchoolHoursWorked < 0)
-                {
                     availableWorktime.SchoolHoursWorked = 0;
-                }
+               
                 if (availableWorktime.Start > availableWorktime.Finish)
-                {
                     return RedirectToAction("Create", "AvailableWorktime");
-                }
+
                 _context.Add(availableWorktime);
 
                 await _context.SaveChangesAsync();
