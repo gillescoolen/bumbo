@@ -43,23 +43,23 @@ namespace Bumbo.Web.Controllers
             {
                 availableWorkTime = availableWorkTime.OrderBy(a => a.UserId);
             }
-            else if (order.Equals("Werkdag"))
+            else if (order != null && order.Equals("Werkdag"))
             {
                 availableWorkTime = availableWorkTime.OrderBy(a => a.WorkDate);
             }
-            else if (order.Equals("Starttijd"))
+            else if (order != null && order.Equals("Starttijd"))
             {
                 availableWorkTime = availableWorkTime.OrderBy(a => a.Start);
             }
-            else if (order.Equals("Eindtijd"))
+            else if (order != null && order.Equals("Eindtijd"))
             {
                 availableWorkTime = availableWorkTime.OrderBy(a => a.Finish);
             }
-            else if (order.Equals("Medewerker"))
+            else if (order != null && order.Equals("Medewerker"))
             {
                 availableWorkTime = availableWorkTime.OrderBy(a => a.User.FirstName);
             }
-            else if (order.Equals("Schooluren"))
+            else if (order != null && order.Equals("Schooluren"))
             {
                 availableWorkTime = availableWorkTime.OrderBy(a => a.SchoolHoursWorked);
             }
