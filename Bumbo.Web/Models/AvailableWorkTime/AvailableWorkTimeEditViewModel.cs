@@ -8,5 +8,6 @@ namespace Bumbo.Web.Models
     {
         public int UserId { get; set; }
         public DateTime WorkDate { get; set; }
+
     }
 }

@@ -142,7 +142,7 @@ namespace Bumbo.Web.Controllers
                 if (availableWorktime.SchoolHoursWorked < 0)
                     availableWorktime.SchoolHoursWorked = 0;
                
-                if (availableWorktime.Start > availableWorktime.Finish)
+                if (availableWorktime.Start >= availableWorktime.Finish)
                     return RedirectToAction("Create", "AvailableWorktime");
 
                 _context.Add(availableWorktime);
@@ -166,6 +166,12 @@ namespace Bumbo.Web.Controllers
             var availableWorktime = await _context.AvailableWorktime
                 .Where(t => t.UserId == model.UserId && t.WorkDate == model.WorkDate)
                 .FirstOrDefaultAsync();
+
+            if (availableWorktime.Start >= availableWorktime.Finish)
+            {
+                ModelState.AddModelError("", $"{availableWorktime.WorkDate.ToShortDateString()} - Startijd kan niet hoger zijn dan eindtijd!");
+                return View(model);
+            }
             
             if (availableWorktime == null) return NotFound();
 
