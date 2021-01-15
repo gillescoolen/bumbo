@@ -9,8 +9,10 @@ namespace Bumbo.Data.Models
         [Required]
         public DateTime Date { get; set; }
         [Required]
+        [Range(0, 999999999999)]
         public int AmountOfCustomers { get; set; }
         [Required]
+        [Range(0, 999999999999)]
         public int AmountOfFreight { get; set; }
         [Required]
         public int BranchId { get; set; }
@@ -59,7 +61,7 @@ namespace Bumbo.Data.Models
 
             return estimated < 5 ? 5 : estimated;
         }
-        
+
         public string GetDayName()
         {
             var culture = new System.Globalization.CultureInfo("nl-NL");
