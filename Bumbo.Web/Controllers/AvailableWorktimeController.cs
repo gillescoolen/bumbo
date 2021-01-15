@@ -30,8 +30,6 @@ namespace Bumbo.Web.Controllers
         {
             var user = _userManager.GetUserAsync(User).Result;
             ViewBag.UserAge = (int)((DateTime.Today - user.DateOfBirth).TotalDays / 365);
-            CultureInfo dutchculture = new CultureInfo("nl-NL");
-            ViewBag.cultureinfo = dutchculture;
             ViewBag.order = order;
 
             var availableWorkTime = _context.AvailableWorktime.Include(a => a.User).Where(a => a.UserId == user.Id && a.User.BranchId == user.BranchId); ;
@@ -76,8 +74,6 @@ namespace Bumbo.Web.Controllers
                 return RedirectToAction("Standard", "AvailableWorktime");
             }
 
-            CultureInfo dutchculture = new CultureInfo("nl-NL");
-            ViewBag.cultureinfo = dutchculture;
             var user = _userManager.GetUserAsync(User).Result;
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Bid");
             DateTime maxDate = DateTime.Today;

@@ -55,7 +55,7 @@
                 {
                     <tr>
                         <td>
-                            @char.ToUpper(ViewBag.cultureinfo.DateTimeFormat.GetDayName(item.WorkDate.DayOfWeek)[0])@ViewBag.cultureinfo.DateTimeFormat.GetDayName(item.WorkDate.DayOfWeek).Substring(1)-@item.WorkDate.Day-@char.ToUpper(ViewBag.cultureinfo.DateTimeFormat.GetMonthName(item.WorkDate.Month)[0])@ViewBag.cultureinfo.DateTimeFormat.GetMonthName(item.WorkDate.Month).Substring(1) @item.WorkDate.Year
+                            @item.WorkDate.ToShortDateString()
                         </td>
                         @if (item.Start == tempTimeSpan && item.Finish == tempTimeSpan)
                         {
