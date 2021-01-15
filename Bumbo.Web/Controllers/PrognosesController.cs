@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using Nager.Date;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bumbo.Web.Controllers
 {
@@ -181,6 +182,13 @@ namespace Bumbo.Web.Controllers
                         WeatherDescription = prognoseViewModel.WeatherDescription,
                         Branch = prognoseViewModel.Branch
                     };
+
+                    var exists = await _context.Prognoses
+                        .Where(p => p.Date == prognose.Date)
+                        .AnyAsync();
+
+                    if (exists)
+                        _repository.Update(prognose);
 
                     if (!_repository.Create(prognose)) return View("Create", model);
                 }
