@@ -11,7 +11,7 @@
             <div class="input-group-prepend">
                 <label class="input-group-text" asp-for="@Model.Date">Week:</label>
             </div>
-            <input onchange="this.form.submit()" type="date" asp-for="@Model.Date" class="form-control" />
+            <input id="week" onchange="this.form.submit()" type="date" asp-for="@Model.Date" class="form-control" />
         </form>
     </div>
 </div>
@@ -48,6 +48,13 @@
         </ul>   
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const picker = document.getElementById('week');
+    picker.min = new Date().toISOString().split("T")[0];
+});
+</script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
