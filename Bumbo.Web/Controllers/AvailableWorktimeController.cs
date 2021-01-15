@@ -154,19 +154,15 @@ namespace Bumbo.Web.Controllers
             return RedirectToAction("Standard", "AvailableWorktime");
         }
 
-        [HttpGet("AvailableWorktime/Edit/{UserId}/{WorkDate}")]
-        public async Task<IActionResult> Edit(int? UserId, string WorkDate)
+        public async Task<IActionResult> Edit(AvailableWorkTimeEditViewModel model)
         {
 
-            if (UserId == null || WorkDate == null)
+            if (model.UserId == 0 || model.WorkDate == null)
             {
                 return NotFound();
             }
 
-            var decoded = HttpUtility.UrlDecode(WorkDate);
-            DateTime date = DateTime.Parse(decoded);
-
-            if (date.Subtract(DateTime.Today.AddDays(7)).Days < 0)
+            if (model.WorkDate.Subtract(DateTime.Today.AddDays(7)).Days < 0)
             {
                 return RedirectToAction("Standard", "AvailableWorktime");
             }
@@ -175,53 +171,52 @@ namespace Bumbo.Web.Controllers
             ViewBag.UserAge = (int)((DateTime.Now - user.DateOfBirth).TotalDays / 365);
 
             
-            var availableWorktime = await _context.AvailableWorktime.Where(at => at.UserId == UserId && at.WorkDate == date).FirstOrDefaultAsync();
+            var availableWorktime = await _context.AvailableWorktime.Where(at => at.UserId == model.UserId && at.WorkDate == model.WorkDate).FirstOrDefaultAsync();
             if (availableWorktime == null)
-            {
                 return NotFound();
-            }
+
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Bid", availableWorktime.UserId);
             return View(availableWorktime);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditConfirmed(int userId, AvailableWorktime availableWorktime)
+        public async Task<IActionResult> EditConfirmed(AvailableWorkTimeDeleteViewModel model)
         {
-            if (userId != availableWorktime.UserId)
+            if (model.UserId != model.AvailableWorkTime.UserId)
             {
                 return NotFound();
             }
 
-            if (availableWorktime.WorkDate.Subtract(DateTime.Today.AddDays(7)).Days < 0)
+            if (model.AvailableWorkTime.WorkDate.Subtract(DateTime.Today.AddDays(7)).Days < 0)
             {
-                return RedirectToAction("Edit", "AvailableWorktime", new {UserId= userId , WorkDate = availableWorktime.WorkDate.ToString()});
+                return RedirectToAction("Edit", "AvailableWorktime", new {UserId= model.UserId , WorkDate = model.AvailableWorkTime.WorkDate.ToString()});
             }
 
-            if (availableWorktime.Start.CompareTo(availableWorktime.Finish) > 0)
+            if (model.AvailableWorkTime.Start.CompareTo(model.AvailableWorkTime.Finish) > 0)
             {
-                return RedirectToAction("Edit", "AvailableWorktime", new { UserId = userId, WorkDate = availableWorktime.WorkDate.ToString() });
+                return RedirectToAction("Edit", "AvailableWorktime", new { UserId = model.UserId, WorkDate = model.AvailableWorkTime.WorkDate.ToString() });
             }
 
-            if (availableWorktime.SchoolHoursWorked < 0)
+            if (model.AvailableWorkTime.SchoolHoursWorked < 0)
             {
-                availableWorktime.SchoolHoursWorked = 0;
+                model.AvailableWorkTime.SchoolHoursWorked = 0;
             }
-            AvailableWorktime toBeUpdated = _context.AvailableWorktime.Where(a => a.UserId == userId && a.WorkDate == availableWorktime.WorkDate).FirstOrDefault();
+            AvailableWorktime toBeUpdated = _context.AvailableWorktime.Where(a => a.UserId == model.UserId && a.WorkDate == model.AvailableWorkTime.WorkDate).FirstOrDefault();
             try
             {
                 if (ModelState.IsValid)
                 {
-                    toBeUpdated.Start = availableWorktime.Start;
-                    toBeUpdated.Finish = availableWorktime.Finish;
-                    toBeUpdated.SchoolHoursWorked = availableWorktime.SchoolHoursWorked;
+                    toBeUpdated.Start = model.AvailableWorkTime.Start;
+                    toBeUpdated.Finish = model.AvailableWorkTime.Finish;
+                    toBeUpdated.SchoolHoursWorked = model.AvailableWorkTime.SchoolHoursWorked;
                     _context.Update(toBeUpdated);
                     await _context.SaveChangesAsync();
                 }
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!AvailableWorktimeExists(availableWorktime.WorkDate))
+                if (!AvailableWorktimeExists(model.AvailableWorkTime.WorkDate))
                 {
                     return NotFound();
                 }
@@ -233,19 +228,16 @@ namespace Bumbo.Web.Controllers
             return RedirectToAction("Standard", "AvailableWorktime");
         }
 
-        [HttpGet("AvailableWorktime/Delete/{UserId}/{WorkDate}")]
-        public async Task<IActionResult> Delete(int? UserId, string? WorkDate)
+        public async Task<IActionResult> Delete(AvailableWorkTimeEditViewModel model)
         {
-            if (UserId == null || WorkDate == null)
+            if (model.UserId == 0 || model.WorkDate == null)
             {
                 return NotFound();
             }
 
-            var decoded = HttpUtility.UrlDecode(WorkDate);
-            DateTime date = DateTime.Parse(decoded);
             var availableWorktime = await _context.AvailableWorktime
                 .Include(a => a.User)
-                .FirstOrDefaultAsync(at => at.UserId == UserId && at.WorkDate == date);
+                .FirstOrDefaultAsync(at => at.UserId == model.UserId && at.WorkDate == model.WorkDate);
 
             if (availableWorktime == null)
             {
@@ -255,15 +247,14 @@ namespace Bumbo.Web.Controllers
             return View(availableWorktime);
         }
 
-        [HttpGet("AvailableWorktime/DeleteConfirmed/{UserId}/{WorkDate}")]
-        public async Task<IActionResult> DeleteConfirmed(int UserId, string WorkDate)
+        public async Task<IActionResult> DeleteConfirmed(AvailableWorkTimeEditViewModel model)
         {
-            DateTime workDate = DateTime.Parse(HttpUtility.UrlDecode(WorkDate));
-            if (workDate.Subtract(DateTime.Today.AddDays(7)).Days < 0)
+
+            if (model.WorkDate.Subtract(DateTime.Today.AddDays(7)).Days < 0)
             {
                 return RedirectToAction(nameof(Index));
             }
-            var availableWorktime = await _context.AvailableWorktime.Where(at => at.UserId == UserId && at.WorkDate == workDate).FirstOrDefaultAsync();
+            var availableWorktime = await _context.AvailableWorktime.Where(at => at.UserId == model.UserId && at.WorkDate == model.WorkDate).FirstOrDefaultAsync();
             _context.AvailableWorktime.Remove(availableWorktime);
             await _context.SaveChangesAsync();
             return RedirectToAction("Standard", "AvailableWorktime");
