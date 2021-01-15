@@ -23,7 +23,6 @@ namespace Bumbo.Data.Models
 
         public virtual Branch Branch { get; set; }
 
-
         public Prognoses()
         {
             WeatherDescription = "Default";

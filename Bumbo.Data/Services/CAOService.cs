@@ -155,10 +155,10 @@ namespace Bumbo.Data.Services
                 }
             }
 
-            if (LessThanFortyHoursAverageInMonth(user, plannedWorkWeek[0].WorkDate.Month) != null)
-            {
-                validationErrors.Add(LessThanFortyHoursAverageInMonth(user, plannedWorkWeek[0].WorkDate.Month));
-            }
+            var result = LessThanFortyHoursAverageInMonth(user, plannedWorkWeek[0].WorkDate.Month);
+
+            if (result != null) validationErrors.Add(result);
+            
             return validationErrors;
         }
 

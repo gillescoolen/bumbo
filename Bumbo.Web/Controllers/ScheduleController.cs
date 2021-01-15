@@ -45,12 +45,14 @@ namespace Bumbo.Web.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
             var users = await _context.Users.Where(u => u.BranchId == user.BranchId).ToListAsync();
-            var date = model.Date >= DateTime.Today ? model.Date : getBeginningOfWeek(DateTime.Today);
-
+            var date = model.Date >= DateTime.Today ? model.Date : GetBeginningOfWeek(DateTime.Today);
+            var errors = await CalculateMonthlyCAOAsync(users, date);
+            
             var newModel = new SchedulePlanViewModel
             {
                 Users = users,
-                Date = date
+                Date = date,
+                Errors = errors
             };
 
             return View(newModel);
@@ -62,7 +64,7 @@ namespace Bumbo.Web.Controllers
             if (userId < 1 || date == null) return View("Plan");
 
             var user = await _context.Users.FindAsync(userId);
-            var beginningOfWeek = getBeginningOfWeek(date);
+            var beginningOfWeek = GetBeginningOfWeek(date);
             var endOfWeek = beginningOfWeek.AddDays(7);
 
             var availableTimes = await _context.AvailableWorktime
@@ -90,7 +92,8 @@ namespace Bumbo.Web.Controllers
                 MinimumDate = beginningOfWeek,
                 MaximumDate = endOfWeek,
                 UserName = user.GetFullName(),
-                UserId = userId
+                UserId = userId,
+                Errors = _caoService.WorkWeekValidate(user, plannedWorktimes.ToArray())
             };
 
             for (int i = 0; i < 7; i++)
@@ -111,8 +114,6 @@ namespace Bumbo.Web.Controllers
         {
             var user = await _context.Users.FindAsync(model.UserId);
             model.Errors = _caoService.WorkWeekValidate(user, model.PlannedWorktimes.ToArray());
-
-            if (model.Errors.Count() > 0) return await ShowErrorsAsync(model);
 
             foreach (var plannedWorktime in model.PlannedWorktimes)
             {
@@ -141,13 +142,13 @@ namespace Bumbo.Web.Controllers
                 }
 
                 if (
-                    plannedWorktime.Start.Hours < 8 ||
-                    plannedWorktime.Finish.Hours > 19 ||
-                    plannedWorktime.Start.Hours > 19 ||
-                    plannedWorktime.Finish.Hours < 8
+                    plannedWorktime.Start.Hours < 6 ||
+                    plannedWorktime.Finish.Hours > 23 ||
+                    plannedWorktime.Start.Hours > 23 ||
+                    plannedWorktime.Finish.Hours < 6
                 )
                 {
-                    model.Errors.Add($"{plannedWorktime.WorkDate.ToShortDateString()} - Tijden mogen niet buiten 08:00 en 19:00 vallen!");
+                    model.Errors.Add($"{plannedWorktime.WorkDate.ToShortDateString()} - Tijden mogen niet buiten 06:00 en 23:00 vallen!");
                     break;
                 }              
 
@@ -155,16 +156,16 @@ namespace Bumbo.Web.Controllers
                 else await _context.PlannedWorktime.AddAsync(plannedWorktime);
             }
 
-            if (model.Errors.Count > 0) return await ShowErrorsAsync(model);
-
             await _context.SaveChangesAsync();
+
+            if (model.Errors.Count > 0) return await ShowErrorsAsync(model);
 
             return RedirectToAction("Plan");
         }
 
         private async Task<IActionResult> ShowErrorsAsync(ScheduleCreateViewModel model)
         {
-            var beginningOfWeek = getBeginningOfWeek(model.MinimumDate);
+            var beginningOfWeek = GetBeginningOfWeek(model.MinimumDate);
             var endOfWeek = beginningOfWeek.AddDays(7);
 
             var availableWorktimes = await _context.AvailableWorktime
@@ -192,9 +193,26 @@ namespace Bumbo.Web.Controllers
             return View("Create", model);
         }
 
-        private DateTime getBeginningOfWeek(DateTime date)
+        private DateTime GetBeginningOfWeek(DateTime date)
         {
             return date.AddDays(-(int)date.DayOfWeek + (int)DayOfWeek.Monday);
+        }
+
+        private async Task<List<string>> CalculateMonthlyCAOAsync(List<User> users, DateTime date)
+        {
+            var errors = new List<string>();
+
+            foreach (var user in users)
+            {
+                var plannedWorktimes = await _context.PlannedWorktime
+                    .Where(t => t.UserId == user.Id)
+                    .Where(t => t.WorkDate.Month == date.Month)
+                    .ToListAsync();
+
+                errors.AddRange(_caoService.WorkWeekValidate(user, plannedWorktimes.ToArray()));
+            }
+
+            return errors;
         }
     }
 }
