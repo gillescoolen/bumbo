@@ -9,7 +9,7 @@ namespace Bumbo.Data.Models
         [Required]
         public DateTime Date { get; set; }
         [Required]
-        [Range(0, 999999999999)]
+        [Range(0, Int32.MaxValue)]
         public int AmountOfCustomers { get; set; }
         [Required]
         [Range(0, 999999999999)]
