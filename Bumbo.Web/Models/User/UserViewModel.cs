@@ -103,7 +103,7 @@ namespace Bumbo.Web.Models.User
         [StringLength(36)]
         public string Bid { get; set; }
 
-        [DataType(DataType.EmailAddress)]
+        [DataType(DataType.EmailAddress, ErrorMessage = "Email voldoet niet aan de eisen")]
         [Required]
         public string Email { get; set; }
 
