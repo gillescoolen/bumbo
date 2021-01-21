@@ -1,0 +1,160 @@
+@model Bumbo.Web.Models.ScheduleCreateViewModel
+
+@{
+    ViewData["Title"] = "Inplannen";
+}
+
+<h4>Inplannen voor @Model.UserName</h4>
+<hr />
+
+<div class="collapse" id="rules">
+  <div class="card card-body">
+    Zorg ervoor dat:
+    <ul>
+        <li>Werknemers niet meer dan 60 uur per week werken.</li>
+        <li>Minderjarigen niet meer dan 8 uur per dag werken.</li>
+        <li>Minderjarigen niet na dan 19:00 ingepland zijn.</li>
+        <li>Minderjarigen niet meer dan 40 uur gemiddeld per week werken.</li>
+        <li>Minderjarigen niet meer dan 12 uur zijn ingepland tijdens een schoolweek.</li>
+        <li>Minderjarigen niet meer dan 5 dagen zijn ingepland per week.</li>
+    </ul>
+  </div>
+</div>
+
+<br>
+<form asp-action="Store" asp-controller="Schedule" method="post">
+    <input asp-for="UserId" type="hidden" value="@Model.UserId"/>
+    <input asp-for="UserName" type="hidden" value="@Model.UserName"/>
+    <input asp-for="MinimumDate" type="hidden" value="@Model.MinimumDate"/>
+    <input asp-for="MaximumDate" type="hidden" value="@Model.MaximumDate"/>
+
+    <div class="row">
+        <div asp-validation-summary="None" class="text-danger"></div>
+
+        @if (Model.Errors != null && Model.Errors.Count() > 0)
+        {
+            <div class="alert alert-danger" style="width: 100%" role="alert">
+                <ul>
+                    @foreach (var error in Model.Errors)
+                    {
+                        <li>@error</li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+    <div class="row">
+        
+        <ul class="list-group col-6">
+
+            <li class="list-group-item">
+                <h5>Geplande tijden</h5>
+            </li>
+
+            @for (int i = 0; i < Model.PlannedWorktimes.Count(); i++)
+            {
+                <li class="list-group-item">
+                    <div class="input-group">
+                        <div class="input-group-prepend"><span class="input-group-text" id="">@Model.MinimumDate.AddDays(i).ToShortDateString()</span></div>
+
+                        <input asp-for="@Model.PlannedWorktimes[i].UserId" value="@Model.UserId" type="hidden" />
+                        <input asp-for="@Model.PlannedWorktimes[i].WorkDate" value="@Model.MinimumDate.AddDays(i)" type="hidden" />
+                        
+                        @if(Model.PlannedWorktimes[i] != null) 
+                        {
+                            <input step="900" value="@Model.PlannedWorktimes[i].Start" asp-for="@Model.PlannedWorktimes[i].Start" type="time" class="datetimepicker form-control">
+                            <input step="900" value="@Model.PlannedWorktimes[i].Finish" asp-for="@Model.PlannedWorktimes[i].Finish" type="time" class="datetimepicker form-control">
+                        }
+                        else if (Model.AvailableWorkTimes[i] != null)
+                        {
+                            <input step="900" value="@Model.AvailableWorkTimes[i].Start" asp-for="@Model.PlannedWorktimes[i].Start" type="time" class="datetimepicker form-control">
+                            <input step="900" value="@Model.AvailableWorkTimes[i].Finish" asp-for="@Model.PlannedWorktimes[i].Finish" type="time" class="datetimepicker form-control">
+                        } 
+                        else
+                        {
+                            <input step="900" asp-for="@Model.PlannedWorktimes[i].Start" type="time" class="datetimepicker form-control">
+                            <input step="900" asp-for="@Model.PlannedWorktimes[i].Finish" type="time" class="datetimepicker form-control">
+                        }
+                        <select asp-for="@Model.PlannedWorktimes[i].Section" class="custom-select">
+                            <option value="Kassa">Kassa</option>
+                            <option value="Vriezer">Vriezer</option>
+                            <option value="Anders">Anders</option>
+                        </select>
+                    </div>
+                </li>
+            }
+        </ul> 
+
+        <ul class="list-group col-6">
+
+            <li class="list-group-item">
+                <h5>Beschikbare tijden</h5>
+            </li>
+
+            @for (int i = 0; i < Model.AvailableWorkTimes.Count(); i++)
+            {
+                <li class="list-group-item">
+                    @if (Model.AvailableWorkTimes[i] != null)
+                    {
+                        <div class="input-group">
+                            <div class="input-group-prepend"><span class="input-group-text" id="">@Model.AvailableWorkTimes[i].WorkDate.ToShortDateString()</span></div>
+                            
+                            <input disabled value="@Model.AvailableWorkTimes[i].Start" type="time" class="datetimepicker form-control">
+                            <input disabled value="@Model.AvailableWorkTimes[i].Finish" type="time" class="datetimepicker form-control">
+                        </div>
+                    } else
+                    {
+                        <div class="input-group">
+                            <div class="input-group-prepend"><span class="input-group-text" id="">@Model.MinimumDate.AddDays(i).ToShortDateString()</span></div>
+                            <input disabled type="time" class="datetimepicker form-control">
+                            <input disabled type="time" class="datetimepicker form-control">
+                        </div>
+                    }
+                </li>
+            }
+        </ul>   
+        <br>
+    </div>
+    <div class="row my-4">
+        <div class="col-6">
+            <button class="btn btn-primary btn-lg btn-block" name="submitSchedule" type="submit">Planning opslaan</button>
+        </div>
+        <div class="col-6">
+            <button class="btn btn-secondary btn-lg btn-block" type="button" data-toggle="collapse" data-target="#rules" aria-expanded="false" aria-controls="rules">CAO Regels</button>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <h5>Prognose voor deze week</h5>
+        <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Datum</th>
+                <th scope="col">Aantal Bezoekers</th>
+                <th scope="col">Hoeveelheid Vracht</th>
+                <th scope="col">Geschatte uren</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Prognoses.Count(); i++)
+            {
+            <tr>
+                    @if (Model.Prognoses[i] != null)
+                    {
+                        <td>@Model.Prognoses[i].Date.ToShortDateString()</td>
+                        <td>@Model.Prognoses[i].AmountOfCustomers bezoekers</td>
+                        <td>@Model.Prognoses[i].AmountOfFreight vracht</td>
+                        <td>@Model.Prognoses[i].GetEstimatedWorkingHours() uur</td>
+                    } else {
+                        <td>Geen prognose beschikbaar voor @Model.MinimumDate.AddDays(i).ToShortDateString()</td>
+                    }
+            </tr>
+            }
+        </tbody>
+        </table>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

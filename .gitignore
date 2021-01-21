@@ -1,0 +1,13 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+.idea/
+.vs/
+.vs/bumbo/v16/.suo
+Bumbo.Web/Properties/launchSettings.json
+.vs/bumbo/v16/.suo
+.vs/bumbo/DesignTimeBuild/.dtbcache.v2
+.vs/bumbo/v16/.suo
+.vs/bumbo/DesignTimeBuild/.dtbcache.v2

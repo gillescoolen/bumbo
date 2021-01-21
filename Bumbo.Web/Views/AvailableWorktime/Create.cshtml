@@ -1,0 +1,71 @@
+﻿@model Bumbo.Web.Models.AvailableWorkTimeViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+<h1>Geef nieuwe beschikbaarheid door</h1>
+
+<hr />
+<form asp-action="Create" asp-controller="AvailableWorktime" method="post">
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+    <div class="form-group">
+        <input type="hidden" asp-for="Dates" value="@ViewBag.newDates" />
+    </div>
+
+    <div class="row justify-content-md-center">
+        @foreach (DateTime date in ViewBag.newDates)
+        {
+            <div class="col-md-3 text-center">
+                <div class="card" style="width: 15rem; margin:3px;">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <b><label asp-for="@date" class="control-label">@date.ToShortDateString()</label></b>
+                            <input asp-for="Dates" type="hidden" value="@date" class="form-control" />
+                            <span asp-validation-for="WorkDate" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Start" class="control-label">Jouw beschikbare starttijd</label>
+                            <input placeholder="For example: 9:00:00" asp-for="Start" type="time" value="09:00:00" class="form-control" />
+                            <span asp-validation-for="Start" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Finish" class="control-label">Jouw beschikbare eindtijd</label>
+                            <input placeholder="For example: 18:00:00" asp-for="Finish" type="time" value="18:00:00" class="form-control" />
+                            <span asp-validation-for="Finish" class="text-danger"></span>
+                        </div>
+                        @if (ViewBag.UserAge < 18)
+                        {
+                            <div class="form-group">
+                                <label asp-for="SchoolHoursWorked" class="control-label">Gemaakte schooluren</label>
+                                <input asp-for="SchoolHoursWorked" class="form-control" />
+                                <span asp-validation-for="SchoolHoursWorked" class="text-danger"></span>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <i>
+        *Indien je niet beschikbaar bent, vul dan in:
+        <br>
+        01:00(AM) en 01:00(AM)
+    </i>
+
+    <div class="form-group">
+        <input type="submit" value="Opslaan" class="btn btn-primary" />
+    </div>
+</form>
+
+<div>
+    <a asp-area="" asp-controller="AvailableWorktime" asp-action="Standard">Terug naar het overzicht</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

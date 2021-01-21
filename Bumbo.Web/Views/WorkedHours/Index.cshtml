@@ -1,0 +1,146 @@
+﻿@model IEnumerable<Bumbo.Data.Models.ActualTimeWorked>
+
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Gewerkte Uren</h1>
+
+@if (User.IsInRole("Manager"))
+{
+    @if (ViewBag.ShowButton)
+    {
+        <p>
+            <a asp-action="Payout"> <button class="btn btn-primary">Betaal alle onbetaalde werktijden</button></a>
+        </p>
+    }
+}
+
+@if (ViewBag.Message != null)
+{
+    <i>
+        *@ViewBag.Message
+    </i>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-controller="WorkedHours" asp-action="Datum">
+                    <button class="btn btn-primary">Datum</button>
+                </a>
+            </th>
+            <th>
+                <a asp-controller="WorkedHours" asp-action="Starttijd">
+                    <button class="btn btn-primary">Starttijd</button>
+                </a>
+            </th>
+            <th>
+                <a asp-controller="WorkedHours" asp-action="Eindtijd">
+                    <button class="btn btn-primary">Eindtijd</button>
+                </a>
+            </th>
+            <th>
+                <a asp-controller="WorkedHours" asp-action="Ziek">
+                    <button class="btn btn-primary">Aanwezig/Ziek</button>
+                </a>
+            </th>
+            <th>
+                <a asp-controller="WorkedHours" asp-action="Geaccepteerd">
+                    <button class="btn btn-primary">Geaccepteerd</button>
+                </a>
+            </th>
+            <th>
+                <a asp-controller="WorkedHours" asp-action="Betaald">
+                    <button class="btn btn-primary">Uitbetaald</button>
+                </a>
+            </th>
+            <th>
+                <a asp-controller="WorkedHours" asp-action="Naam">
+                    <button class="btn btn-primary">Naam</button>
+                </a>
+            </th>
+            <th>
+            </th>
+            <th>
+            </th>
+            <th>
+            </th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.WorkDate.Date.ToShortDateString()
+                </td>
+                <td>
+                    @item.Start.ToString("hh\\:mm")
+                </td>
+                <td>
+                    @item.Finish.ToString("hh\\:mm")
+                </td>
+                @if (item.Sickness == 0)
+                {
+                    <td style="color:green">Aanwezig</td>
+                }
+                else
+                {
+                    <td style="color:red">Ziek</td>
+                }
+                @if (item.Accepted)
+                {
+                    <td style="color:green">Geaccepteerd</td>
+                }
+                else
+                {
+                    <td style="color:red">In afwachting</td>
+                }
+                @if (item.Payed)
+                {
+                    <td style="color:green">Betaald</td>
+                }
+                else
+                {
+                    <td style="color:red">In afwachting</td>
+                }
+                <td>
+                    @item.User.GetFullName()
+                </td>
+                <td>
+                    @Html.ActionLink("Uren inzien", "ViewPerHour", "WorkedHours", new { UserId = item.UserId, WorkDate = item.WorkDate.ToString() })
+                </td>
+                @if (ViewBag.user.IsInRole("Manager"))
+                {
+                    @if (!item.Payed && !item.Accepted)
+                    {
+                        <td>
+                            <form asp-action="ApproveHours" asp-controller="WorkedHours" method="post">
+                                <input type="hidden" value="@item.UserId" name="userId" />
+                                <input type="hidden" value="@item.WorkDate" name="workDate" />
+                                <button type="submit" class="btn-primary btn">Accorderen</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form asp-action="Edit" asp-controller="WorkedHours" method="post">
+                                <input type="hidden" value="@item.UserId" name="UserId" />
+                                <input type="hidden" value="@item.WorkDate" name="WorkDate" />
+                                <button type="submit" class="btn-primary btn" asp-action="ApproveHours">Aanpassen</button>
+                            </form>
+                            <form asp-action="Delete" asp-controller="WorkedHours" method="post">
+                                <input type="hidden" value="@item.UserId" name="UserId" />
+                                <input type="hidden" value="@item.WorkDate" name="WorkDate" />
+                                <button type="submit" class="btn-primary btn" asp-action="ApproveHours">Verwijderen</button>
+                            </form>
+                        </td>
+                    }
+                }
+            </tr>
+        }
+    </tbody>
+</table>
