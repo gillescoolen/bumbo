@@ -262,7 +262,7 @@ namespace Bumbo.Web.Controllers
                     payroll.Items.Add(new PayrollItem
                     {
                         Bid = workTime.User.Bid,
-                        Hours = hours,//hier gaat iets fout
+                        Hours = hours,
                         Addition = dayAddition
                     });
                 }
