@@ -1,13 +1,9 @@
-﻿using Bumbo.Data.Models;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Azure.Amqp.Framing;
+using Bumbo.Data.Models;
 
-namespace Bumbo.Web.Models
+namespace Bumbo.Web.Models.User
 {
     public class UserViewModel
     {
@@ -107,16 +103,13 @@ namespace Bumbo.Web.Models
         [StringLength(36)]
         public string Bid { get; set; }
 
-        [DataType(DataType.EmailAddress)]
+        [DataType(DataType.EmailAddress, ErrorMessage = "Email voldoet niet aan de eisen")]
+        [Required]
         public string Email { get; set; }
 
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
-
         [Display(Name = "Rol")]
+        [Required]
         public Roles Role { get; set; }
-        
-        public List<Branch> AllBranches { get; set; }
 
         public enum Roles
         {

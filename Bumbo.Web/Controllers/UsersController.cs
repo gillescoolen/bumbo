@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Bumbo.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Bumbo.Data;
+using Bumbo.Web.Models.User;
 using Microsoft.CodeAnalysis.CSharp;
 
 namespace Bumbo.Web.Controllers
@@ -91,46 +92,46 @@ namespace Bumbo.Web.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(UserViewModel userViewModel)
+        public async Task<IActionResult> Create(CreateViewModel createViewModel)
         {
             if (ModelState.IsValid)
             {
                 User dataUser = new User()
                 {
-                    FirstName = userViewModel.FirstName,
-                    LastName = userViewModel.LastName,
-                    DateOfBirth = userViewModel.DateOfBirth,
-                    StreetName = userViewModel.StreetName,
-                    HouseNumber = userViewModel.HouseNumber,
-                    HouseNumberLetter = userViewModel.HouseNumberLetter,
-                    PostalCode = userViewModel.PostalCode,
-                    PhoneNumber = userViewModel.PhoneNumber,
-                    IBAN = userViewModel.IBAN,
-                    BranchId = userViewModel.BranchId,
-                    DateOfEmployment = userViewModel.DateOfEmployment,
-                    Bid = userViewModel.Bid,
-                    Email = userViewModel.Email,
-                    UserName = userViewModel.Email
+                    FirstName = createViewModel.FirstName,
+                    LastName = createViewModel.LastName,
+                    DateOfBirth = createViewModel.DateOfBirth,
+                    StreetName = createViewModel.StreetName,
+                    HouseNumber = createViewModel.HouseNumber,
+                    HouseNumberLetter = createViewModel.HouseNumberLetter,
+                    PostalCode = createViewModel.PostalCode,
+                    PhoneNumber = createViewModel.PhoneNumber,
+                    IBAN = createViewModel.IBAN,
+                    BranchId = createViewModel.BranchId,
+                    DateOfEmployment = createViewModel.DateOfEmployment,
+                    Bid = createViewModel.Bid,
+                    Email = createViewModel.Email,
+                    UserName = createViewModel.Email
                 };
 
                 if (!_context.Branch.Any(branch => branch.Id == dataUser.BranchId))
                 {
                     ViewBag.Branches = _context.Branch.ToList();
-                    return View(userViewModel);
+                    return View(createViewModel);
                 }
 
-                var result = await _userManager.CreateAsync(dataUser, userViewModel.Password);
+                var result = await _userManager.CreateAsync(dataUser, createViewModel.Password);
 
                 if (result.Succeeded)
                 {
-                    if (userViewModel.Role == UserViewModel.Roles.Manager) await _userManager.AddToRoleAsync(dataUser, "Manager");
+                    if (createViewModel.Role == UserViewModel.Roles.Manager) await _userManager.AddToRoleAsync(dataUser, "Manager");
 
                     return RedirectToAction(nameof(Index));
                 }
             }
 
             ViewBag.Branches = _context.Branch.ToList();
-            return View(userViewModel);
+            return View(createViewModel);
         }
 
         // GET: Users/Edit/5
@@ -226,7 +227,7 @@ namespace Bumbo.Web.Controllers
 
                     var roles = _userManager.GetRolesAsync(dataUser).Result;
                     await _userManager.RemoveFromRolesAsync(dataUser, roles.ToArray());
-
+                    
                     if (role == UserViewModel.Roles.Manager)
                     {
                         await _userManager.AddToRoleAsync(dataUser, "Manager");

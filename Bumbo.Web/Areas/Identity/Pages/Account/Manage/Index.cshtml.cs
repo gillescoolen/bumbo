@@ -41,7 +41,7 @@ namespace Bumbo.Web.Areas.Identity.Pages.Account.Manage
         private void Load(User user)
         {
             var userName = user.UserName;
-            var phoneNumber = user.PhoneNumber.ToString();
+            var phoneNumber = user.PhoneNumber?.ToString();
 
             Username = userName;
 
