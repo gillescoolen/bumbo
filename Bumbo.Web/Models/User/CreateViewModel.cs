@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Bumbo.Web.Models.User
+namespace Bumbo.Web.Models
 {
     public class CreateViewModel : UserViewModel
     {
