@@ -128,26 +128,33 @@ namespace Bumbo.Web.Controllers
                 }
             }
 
-            for (int index = 0; index < model.Start.Count; index++)
+            try
             {
+              for (int index = 0; index < model.Start.Count; index++)
+              {
                 AvailableWorktime availableWorktime = new AvailableWorktime
                 {
-                    UserId = user.Id,
-                    WorkDate = model.Dates[index],
-                    SchoolHoursWorked = model.SchoolHoursWorked,
-                    Start = model.Start[index],
-                    Finish = model.Finish[index]
+                  UserId = user.Id,
+                  WorkDate = model.Dates[index],
+                  SchoolHoursWorked = model.SchoolHoursWorked,
+                  Start = model.Start[index],
+                  Finish = model.Finish[index]
                 };
-               
+
                 if (availableWorktime.SchoolHoursWorked < 0)
-                    availableWorktime.SchoolHoursWorked = 0;
-               
+                  availableWorktime.SchoolHoursWorked = 0;
+
                 if (availableWorktime.Start >= availableWorktime.Finish)
-                    return RedirectToAction("Create", "AvailableWorktime");
+                  return RedirectToAction("Create", "AvailableWorktime");
 
                 _context.Add(availableWorktime);
 
                 await _context.SaveChangesAsync();
+              }
+            }
+            catch (System.Exception)
+            {
+              return RedirectToAction("Standard", "AvailableWorktime");
             }
 
             return RedirectToAction("Standard", "AvailableWorktime");
