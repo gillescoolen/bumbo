@@ -4,8 +4,8 @@ namespace Bumbo.Web.Models
 {
     public class CreateViewModel : UserViewModel
     {
+        [DataType(DataType.Password, ErrorMessage = "Wachtwoord voldoet niet aan de eisen")]
         [Required]
-        [DataType(DataType.Password)]
         public string Password { get; set; }
     }
 }

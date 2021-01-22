@@ -1,5 +1,6 @@
-﻿@using Bumbo.Data.Models
-@model Bumbo.Web.Models.CreateViewModel
+@using Bumbo.Data.Models
+@using Bumbo.Web.Models.User
+@model Bumbo.Web.Models.User.CreateViewModel
 
 @{
     ViewData["Title"] = "Aanmaken";
@@ -114,8 +115,8 @@
             <div class="form-group">
                 <label asp-for="Role" class="control-label"></label>
                 <select asp-for="Role" class="form-control">
-                    <option value="@Bumbo.Web.Models.UserViewModel.Roles.Manager">Manager</option>
-                    <option value="@Bumbo.Web.Models.UserViewModel.Roles.User">Medewerker</option>
+                    <option value="@UserViewModel.Roles.Manager">Manager</option>
+                    <option value="@UserViewModel.Roles.User">Medewerker</option>
                     <span asp-validation-for="Role" class="text-danger"></span>
                 </select>
             </div>

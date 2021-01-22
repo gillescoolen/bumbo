@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Bumbo.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Bumbo.Data;
+using Bumbo.Web.Models.User;
 using Microsoft.CodeAnalysis.CSharp;
 
 namespace Bumbo.Web.Controllers
@@ -226,7 +227,7 @@ namespace Bumbo.Web.Controllers
 
                     var roles = _userManager.GetRolesAsync(dataUser).Result;
                     await _userManager.RemoveFromRolesAsync(dataUser, roles.ToArray());
-
+                    
                     if (role == UserViewModel.Roles.Manager)
                     {
                         await _userManager.AddToRoleAsync(dataUser, "Manager");
